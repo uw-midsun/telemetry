@@ -1,8 +1,12 @@
-hash: 2462294f70bf9071a0ed24133bb3c2451e95f4a4b488a1af1c4632b8cad1bacf
-updated: 2017-02-18T20:46:59.449420113-05:00
+hash: 912eb5bc8373fdd8c0a3a98466f1e24ec16682788b61c46e4ba7f37977a882d9
+updated: 2017-02-19T00:40:26.55008-05:00
 imports:
+- name: github.com/gorilla/websocket
+  version: 3f3e394da2b801fbe732a935ef40724762a67a07
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/pressly/chi
+  version: 5917107c1cecb42eb3dbca2246b160285562799b
 - name: github.com/spf13/cobra
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
 - name: github.com/spf13/pflag

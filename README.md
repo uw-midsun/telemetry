@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.org/uw-midsun/telemetry.svg?branch=master)](https://travis-ci.org/uw-midsun/telemetry)
 
-This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry server for a solar car.
+This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry software for our solar car.
+
+The telemetry server is written in Golang, and receives data from the telemetry board mounted in the vehicle. It exposes a WebSocket connection to stream messages as they arrive, and provides a RESTful API for exploring historical data. A SQLite database (optional) is used to store the received data for future use.
+
+The telemetry client is a web frontend that displays data pushed from the server over a WebSocket connection. 
 
 ## Getting Started
 We use [Glide](https://github.com/Masterminds/glide) to manage vendored dependencies.
@@ -16,19 +20,21 @@ make
 ```
 
 ## Makefile commands
+If you're stuck and need help
 
 ```bash
 make help
 ```
 
 ### Building the binary
-To build the binary (in ``bin/``)
+To build the binary (output in ``bin/``)
 
 ```bash
 make
 ```
 
 ### Tests
+To build (and run) the tests
 
 ```bash
 make test
@@ -40,13 +46,13 @@ You can also run tests with specific arguments
 make test ARGS="-v"
 ```
 
-Or run tests for a specific package
+Or run the tests for a specific package
 
 ```bash
 make test PKG=telemetry/cmd
 ```
 
-To run the test in verbose mode
+To run the tests in verbose mode
 
 ```bash
 make test-verbose
@@ -57,6 +63,8 @@ Or with the race-detector enabled
 ```bash
 make test-race
 ```
+
+To have the test output in XML
 
 ```bash
 make test-xml
@@ -69,6 +77,7 @@ make test-coverage
 ```
 
 ### Linting
+All linting is done by `golint`
 
 ```bash
 make lint
