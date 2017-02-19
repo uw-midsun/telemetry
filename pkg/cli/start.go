@@ -11,7 +11,7 @@ var startCmd = &cobra.Command{
 			Start the telemetry server, which will start listening for data on
 			the input device specified via the --source flags
 			`,
-	Example: `  telemetry start -source=attrs=ssd,path=/mnt/ssd1 [--join=host:port,[host:port]]`,
+	Example: `  telemetry start -source=/dev/tty.* [--port=port]`,
 	RunE:    runStart,
 }
 

@@ -30,7 +30,8 @@ var versionCmd = &cobra.Command{
 	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		tw := tabwriter.NewWriter(os.Stdout, 2, 1, 2, ' ', 0)
-		fmt.Fprintf(tw, "Version:    %s\n", 1)
+		// TODO: replace with package version
+		fmt.Fprintf(tw, "Version:    %s\n", "1.0.0")
 		return tw.Flush()
 	},
 }
