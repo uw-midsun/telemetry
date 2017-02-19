@@ -1,9 +1,9 @@
 package main
 
 import (
-	"telemetry/cmd"
+	"telemetry/pkg/cli"
 )
 
 func main() {
-	cmd.RootCmd.Execute()
+	cli.Main()
 }

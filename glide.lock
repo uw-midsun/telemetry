@@ -1,5 +1,5 @@
-hash: 8f00b3408ad3a7b3161077875717898fa0dc4b6449f94728044e6c8748ec0cd7
-updated: 2017-02-19T00:56:08.730638829-05:00
+hash: df8bbc3df755a26558bd26cac74ccf0b3694f0fded42a18907ae7c88bf609c36
+updated: 2017-02-19T14:22:20.306657357-05:00
 imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
@@ -7,6 +7,8 @@ imports:
   version: 3f3e394da2b801fbe732a935ef40724762a67a07
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/pkg/errors
+  version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
 - name: github.com/pressly/chi
   version: 5917107c1cecb42eb3dbca2246b160285562799b
 - name: github.com/spf13/cobra

@@ -128,7 +128,8 @@ glide.lock: glide.yaml | $(BASE) ; $(info updating dependencies...)
 	$Q cd $(BASE) && $(GLIDE) update
 	@touch $@
 
-vendor: glide.lock | $(BASE) ; $(info retrieving dependencies...)
+#vendor: glide.lock | (BASE) ; $(info retrieving dependencies...)
+vendor: $(info retrieving dependencies...)
 	$Q cd $(BASE) && $(GLIDE) --quiet install
 	@ln -sf . vendor/src
 	@touch $@
