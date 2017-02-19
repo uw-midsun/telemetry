@@ -1,17 +1,22 @@
 # telemetry
-Telemetry server for a solar car
+
+[![Build Status](https://travis-ci.org/uw-midsun/telemetry.svg?branch=master)](https://travis-ci.org/uw-midsun/telemetry)
+
+This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry server for a solar car.
 
 ## Getting Started
-Get the code
+We use [Glide](https://github.com/Masterminds/glide) to manage vendored dependencies.
+
+Once you've installed Glide, get the code
 
 ```bash
 go get -d github.com/uw-midsun/telemetry
 cd $GOPATH/src/github.com/uw-midsun/telemetry
+make
 ```
 
-We use [Glide](https://github.com/Masterminds/glide) to manage vendored dependencies.
-
 ## Makefile commands
+
 ```bash
 make help
 ```
@@ -57,6 +62,8 @@ make test-race
 make test-xml
 ```
 
+If you want coverage results
+
 ```bash
 make test-coverage
 ```
@@ -70,5 +77,8 @@ make lint
 To lint a specific package
 
 ```bash
-make lint PKG=telemetry/package
+make lint PKG=telemetry/package-name
 ```
+
+## License
+The project is made available under the [MIT License](https://opensource.org/licenses/MIT).
