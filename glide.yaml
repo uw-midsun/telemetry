@@ -1,5 +1,6 @@
 package: telemetry
 import:
+- package: github.com/golang/glog
 - package: github.com/gorilla/websocket
 - package: github.com/pressly/chi
 - package: github.com/spf13/cobra
