@@ -1,4 +1,4 @@
-package: telemetry
+package: github.com/uw-midsun/telemetry
 import:
 - package: github.com/golang/glog
 - package: github.com/gorilla/websocket

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/uw-midsun/telemetry.svg?branch=master)](https://travis-ci.org/uw-midsun/telemetry)
 
-This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry software for our solar car.
+This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry software for our solar car. Coincidentally, this backend is also shared with the driver dashboard display.
 
 The telemetry server is written in Golang, and receives data from the telemetry board mounted in the vehicle. It exposes a WebSocket connection to stream messages as they arrive, and provides a RESTful API for exploring historical data. A SQLite database (optional) is used to store the received data for future use.
 

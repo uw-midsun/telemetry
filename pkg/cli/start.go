@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
 
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
@@ -36,6 +38,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 		return usageAndError(cmd)
 	}
 
+	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
@@ -44,4 +47,13 @@ func runStart(cmd *cobra.Command, args []string) error {
 	http.ListenAndServe(port, r)
 
 	return nil
+}
+
+// restartBackground restarts the process in the background (like a daemon)
+func restartBackground() {
+	args := make([]string, 0, len(os.Args))
+
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 }
