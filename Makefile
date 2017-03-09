@@ -27,7 +27,7 @@ all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build progr
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o bin/$(PACKAGE) main.go
 
-$(BASE): ; $(info setting GOPATH...)
+$(BASE): ; $(info setting $$GOPATH...)
 	@mkdir -p $(dir $@)
 	@ln -sf $(CURDIR) $@
 
@@ -83,13 +83,11 @@ test-xml: fmt lint vendor | $(BASE) $(GO2XUNIT) ; $(info running $(NAME:%=% )tes
 	$Q cd $(BASE) && 2>&1 $(GO) test -timeout 20s -v $(TESTPKGS) | tee test/tests.output
 	$(GO2XUNIT) -fail -input test/tests.output -output test/tests.xml
 
-
 # Code coverage
 COVERAGE_MODE = atomic
 COVERAGE_PROFILE = $(COVERAGE_DIR)/profile.out
 COVERAGE_XML = $(COVERAGE_DIR)/coverage.xml
 COVERAGE_HTML = $(COVERAGE_DIR)/index.html
-
 .PHONY: test-coverage test-coverage-tools
 test-coverage-tools: | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML)
 test-coverage: COVERAGE_DIR := $(CURDIR)/test/coverage.$(shell date -Iseconds)
@@ -107,7 +105,6 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info running co
 	$Q $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
 	$Q $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
-
 .PHONY: lint
 lint: vendor | $(BASE) $(GOLINT) ; $(info running golint...) @ ## Run golint
 	$Q cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
@@ -120,16 +117,14 @@ fmt: ; $(info running gofmt...) @ ## Run gofmt on all source files
 		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
 	 done ; exit $$ret
 
+
 #########################
 # Dependency management #
 #########################
-
 glide.lock: glide.yaml | $(BASE) ; $(info updating dependencies...)
 	$Q cd $(BASE) && $(GLIDE) update
 	@touch $@
-
-#vendor: glide.lock | (BASE) ; $(info retrieving dependencies...)
-vendor: $(info retrieving dependencies...)
+vendor: glide.lock | $(BASE) ; $(info retrieving dependencies...)
 	$Q cd $(BASE) && $(GLIDE) --quiet install
 	@ln -sf . vendor/src
 	@touch $@
@@ -138,7 +133,6 @@ vendor: $(info retrieving dependencies...)
 #################
 # Miscellaneous #
 #################
-
 .PHONY: clean
 clean: ; $(info cleaning...)	@ ## Cleanup everything
 	@rm -rf $(GOPATH)
@@ -148,7 +142,7 @@ clean: ; $(info cleaning...)	@ ## Cleanup everything
 .PHONY: help
 help:
 	@grep -E '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: version
 version:
