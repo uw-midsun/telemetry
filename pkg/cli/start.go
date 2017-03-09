@@ -8,6 +8,8 @@ import (
 
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
+
+	"telemetry/pkg/ws"
 )
 
 var startCmd = &cobra.Command{
@@ -29,7 +31,7 @@ var ErrorCode = 1
 var serverPort int
 
 func init() {
-	startCmd.Flags().IntVarP(&serverPort, "port", "p", 3000, "port")
+	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 }
 
 // runStart
@@ -40,12 +42,9 @@ func runStart(cmd *cobra.Command, args []string) error {
 
 	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
+	r.Get("/ws", ws.ServeHTTP)
 	port := fmt.Sprintf(":%d", serverPort)
 	http.ListenAndServe(port, r)
-
 	return nil
 }
 
