@@ -27,7 +27,8 @@ all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build progr
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o bin/$(PACKAGE) main.go
 
-$(BASE): ; $(info setting $$GOPATH...)
+# echoing $GOPATH to ensure it is evaluated and not lazily-evaluated
+$(BASE): ; $(info setting $$GOPATH ${GOPATH}...)
 	@mkdir -p $(dir $@)
 	@ln -sf $(CURDIR) $@
 
