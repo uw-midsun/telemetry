@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
+	"telemetry/pkg/sources/fake"
 )
 
 const (
@@ -28,17 +30,10 @@ func handleMessages(conn *websocket.Conn) {
 	// defer pingTicker.Stop()
 
 	for {
-		msgType, message, err := conn.ReadMessage()
+		// TODO: actually parse received messages for bidirectional data exchange
+		// msgType, message, err := conn.ReadMessage()
 
-		if err != nil {
-			return
-		}
-
-		if message != nil {
-			if string(message) == "ping" {
-				conn.WriteMessage(msgType, []byte("pong"))
-			}
-		}
+		fake.GenFake(conn)
 	}
 }
 

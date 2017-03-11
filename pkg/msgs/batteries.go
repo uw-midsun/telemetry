@@ -11,3 +11,8 @@ type BatteryModule struct {
 func (b BatteryModule) canID() uint16 {
 	return b.ID
 }
+
+// New creates a new BatteryModule
+func (b BatteryModule) New() CAN {
+	return &BatteryModule{ID: b.ID}
+}
