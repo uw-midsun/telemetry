@@ -2,7 +2,7 @@ PACKAGE  = telemetry
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
-GOPATH   = $(CURDIR)/.gopath~
+GOPATH   := $(CURDIR)/.gopath~
 BIN      = $(GOPATH)/bin
 BASE     = $(GOPATH)/src/$(PACKAGE)
 
@@ -28,7 +28,7 @@ all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build progr
 		-o bin/$(PACKAGE) main.go
 
 # echoing $GOPATH to ensure it is evaluated and not lazily-evaluated
-$(BASE): ; $(info setting $$GOPATH ${GOPATH}...)
+$(BASE): ; $(info setting $$GOPATH...)
 	@mkdir -p $(dir $@)
 	@ln -sf $(CURDIR) $@
 
