@@ -1,0 +1,18 @@
+hash: 39a210b656a4711a62930ff3b42a00875f9b7d6f82475ce6cb0362a9fe0f7df3
+updated: 2017-03-08T23:03:14.49057282-05:00
+imports:
+- name: github.com/golang/glog
+  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/gorilla/websocket
+  version: 3f3e394da2b801fbe732a935ef40724762a67a07
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/pkg/errors
+  version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
+- name: github.com/pressly/chi
+  version: 5917107c1cecb42eb3dbca2246b160285562799b
+- name: github.com/spf13/cobra
+  version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
+- name: github.com/spf13/pflag
+  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+testImports: []

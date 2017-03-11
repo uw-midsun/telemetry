@@ -1,0 +1,7 @@
+package: github.com/uw-midsun/telemetry
+import:
+- package: github.com/golang/glog
+- package: github.com/gorilla/websocket
+- package: github.com/pkg/errors
+- package: github.com/pressly/chi
+- package: github.com/spf13/cobra
