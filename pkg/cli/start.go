@@ -9,6 +9,7 @@ import (
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
+	"telemetry/pkg/pubsub"
 	"telemetry/pkg/ws"
 )
 
@@ -41,8 +42,9 @@ func runStart(cmd *cobra.Command, args []string) error {
 	}
 
 	// TODO(karl): change this so the process can be "daemonized"
+	messageBus := pubsub.New()
 	r := chi.NewRouter()
-	r.Get("/ws", ws.ServeHTTP)
+	r.Get("/ws", ws.ServeHTTP(messageBus))
 	port := fmt.Sprintf(":%d", serverPort)
 	http.ListenAndServe(port, r)
 	return nil
