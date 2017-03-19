@@ -4,9 +4,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/gorilla/websocket"
-
 	"telemetry/pkg/msgs"
+	"telemetry/pkg/pubsub"
 )
 
 const (
@@ -30,11 +29,10 @@ func getBattery(id uint16) msgs.TelemetryData {
 }
 
 // GenFake generates fake data
-// TODO: make this pub-sub, and write to channel instead of directly to websocket
-func GenFake(conn *websocket.Conn) {
+func GenFake(bus *pubsub.MessageBus) {
 	for {
 		for battery := uint16(1); battery <= 36; battery++ {
-			conn.WriteJSON(getBattery(battery))
+			bus.Publish("battery", getBattery(battery))
 		}
 		time.Sleep(readInterval)
 	}
