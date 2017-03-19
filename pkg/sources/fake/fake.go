@@ -15,24 +15,19 @@ const (
 
 var startTime = time.Now()
 
-func getBattery(id uint16) msgs.TelemetryData {
+func getCAN(id uint16) msgs.CAN {
 	t := time.Since(startTime)
 	fid := float64(id)
-	voltage := uint16(33000 + 3000*math.Sin((t.Seconds()/20)+fid))
-	temperature := float32(33000 + 3000*math.Sin((t.Seconds()/20)+fid))
+	data := uint16(33000 + 3000*math.Sin((t.Seconds()/20)+fid))
 
-	return msgs.NewTelemetryData(&msgs.BatteryModule{
-		ID:          id,
-		Voltage:     voltage,
-		Temperature: temperature,
-	})
+	return msgs.NewCAN(id, data)
 }
 
 // GenFake generates fake data
 func GenFake(bus *pubsub.MessageBus) {
 	for {
-		for battery := uint16(1); battery <= 36; battery++ {
-			bus.Publish("battery", getBattery(battery))
+		for msg := uint16(1); msg <= 36; msg++ {
+			bus.Publish("CAN", getCAN(msg))
 		}
 		time.Sleep(readInterval)
 	}

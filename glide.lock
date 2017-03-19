@@ -1,5 +1,5 @@
-hash: 39a210b656a4711a62930ff3b42a00875f9b7d6f82475ce6cb0362a9fe0f7df3
-updated: 2017-03-08T23:03:14.49057282-05:00
+hash: fdc062d3586107dfe67955db912a32ef139f388fabaf212aaf8743fe57e7d3ac
+updated: 2017-03-19T18:10:32.966371705-04:00
 imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
@@ -7,6 +7,8 @@ imports:
   version: 3f3e394da2b801fbe732a935ef40724762a67a07
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/mattn/go-sqlite3
+  version: eac1dfa2a61ebccaa117538a5bb12044f6700cd0
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
 - name: github.com/pressly/chi
@@ -15,4 +17,8 @@ imports:
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
 - name: github.com/spf13/pflag
   version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
-testImports: []
+testImports:
+- name: golang.org/x/net
+  version: a6577fac2d73be281a500b310739095313165611
+  subpackages:
+  - context

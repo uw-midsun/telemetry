@@ -36,7 +36,7 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn) {
 	// the websocket cannot be concurrently written to
 	l := sync.Mutex{}
 
-	bus.Subscribe("battery", func(msg msgs.TelemetryData) {
+	bus.Subscribe("CAN", func(msg msgs.CAN) {
 		l.Lock()
 		defer l.Unlock()
 		conn.WriteJSON(msg)

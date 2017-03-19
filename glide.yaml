@@ -5,3 +5,4 @@ import:
 - package: github.com/pkg/errors
 - package: github.com/pressly/chi
 - package: github.com/spf13/cobra
+- package: github.com/mattn/go-sqlite3
