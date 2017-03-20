@@ -32,7 +32,7 @@ func TestEnd2End(t *testing.T) {
 	before := tm.AddDate(0, 0, -1)
 	after := tm.AddDate(0, 0, 1)
 
-	msgs, err := TimeWindowedRead(db, 1, after, before)
+	msgs, err := TimeWindowedRead(db, 1, before, after)
 	if err != nil {
 		t.Errorf("TimeWindowedRead failed " + err.Error())
 	} else if len(msgs) != 1 {

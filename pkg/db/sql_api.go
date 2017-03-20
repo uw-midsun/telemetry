@@ -27,7 +27,7 @@ func WriteMsg(db *sql.DB, msg msgs.CAN) error {
 }
 
 // TimeWindowedRead reads msgs between to and from with the provided id.
-func TimeWindowedRead(db *sql.DB, canID uint16, to time.Time, from time.Time) ([]msgs.CAN, error) {
+func TimeWindowedRead(db *sql.DB, canID uint16, from time.Time, to time.Time) ([]msgs.CAN, error) {
 	rows, err := db.Query(`
     SELECT
       can.id,
@@ -37,8 +37,8 @@ func TimeWindowedRead(db *sql.DB, canID uint16, to time.Time, from time.Time) ([
       can
     WHERE
      can.id = ?
-     AND can.timestamp < ?
-     AND can.timestamp > ?
+     AND can.timestamp <= ?
+     AND can.timestamp >= ?
     `, canID, to, from)
 	if err != nil {
 		return nil, err
