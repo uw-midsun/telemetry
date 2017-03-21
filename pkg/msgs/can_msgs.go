@@ -4,29 +4,14 @@ import (
 	"time"
 )
 
-// CAN describes the data stored inside messages from the CAN bus.
-type CAN interface {
-	// New creates a new message, preserving id and other meta information.
-	New() CAN
+// CAN describes a single message from the CAN bus.
+type CAN struct {
+	ID        uint16
+	Timestamp time.Time
+	Data      uint64
 }
 
-// TelemetryData is what we return to the user
-type TelemetryData struct {
-	CAN   CAN
-	CANID uint16
-	Time  time.Time
-}
-
-// GetID gets the CAN id
-func GetID(msg CAN) uint16 {
-	// TODO: enable the CAN message mapping with reflection
-	// for now, we'll just return a fixed id
-	// msgType := reflect.TypeOf(msg)
-
-	return 0
-}
-
-// NewTelemetryData creates a TelemetryData struct
-func NewTelemetryData(msg CAN) TelemetryData {
-	return TelemetryData{msg, GetID(msg), time.Now().UTC()}
+// NewCAN creates a CAN struct, this should be used for all incoming messages.
+func NewCAN(id uint16, data uint64) CAN {
+	return CAN{id, time.Now().UTC(), data}
 }
