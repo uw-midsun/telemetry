@@ -17,6 +17,16 @@
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
 
+# Project-local glide vendor files
+/vendor/
+
+# Project-local test and coverage files
+/test/tests.*
+/test/coverage.*
+
+# compiled binaries
+/bin/
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
