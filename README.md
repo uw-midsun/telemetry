@@ -6,9 +6,19 @@ This repository contains the latest version of the [University of Waterloo](http
 
 The telemetry server is written in Golang, and receives data from the telemetry board mounted in the vehicle. It exposes a WebSocket connection to stream messages as they arrive, and provides a RESTful API for exploring historical data. A SQLite database (optional) is used to store the received data for future use.
 
-The telemetry client is a web frontend that displays data pushed from the server over a WebSocket connection. 
+## telemetry-client
+The telemetry client is a web frontend that displays data pushed from the server over a WebSocket connection. This is written in TypeScript.
 
-## Getting Started
+### Getting Started
+We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is compatible with `npm`, but is a little faster and allows us to specify a `yarn.lock` file.
+
+```bash
+yarn install
+```
+
+## telemetry-server
+
+### Getting Started
 We use [Glide](https://github.com/Masterminds/glide) to manage vendored dependencies.
 
 Once you've installed Glide, get the code
@@ -19,21 +29,21 @@ cd $GOPATH/src/github.com/uw-midsun/telemetry
 make
 ```
 
-## Makefile commands
+### Makefile commands
 If you're stuck and need help
 
 ```bash
 make help
 ```
 
-### Building the binary
+#### Building the binary
 To build the binary (output in ``bin/``)
 
 ```bash
 make
 ```
 
-### Tests
+#### Tests
 To build (and run) the tests
 
 ```bash
@@ -76,7 +86,7 @@ If you want coverage results
 make test-coverage
 ```
 
-### Linting
+#### Linting
 All linting is done by `golint`
 
 ```bash
