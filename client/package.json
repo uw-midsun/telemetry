@@ -1,0 +1,20 @@
+{
+  "name": "telemetry-client",
+  "version": "0.0.1",
+  "description": "telemetry client",
+  "main": "index.js",
+  "repository": "https://github.com/uw-midsun/telemetry",
+  "author": "Midnight Sun",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "node-sass": "^4.5.2",
+    "tslint": "^5.0.0",
+    "typescript": "^2.2.2"
+  },
+  "dependencies": {
+    "plotly": "^1.0.6",
+    "socket.io": "^1.7.3"
+  }
+}
