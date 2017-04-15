@@ -12,7 +12,6 @@
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.1",
     "babel-loader": "^6.4.1",
-    "browser-sync": "^2.18.8",
     "chai": "^3.5.0",
     "chokidar": "^1.6.1",
     "copy-webpack-plugin": "^4.0.1",
