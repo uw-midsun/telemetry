@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "allowUnreachableCode": true,
+    "target": "es5",
+    "moduleResolution": "node",
+    "outDir": "./src/js",
+    "typeRoots": [
+      "node_modules/@types/"
+    ],
+    "types": [
+      "plottable"
+    ]
+  },
+  "include": [
+    "src/ts/**/*.ts"
+  ]
+}
