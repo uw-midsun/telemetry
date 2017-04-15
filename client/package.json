@@ -18,5 +18,8 @@
   },
   "dependencies": {
 
+  },
+  "scripts": {
+    "lint:ts": "tslint src/**/*.ts"
   }
 }
