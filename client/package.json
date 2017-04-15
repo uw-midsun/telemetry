@@ -19,6 +19,8 @@
   "dependencies": {},
   "scripts": {
     "lint:ts": "tslint src/**/*.ts",
-    "lint:scss": "stylelint src/css/**/*.scss"
+    "lint:scss": "stylelint src/css/**/*.scss",
+    "compile:ts": "tsc",
+    "compile:scss": "node-sass --include-path src/css src/css/stylesheet.scss src/css/stylesheet.css"
   }
 }
