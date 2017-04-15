@@ -16,8 +16,7 @@
       "plottable"
     ]
   },
-  "files": [
-    "./src/ts/dial.ts",
-    "./src/ts/driver_graph.ts"
+  "include": [
+    "src/ts/**/*.ts"
   ]
 }
