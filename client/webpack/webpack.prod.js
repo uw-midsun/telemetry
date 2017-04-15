@@ -23,6 +23,10 @@ webpack_base.plugins.push(
     {
       from: 'img',
       to: 'img'
+    },
+    {
+      from: 'fonts',
+      to: 'fonts'
     }
   ])
 );
