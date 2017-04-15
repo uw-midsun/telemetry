@@ -7,14 +7,16 @@
   "author": "Midnight Sun",
   "license": "MIT",
   "devDependencies": {
+    "@types/d3": "^4.7.0",
+    "@types/plottable": "^1.4.32",
     "chai": "^3.5.0",
+    "js-beautify": "^1.6.12",
     "mocha": "^3.2.0",
     "node-sass": "^4.5.2",
     "tslint": "^5.0.0",
     "typescript": "^2.2.2"
   },
   "dependencies": {
-    "plotly": "^1.0.6",
-    "socket.io": "^1.7.3"
+
   }
 }
