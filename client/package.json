@@ -51,11 +51,13 @@
   },
   "dependencies": {},
   "scripts": {
-    "build": "NODE_ENV=production del dist && webpack --config webpack/webpack.prod.js",
+    "build": "npm-run-all clean webpack",
+    "clean": "del dist",
     "dev": "NODE_ENV=development node webpack/server.js",
     "lint:js": "eslint js/*.js",
     "lint:ts": "tslint js/*.ts",
     "lint:scss": "stylelint css/*.scss",
-    "lint": "npm-run-all lint:js lint:ts lint:scss"
+    "lint": "npm-run-all lint:js lint:ts lint:scss",
+    "webpack": "NODE_ENV=production webpack --config webpack/webpack.prod.js"
   }
 }
