@@ -7,28 +7,31 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
 const webpack_base = require('./webpack.base')
 const config = require('./config')
+const webpackMerge = require('webpack-merge')
 
-webpack_base.plugins.push(
-  new ProgressBarPlugin(),
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    },
-    comments: false
-  }),
-  new AssetsPlugin({
-    filename: path.join('dist', 'assets.json')
-  }),
-  new CopyWebpackPlugin([
-    {
-      from: 'img',
-      to: 'img'
-    },
-    {
-      from: 'fonts',
-      to: 'fonts'
-    }
-  ])
-);
-
-module.exports = webpack_base;
+module.exports = function() {
+  return webpackMerge(webpack_base, {
+    plugins: [
+      new ProgressBarPlugin(),
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false
+        },
+        comments: false
+      }),
+      new AssetsPlugin({
+        filename: path.join('dist', 'assets.json')
+      }),
+      new CopyWebpackPlugin([
+        {
+          from: 'img',
+          to: 'img'
+        },
+        {
+          from: 'fonts',
+          to: 'fonts'
+        }
+      ])
+    ]
+  })
+};
