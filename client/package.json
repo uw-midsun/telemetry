@@ -12,12 +12,13 @@
     "mocha": "^3.2.0",
     "node-sass": "^4.5.2",
     "stylelint": "^7.10.1",
+    "stylelint-config-standard": "^16.0.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.2"
   },
   "dependencies": {},
   "scripts": {
     "lint:ts": "tslint src/**/*.ts",
-    "lint:scss": "stylelint css/**/*.scss"
+    "lint:scss": "stylelint src/css/**/*.scss"
   }
 }
