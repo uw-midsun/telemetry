@@ -2,7 +2,6 @@
   "name": "telemetry-client",
   "version": "0.0.1",
   "description": "telemetry client",
-  "main": "index.js",
   "repository": "https://github.com/uw-midsun/telemetry",
   "author": "Midnight Sun",
   "license": "MIT",
