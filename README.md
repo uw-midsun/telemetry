@@ -13,7 +13,36 @@ The telemetry client is a web frontend that displays data pushed from the server
 We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is compatible with `npm`, but is a little faster and allows us to specify a `yarn.lock` file.
 
 ```bash
+cd client/
+nvm use .
 yarn install
+```
+
+### yarn/npm scripts
+All the below scripts can be run using ``npm`` or ``yarn``.
+
+#### Development
+```bash
+yarn run dev
+```
+
+#### Linting
+```bash
+yarn run lint
+```
+
+If you want to run a specific lint,
+
+```bash
+yarn run lint:js
+yarn run lint:ts
+yarn run lint:scss
+```
+
+#### Build
+
+```bash
+yarn run build
 ```
 
 ## telemetry-server

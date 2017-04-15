@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "suppressImplicitAnyIndexErrors": true,
+    "suppressExcessPropertyErrors": true,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist/js",
+    "declaration": true,
+    "listFiles": false,
+    "noEmitOnError": false
+  },
+  "filesGlob": [
+    "./js/**/*.ts"
+  ],
+  "atom": {
+    "rewriteTsconfig": false
+  }
+}
