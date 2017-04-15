@@ -1,4 +1,5 @@
-/* eslint-disable */
+'use strict'
+
 var config = require('./config')
 
 // From https://raw.githubusercontent.com/glenjamin/webpack-hot-middleware/master/client.js

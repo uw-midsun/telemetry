@@ -1,3 +1,5 @@
+'use strict'
+
 var ExtractPlugin = require('extract-text-webpack-plugin')
 var RawSource = require("webpack-sources").RawSource
 var postcss  = require('postcss')

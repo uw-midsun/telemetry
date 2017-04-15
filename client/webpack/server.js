@@ -1,4 +1,5 @@
 'use strict'
+
 const WebpackDevServer = require('webpack-dev-server')
 const webpack = require('webpack')
 const webpack_dev = require('./webpack.dev')
