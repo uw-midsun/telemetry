@@ -21,6 +21,6 @@
     "lint:ts": "tslint src/**/*.ts",
     "lint:scss": "stylelint src/css/**/*.scss",
     "compile:ts": "tsc",
-    "compile:scss": "node-sass --include-path src/css src/css/stylesheet.scss src/css/stylesheet.css"
+    "compile:scss": "node-sass --include-path src/css --output-style compressed src/css/stylesheet.scss src/css/stylesheet.css"
   }
 }
