@@ -1,22 +1,18 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "allowUnreachableCode": true,
-    "target": "es5",
-    "moduleResolution": "node",
-    "outDir": "./src/js",
-    "typeRoots": [
-      "node_modules/@types/"
-    ],
-    "types": [
-      "plottable"
+    "compilerOptions": {
+        "module": "umd",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "allowUnreachableCode": true,
+        "target": "es5",
+        "moduleResolution": "node",
+        "outDir": "./src/js",
+        "typeRoots": ["node_modules/@types/"],
+        "types": ["requirejs", "plottable"]
+    },
+    "include": [
+        "./src/ts/**/*.ts"
     ]
-  },
-  "include": [
-    "src/ts/**/*.ts"
-  ]
 }

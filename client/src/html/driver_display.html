@@ -1,0 +1,55 @@
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UWMidsun Driver Display</title>  
+    <meta name="description" content="UWMidsun Driver Display">
+    <meta name="author" content="UWMidsun">
+    <link href="../fonts/OpenSans-Regular.ttf" rel="stylesheet">
+    <link href="../css/stylesheet.css" rel="stylesheet">
+    <link href="../css/plottable.css" rel="stylesheet">
+    <script src="../static/d3.js"></script>
+    <script src="../static/plottable.js"></script>
+  </head>
+
+
+  <body style="width:100%; height:100%">
+    <div id="dash-wrapper">
+      <div id="top-bar">
+        <div id="left-arrow"> 
+          <object id="left-icon" type="image/svg+xml" data="../img/left.svg"></object>
+        </div>
+        <div id="status-bar">
+          <p id="status"></p> 
+        </div>
+        <div id="right-arrow"> 
+          <object id="right-icon" type="image/svg+xml" data="../img/right.svg"></object>
+        </div>
+      </div>
+      <div id="speedometer-wrapper">      
+        <div id="speedometer"></div>
+        <div id="cruise-wrapper">
+          <div id="cruise-icon-wrapper">
+            <object id="cruise-icon" type="image/svg+xml" data="../img/cruise.svg"></object>
+          </div> 
+          <div id="cruise">
+            <p id="cruise-value">80</p> 
+          </div>
+        </div>
+      </div>
+      <div id="soc-wrapper">
+        <div id="soc-icon">
+          <object id="battery-icon" type="image/svg+xml" data="../img/battery.svg"></object>
+        </div>
+        <div id="soc"></div>
+      </div>
+      <div id="graph-wrapper">
+        <div id="graph" style="overflow:visible" class="plottable"></div>
+      </div>
+      <div id="state-wrapper">
+        <p id="state">D</p>
+      </div>
+    </div>
+    <script data-main="../js/dd" src="../static/require.js"></script>
+  </body> 
+</html >
