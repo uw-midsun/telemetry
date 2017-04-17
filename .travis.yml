@@ -9,7 +9,6 @@ branches:
 
 os:
   - linux
-  - osx
 
 before_install:
   # Repo for newer Node.js versions
@@ -29,6 +28,9 @@ install:
   - go get -v github.com/Masterminds/glide
   - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
   - glide install
+
+before_script:
+  - nvm install 6
 
 script:
   - make test-coverage
