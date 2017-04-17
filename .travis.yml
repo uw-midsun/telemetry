@@ -16,8 +16,9 @@ install:
   - go get -v github.com/Masterminds/glide
   - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
   - glide install
+  - yarn install
 
 script:
   - make test-coverage
   - make
-  - cd client && yarn run lint
+  - cd client && yarn install && yarn run lint
