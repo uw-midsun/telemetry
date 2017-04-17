@@ -8,6 +8,7 @@
   "devDependencies": {
     "@types/d3": "^4.7.0",
     "@types/plottable": "^1.4.32",
+    "@types/requirejs": "^2.1.29",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "node-sass": "^4.5.2",
@@ -16,9 +17,6 @@
     "stylelint-config-standard": "^16.0.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.2"
-  },
-  "dependencies": {
-    "@types/requirejs": "^2.1.29"
   },
   "scripts": {
     "compile:ts": "tsc",

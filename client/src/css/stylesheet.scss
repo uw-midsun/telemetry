@@ -4,12 +4,12 @@
 }
 
 p {
-  font-family: "Open Sans";
   color: white;
 }
 
 html {
   height: 100%;
+  font-family: "Open Sans";
 }
 
 body {
@@ -179,12 +179,10 @@ body {
         width: 100%;
 
         .tick-label {
-          font-family: "Open Sans";
           fill: white;
         }
 
         .text-line {
-          font-family: "Open Sans";
           fill: white;
         }
 
