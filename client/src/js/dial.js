@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var svgns = "http://www.w3.org/2000/svg";
+    var svgns = 'http://www.w3.org/2000/svg';
     var Direction;
     (function (Direction) {
         Direction[Direction["CounterClockwise"] = -1] = "CounterClockwise";
@@ -27,10 +27,11 @@
             step = step * -1;
         }
         function easeCubic(pos) {
-            if ((pos /= 0.5) < 1) {
+            pos /= 0.5;
+            if (pos < 1) {
                 return 0.5 * Math.pow(pos, 3);
             }
-            return 0.5 * (Math.pow(pos - 2, 3), +2);
+            return 0.5 * (Math.pow(pos - 2, 3) + 2);
         }
         function animate() {
             var progress = currentIteration++ / interations;
@@ -54,10 +55,10 @@
     function describeArc(x, y, radius, startAngle, endAngle, reverse) {
         var start = polarToCartesian(x, y, radius, endAngle);
         var end = polarToCartesian(x, y, radius, startAngle);
-        var largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+        var largeArcFlag = endAngle - startAngle <= Math.PI ? '0' : '1';
         return [
-            "M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-        ].join(" ");
+            'M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y
+        ].join(' ');
     }
     var DialOptions = (function () {
         function DialOptions() {
@@ -71,95 +72,95 @@
             this.thickness = 1;
             this.padding = 5;
             this.lineCap = LineEnd.Flat;
-            this.dialColor = "#000000";
+            this.dialColor = '#000000';
             this.dialOpacity = 1;
-            this.rectColor = "#FFFFFF";
+            this.rectColor = '#FFFFFF';
             this.rectOpacity = 1;
             this.showText = true;
-            this.font = "Verdana";
+            this.font = 'Verdana';
             this.fontSize = 30;
-            this.fontColor = "#000000";
+            this.fontColor = '#000000';
         }
         return DialOptions;
     }());
     exports.DialOptions = DialOptions;
     var Dial = (function () {
         function Dial(div, options) {
-            this.div = div;
-            this.options = options;
-            this.value = 0;
-            this.svg = document.createElementNS(svgns, "svg");
-            this.svg.setAttribute('style', "width:100%; height:100%");
-            this.div.appendChild(this.svg);
-            this.rect = document.createElementNS(svgns, "rect");
-            this.svg.appendChild(this.rect);
-            this.path = document.createElementNS(svgns, "path");
-            this.svg.appendChild(this.path);
-            this.text = document.createElementNS(svgns, "text");
-            this.svg.appendChild(this.text);
+            this._value = 0;
+            this._div = div;
+            this._options = options;
+            this._svg = document.createElementNS(svgns, 'svg');
+            this._svg.setAttribute('style', 'width:100%; height:100%');
+            this._div.appendChild(this._svg);
+            this._rect = document.createElementNS(svgns, 'rect');
+            this._svg.appendChild(this._rect);
+            this._path = document.createElementNS(svgns, 'path');
+            this._svg.appendChild(this._path);
+            this._text = document.createElementNS(svgns, 'text');
+            this._svg.appendChild(this._text);
             this.updateOptions(options);
             this.draw();
         }
-        Dial.prototype.drawPath = function (path, radius, value, offset) {
-            if (this.options.rotation == Direction.Clockwise) {
-                var angleEnd = this.options.angleArc * (value - this.options.min) / this.delta +
-                    this.options.angleOffset;
-                path.setAttribute("d", describeArc(this.svg.clientWidth / 2, this.svg.clientHeight / 2, radius, this.options.angleOffset + offset, angleEnd + offset, false));
-            }
-            else {
-                var angleEnd = this.options.angleArc -
-                    this.options.angleArc * (value - this.options.min) / this.delta -
-                    this.options.angleOffset;
-                path.setAttribute("d", describeArc(this.svg.clientWidth / 2, this.svg.clientHeight / 2, radius, angleEnd + offset, this.options.angleOffset - offset, false));
-            }
-        };
-        Dial.prototype.draw = function () {
-            this.rect.setAttribute("width", (this.svg.clientWidth).toString());
-            this.rect.setAttribute("height", (this.svg.clientHeight).toString());
-            var radius = Math.min(this.svg.clientWidth, this.svg.clientHeight) / 2 -
-                this.options.padding - this.options.thickness / 2;
-            this.drawPath(this.path, radius, this.value, 0);
-            if (this.options.showText) {
-                this.text.innerHTML = this.value.toString();
-                this.text.setAttribute("x", (this.svg.clientWidth / 2).toString());
-                this.text.setAttribute("y", (this.svg.clientHeight / 2).toString());
-            }
-        };
         Dial.prototype.updateOptions = function (options) {
-            this.options = options;
-            this.delta = this.options.max - this.options.min;
-            this.path.setAttribute("fill-opacity", "0");
-            if (this.options.lineCap = LineEnd.Flat) {
-                this.path.setAttribute("stroke-linecap", "butt");
+            this._options = options;
+            this._delta = this._options.max - this._options.min;
+            this._path.setAttribute('fill-opacity', '0');
+            if (this._options.lineCap === LineEnd.Flat) {
+                this._path.setAttribute('stroke-linecap', 'butt');
             }
             else {
-                this.path.setAttribute("stroke-linecap", "round");
+                this._path.setAttribute('stroke-linecap', 'round');
             }
-            this.path.setAttribute("stroke", this.options.dialColor);
-            this.path.setAttribute("stroke-width", this.options.thickness.toString());
-            this.path.setAttribute("stroke-opacity", this.options.dialOpacity.toString());
-            this.rect.setAttribute("fill", this.options.rectColor);
-            this.rect.setAttribute("fill-opacity", this.options.rectOpacity.toString());
-            this.text.setAttribute("text-anchor", "middle");
-            this.text.setAttribute("alignment-baseline", "middle");
-            this.text.setAttribute("fill", this.options.fontColor);
-            this.text.setAttribute("font-family", this.options.font);
-            this.text.setAttribute("font-size", this.options.fontSize.toString());
+            this._path.setAttribute('stroke', this._options.dialColor);
+            this._path.setAttribute('stroke-width', this._options.thickness.toString());
+            this._path.setAttribute('stroke-opacity', this._options.dialOpacity.toString());
+            this._rect.setAttribute('fill', this._options.rectColor);
+            this._rect.setAttribute('fill-opacity', this._options.rectOpacity.toString());
+            this._text.setAttribute('text-anchor', 'middle');
+            this._text.setAttribute('alignment-baseline', 'middle');
+            this._text.setAttribute('fill', this._options.fontColor);
+            this._text.setAttribute('font-family', this._options.font);
+            this._text.setAttribute('font-size', this._options.fontSize.toString());
             this.draw();
         };
         Dial.prototype.updateValue = function (value) {
             var _this = this;
             var update = function (new_val) {
-                if (new_val > _this.options.max) {
-                    new_val = _this.options.max;
+                if (new_val > _this._options.max) {
+                    new_val = _this._options.max;
                 }
-                else if (new_val < _this.options.min) {
-                    new_val = _this.options.min;
+                else if (new_val < _this._options.min) {
+                    new_val = _this._options.min;
                 }
-                _this.value = new_val;
+                _this._value = new_val;
                 _this.draw();
             };
-            Animate(this.value, value, this.options.duration, this.options.step, update);
+            Animate(this._value, value, this._options.duration, this._options.step, update);
+        };
+        Dial.prototype.drawPath = function (path, radius, value, offset) {
+            if (this._options.rotation === Direction.Clockwise) {
+                var angleEnd = this._options.angleArc * (value - this._options.min) / this._delta +
+                    this._options.angleOffset;
+                path.setAttribute('d', describeArc(this._svg.clientWidth / 2, this._svg.clientHeight / 2, radius, this._options.angleOffset + offset, angleEnd + offset, false));
+            }
+            else {
+                var angleEnd = this._options.angleArc -
+                    this._options.angleArc * (value - this._options.min) / this._delta -
+                    this._options.angleOffset;
+                path.setAttribute('d', describeArc(this._svg.clientWidth / 2, this._svg.clientHeight / 2, radius, angleEnd + offset, this._options.angleOffset - offset, false));
+            }
+        };
+        Dial.prototype.draw = function () {
+            this._rect.setAttribute('width', (this._svg.clientWidth).toString());
+            this._rect.setAttribute('height', (this._svg.clientHeight).toString());
+            var radius = Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
+                this._options.padding - this._options.thickness / 2;
+            this.drawPath(this._path, radius, this._value, 0);
+            if (this._options.showText) {
+                this._text.innerHTML = this._value.toString();
+                this._text.setAttribute('x', (this._svg.clientWidth / 2).toString());
+                this._text.setAttribute('y', (this._svg.clientHeight / 2).toString());
+            }
         };
         return Dial;
     }());

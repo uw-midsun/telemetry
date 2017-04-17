@@ -20,3 +20,4 @@ install:
 script:
   - make test-coverage
   - make
+  - cd client && yarn run lint

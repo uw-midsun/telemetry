@@ -17,7 +17,9 @@
     "tslint": "^5.0.0",
     "typescript": "^2.2.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/requirejs": "^2.1.29"
+  },
   "scripts": {
     "compile:ts": "tsc",
     "compile:scss": "node-sass --include-path src/css --output-style compressed src/css/stylesheet.scss src/css/stylesheet.css",

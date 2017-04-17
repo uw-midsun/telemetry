@@ -67,7 +67,9 @@
                 this.dataUpdate();
             }
         };
-        StreamingDataset.prototype.setFilter = function (filter) { this._filter = filter; };
+        StreamingDataset.prototype.setFilter = function (filter) {
+            this._filter = filter;
+        };
         StreamingDataset.prototype.getDataset = function () {
             if (this._filter) {
                 this._dataset.data(this._filter(this._dataset.data()));
@@ -77,7 +79,6 @@
         return StreamingDataset;
     }());
     exports.StreamingDataset = StreamingDataset;
-    ;
     var StreamingPlot = (function () {
         function StreamingPlot(plot) {
             this.plot = plot;
@@ -91,6 +92,16 @@
             }
             return this._datasets;
         };
+        StreamingPlot.prototype.x = function (callback, scale) {
+            this._scale = scale;
+            this._xCallback = callback;
+            this.xUpdate();
+        };
+        StreamingPlot.prototype.redraw = function () {
+            this.datasetUpdate();
+            this.xUpdate();
+            this.plot.redraw();
+        };
         StreamingPlot.prototype.datasetUpdate = function () {
             if (this._datasets) {
                 var raw_datasets = [];
@@ -101,18 +112,8 @@
                 this.plot.datasets(raw_datasets);
             }
         };
-        StreamingPlot.prototype.x = function (callback, scale) {
-            this._scale = scale;
-            this._xCallback = callback;
-            this.xUpdate();
-        };
         StreamingPlot.prototype.xUpdate = function () {
             this.plot.x(this._xCallback, this._scale.getScale());
-        };
-        StreamingPlot.prototype.redraw = function () {
-            this.datasetUpdate();
-            this.xUpdate();
-            this.plot.redraw();
         };
         return StreamingPlot;
     }());
