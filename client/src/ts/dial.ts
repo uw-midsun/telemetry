@@ -82,10 +82,10 @@ export class DialOptions {
   public lineCap: LineEnd = LineEnd.Flat;
   public dialColor: string = '#000000';
   public dialOpacity: number = 1;
-  public rectColor: string = '#FFFFFF';
+  public rectColor: string = '#ffffff';
   public rectOpacity: number = 1;
   public showText: boolean = true;
-  public font: string = 'Verdana';
+  public font: string = 'Open Sans';
   public fontSize: number = 30;
   public fontColor: string = '#000000';
 }

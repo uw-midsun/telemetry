@@ -74,10 +74,10 @@
             this.lineCap = LineEnd.Flat;
             this.dialColor = '#000000';
             this.dialOpacity = 1;
-            this.rectColor = '#FFFFFF';
+            this.rectColor = '#ffffff';
             this.rectOpacity = 1;
             this.showText = true;
-            this.font = 'Verdana';
+            this.font = 'Open Sans';
             this.fontSize = 30;
             this.fontColor = '#000000';
         }
