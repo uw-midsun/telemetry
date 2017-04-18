@@ -15,8 +15,7 @@
     "class-name": true,
     "comment-format": [
       true,
-      "check-space",
-      "check-lowercase"
+      "check-space"
     ],
     "curly": false,
     "eofline": true,
@@ -30,7 +29,11 @@
     "label-position": true,
     "max-line-length": [
       true,
-      140
+      80
+    ],
+    "max-classes-per-file" : [
+      false,
+      1
     ],
     "member-ordering": [
       true,
@@ -56,7 +59,7 @@
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
-    "no-require-imports": true,
+    "no-require-imports": false,
     "no-string-literal": true,
     "no-switch-case-fall-through": true,
     "trailing-comma": {

@@ -9,7 +9,19 @@ branches:
 
 os:
   - linux
-  - osx
+
+before_install:
+  # Repo for newer Node.js versions
+  - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+  # Repo for Yarn
+  - sudo apt-key adv --keyserver pgp.mit.edu --recv D101F7899D41F3C3
+  - echo "deb http://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - sudo apt-get update -qq
+  - sudo apt-get install -y -qq yarn
+
+cache:
+  directories:
+  - $HOME/.yarn-cache
 
 install:
   # install Glide
@@ -17,6 +29,10 @@ install:
   - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
   - glide install
 
+before_script:
+  - nvm install 6
+
 script:
   - make test-coverage
   - make
+  - cd client && yarn install && yarn run lint

@@ -192,6 +192,10 @@
   dependencies:
     "@types/d3" "^3"
 
+"@types/requirejs@^2.1.29":
+  version "2.1.29"
+  resolved "https://registry.yarnpkg.com/@types/requirejs/-/requirejs-2.1.29.tgz#bc48bc833c079c2c24ba6afbca6d3a03b3f4e2f3"
+
 JSONStream@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-0.8.4.tgz#91657dfe6ff857483066132b4618b62e8f4887bd"

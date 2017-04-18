@@ -1,0 +1,155 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url("../fonts/OpenSans-Regular.ttf") format("truetype"); }
+p {
+  color: white; }
+
+html {
+  height: 100%;
+  font-family: "Open Sans"; }
+
+body {
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%; }
+  body #dash-wrapper {
+    width: 100%;
+    height: 100%;
+    background-color: #1d1f26;
+    position: relative;
+    top: 0%;
+    left: 0%; }
+    body #dash-wrapper #top-bar {
+      width: 100%;
+      height: 10%;
+      top: 2%;
+      left: 0%;
+      position: relative;
+      display: flex;
+      align-items: center; }
+      body #dash-wrapper #top-bar #left-arrow,
+      body #dash-wrapper #top-bar #right-arrow {
+        width: 7%; }
+      body #dash-wrapper #top-bar #left-arrow {
+        height: 100%;
+        text-align: center; }
+        body #dash-wrapper #top-bar #left-arrow #left-icon {
+          position: absolute;
+          top: 50%;
+          bottom: 50%;
+          height: 75%;
+          transform: translate(-50%, -50%); }
+      body #dash-wrapper #top-bar #right-arrow {
+        height: 100%;
+        text-align: center; }
+        body #dash-wrapper #top-bar #right-arrow #right-icon {
+          position: absolute;
+          top: 50%;
+          bottom: 50%;
+          height: 70%;
+          transform: translate(-50%, -50%); }
+      body #dash-wrapper #top-bar #status-bar {
+        width: auto;
+        height: 100%;
+        text-align: center;
+        flex-grow: 1; }
+        body #dash-wrapper #top-bar #status-bar #status {
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+          margin: 0;
+          font-size: 2em; }
+    body #dash-wrapper #speedometer-wrapper {
+      position: relative;
+      top: -10%;
+      left: 0%;
+      width: 45%;
+      height: 100%; }
+      body #dash-wrapper #speedometer-wrapper #speedometer {
+        height: 100%;
+        z-index: 1; }
+      body #dash-wrapper #speedometer-wrapper #cruise-wrapper {
+        display: flex;
+        position: absolute;
+        left: 50%;
+        right: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        height: 10%;
+        top: 60%;
+        z-index: 2;
+        align-items: center; }
+        body #dash-wrapper #speedometer-wrapper #cruise-wrapper #cruise-icon-wrapper {
+          height: 100%;
+          width: 50%;
+          text-align: right; }
+          body #dash-wrapper #speedometer-wrapper #cruise-wrapper #cruise-icon-wrapper #cruise-icon {
+            position: relative;
+            top: 50%;
+            bottom: 50%;
+            right: 0%;
+            height: 70%;
+            padding-right: 0.25em;
+            transform: translateY(-50%); }
+        body #dash-wrapper #speedometer-wrapper #cruise-wrapper #cruise {
+          text-align: left; }
+          body #dash-wrapper #speedometer-wrapper #cruise-wrapper #cruise #cruise-value {
+            padding-left: 0.25em;
+            font-size: 2.5em; }
+    body #dash-wrapper #soc-wrapper {
+      width: 30%;
+      height: 40%;
+      position: absolute;
+      left: 27%;
+      top: 55%;
+      overflow: visible;
+      float: right; }
+      body #dash-wrapper #soc-wrapper #soc-icon {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 1; }
+        body #dash-wrapper #soc-wrapper #soc-icon #battery-icon {
+          position: absolute;
+          top: 65%;
+          left: 10%;
+          width: 35%;
+          height: 35%; }
+      body #dash-wrapper #soc-wrapper #soc {
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        z-index: 3;
+        height: 100%; }
+    body #dash-wrapper #graph-wrapper {
+      position: absolute;
+      right: 6%;
+      top: 15%;
+      width: 45%;
+      height: 45%; }
+      body #dash-wrapper #graph-wrapper #graph {
+        position: relative;
+        height: 100%;
+        width: 100%; }
+        body #dash-wrapper #graph-wrapper #graph .tick-label {
+          fill: white; }
+        body #dash-wrapper #graph-wrapper #graph .text-line {
+          fill: white; }
+        body #dash-wrapper #graph-wrapper #graph .x-axis-tick .tick-label {
+          font-size: 0; }
+    body #dash-wrapper #state-wrapper {
+      position: absolute;
+      bottom: 0%;
+      left: 0%;
+      height: 15%;
+      width: 7%;
+      text-align: center; }
+      body #dash-wrapper #state-wrapper #state {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+        font-size: 4em; }
+
+/*# sourceMappingURL=stylesheet.css.map */
