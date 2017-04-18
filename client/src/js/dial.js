@@ -68,7 +68,7 @@
             this.angleOffset = 0;
             this.angleArc = 2 * Math.PI;
             this.rotation = Direction.Clockwise;
-            this.duration = 1;
+            this.animationDuration = 1;
             this.thickness = 1;
             this.padding = 5;
             this.lineCap = LineEnd.Flat;
@@ -88,7 +88,6 @@
         function Dial(div, options) {
             this._value = 0;
             this._div = div;
-            this._options = options;
             this._svg = document.createElementNS(svgns, 'svg');
             this._svg.setAttribute('style', 'width:100%; height:100%');
             this._div.appendChild(this._svg);
@@ -135,7 +134,7 @@
                 _this._value = new_val;
                 _this.draw();
             };
-            Animate(this._value, value, this._options.duration, this._options.step, update);
+            Animate(this._value, value, this._options.animationDuration, this._options.step, update);
         };
         Dial.prototype.drawPath = function (path, radius, value, offset) {
             if (this._options.rotation === Direction.Clockwise) {

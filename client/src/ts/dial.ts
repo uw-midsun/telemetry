@@ -65,9 +65,9 @@ function describeArc(x: number, y: number, radius: number, startAngle: number,
   ].join(' ');
 }
 
-// options to adjust the behavior of Dial.
+// Options to adjust the behavior of Dial.
 export class DialOptions {
-  // shape
+  // Shape
   public min: number = 0;
   public max: number = 100;
   public step: number = 1;
@@ -75,8 +75,8 @@ export class DialOptions {
   public angleArc: number = 2 * Math.PI;
   public rotation: Direction = Direction.Clockwise;
 
-  // ui
-  public duration: number = 1;
+  // UI
+  public animationDuration: number = 1;
   public thickness: number = 1;
   public padding: number = 5;
   public lineCap: LineEnd = LineEnd.Flat;
@@ -103,7 +103,6 @@ export class Dial {
 
   constructor(div: HTMLDivElement, options: DialOptions) {
     this._div = div;
-    this._options = options;
     this._svg = document.createElementNS(svgns, 'svg') as SVGElement;
     this._svg.setAttribute('style', 'width:100%; height:100%');
     this._div.appendChild(this._svg);
@@ -157,8 +156,8 @@ export class Dial {
       this._value = new_val;
       this.draw();
     };
-    Animate(this._value, value, this._options.duration, this._options.step,
-            update);
+    Animate(this._value, value, this._options.animationDuration,
+            this._options.step, update);
   }
 
   // helper that draws the SVG path component of the dial.

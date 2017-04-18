@@ -47,7 +47,7 @@
     streamingPlot.plot.attr('stroke-width', 3);
     var group = new Plottable.Components.Group([streamingPlot.plot]);
     var chart = new Plottable.Components.Table([[yAxis, group], [null, xAxis], [null, xLabel]]);
-    chart.renderTo('div#graph');
+    chart.renderTo('#graph');
     function UpdatePlot() {
         timeDomain.domain();
         streamingPlot.redraw();
