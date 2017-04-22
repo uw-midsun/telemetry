@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	log "github.com/golang/glog"
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
@@ -43,7 +44,9 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
 	r.FileServer("/", http.Dir(filesDir))
 
 	port := fmt.Sprintf(":%d", serverPort)
-	http.ListenAndServe(port, r)
+
+	log.Infof("Starting HTTP server on %s", port)
+	log.Fatal(http.ListenAndServe(port, r))
 }
 
 // runStart

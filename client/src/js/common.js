@@ -1,1 +1,6 @@
-requirejs.config({baseUrl : '../static', paths : {app : '../js'}});
+requirejs.config({
+  baseUrl : '../static',
+  paths : {
+    app : '../js'
+  }
+});
