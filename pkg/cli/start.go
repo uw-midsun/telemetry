@@ -36,15 +36,7 @@ func init() {
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 }
 
-// runStart
-func runStart(cmd *cobra.Command, args []string) error {
-	if len(args) > 0 {
-		return usageAndError(cmd)
-	}
-
-	// TODO(karl): change this so the process can be "daemonized"
-	messageBus := pubsub.New()
-	r := chi.NewRouter()
+func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
 	r.Get("/ws", ws.ServeHTTP(messageBus))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
@@ -52,6 +44,18 @@ func runStart(cmd *cobra.Command, args []string) error {
 
 	port := fmt.Sprintf(":%d", serverPort)
 	http.ListenAndServe(port, r)
+}
+
+// runStart
+func runStart(cmd *cobra.Command, args []string) error {
+	if len(args) > 0 {
+		return usageAndError(cmd)
+	}
+
+	// TODO(karl): change this so the process can be "daemonized"
+	r := chi.NewRouter()
+	messageBus := pubsub.New()
+	setupURLRouting(r, messageBus)
 	return nil
 }
 
