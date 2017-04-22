@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
@@ -45,6 +46,10 @@ func runStart(cmd *cobra.Command, args []string) error {
 	messageBus := pubsub.New()
 	r := chi.NewRouter()
 	r.Get("/ws", ws.ServeHTTP(messageBus))
+	workDir, _ := os.Getwd()
+	filesDir := filepath.Join(workDir, "client", "src")
+	r.FileServer("/", http.Dir(filesDir))
+
 	port := fmt.Sprintf(":%d", serverPort)
 	http.ListenAndServe(port, r)
 	return nil
