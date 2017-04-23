@@ -7,9 +7,9 @@ const svgns = 'http://www.w3.org/2000/svg';
 // Options to configure the readout.
 export class ReadoutOptions {
   public units: string;
-  public formatter: (d: number) => string = (d: number) => d.toString();
   public autoRedraw: boolean = true;
-}
+  public formatter: (d: number) => string = (d: number) => d.toString();
+  }
 
 // Class for displaying instantaneous readouts of values in a nice format via
 // SVG.
@@ -22,8 +22,6 @@ export class Readout {
   private _units: SVGTextElement;
   private _text: SVGTextElement;
 
-  constructor(div: HTMLDivElement, options: ReadoutOptions);
-  constructor(div: HTMLDivElement, options: ReadoutOptions, value: number);
   constructor(div: HTMLDivElement, options: ReadoutOptions, value?: number) {
     this._div = div;
     if (value) {

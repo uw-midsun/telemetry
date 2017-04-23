@@ -24,7 +24,7 @@ console.log(xAxis.showEndTickLabels());
 xAxis.addClass('x-axis-tick');
 const gridlines = new Plottable.Components.Gridlines(xScale1, null);
 const xLabel = new Plottable.Components.AxisLabel('Minutes Ago');
-xLabel.addClass("x-label");
+xLabel.addClass('x-label');
 
 // y Configuration.
 const yScale = new Plottable.Scales.Linear();
@@ -121,9 +121,9 @@ motorReadout.value(7.1);
 // Updates
 
 window.addEventListener('resize', () => {
-  chart.redraw()
-  solarReadout.redraw(),
-  motorReadout.redraw(),
-  speedDial.redraw(),
-  batteryDial.redraw()
+  chart.redraw();
+  solarReadout.redraw();
+  motorReadout.redraw();
+  speedDial.redraw();
+  batteryDial.redraw();
 });

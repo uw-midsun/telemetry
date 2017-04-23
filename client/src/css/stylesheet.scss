@@ -6,7 +6,7 @@
 // Force root to a font-size so rem units are consistent if they need to be
 // converted.
 :root {
-font-size: 16px;
+  font-size: 16px;
 }
 
 p {
@@ -117,7 +117,7 @@ body {
           }
         }
       }
-      
+
       #right-arrow {
         position: relative;
         height: 20%;
@@ -283,7 +283,7 @@ body {
           }
         }
       }
-     
+
       #graph-spacer {
         width: 12%;
         height: 45%;
@@ -314,7 +314,7 @@ body {
           #motor-readout-units {
             font-size: 2em;
           }
-            
+
           #motor-readout-text {
             font-size: 5em;
           }
@@ -346,12 +346,12 @@ body {
           #solar-readout-units {
             font-size: 2em;
           }
-            
+
           #solar-readout-text {
             font-size: 5em;
           }
         }
-      } 
+      }
     }
   }
 }

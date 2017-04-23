@@ -18,7 +18,7 @@ function polarToCartesian(centerX: number, centerY: number, radius: number,
     x : centerX + radius * Math.cos(angle),
     y : centerY + radius * Math.sin(angle)
   };
-}
+  }
 
 // Describes an SVG arc as a string.
 function describeArc(x: number, y: number, radius: number, startAngle: number,
@@ -30,7 +30,7 @@ function describeArc(x: number, y: number, radius: number, startAngle: number,
   return [
     'M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y
   ].join(' ');
-}
+  }
 
 // Options to adjust the behavior of Dial.
 export class DialOptions {
@@ -40,13 +40,14 @@ export class DialOptions {
   public angleOffset: number = 0;
   public angleArc: number = 2 * Math.PI;
   public rotation: Direction = Direction.Clockwise;
-  public formatter: (d: number) => string = (d: number) => d.toString();
   public autoRedraw: boolean = true;
 
   // Animation
   public animationDuration: number = 1;
   public step: number = 1;
-}
+
+  public formatter: (d: number) => string = (d: number) => d.toString();
+  }
 
 // Class for drawing SVG based dials.
 export class Dial {
@@ -58,8 +59,6 @@ export class Dial {
   private _div: HTMLDivElement;
   private _options: DialOptions;
 
-  constructor(div: HTMLDivElement, options: DialOptions);
-  constructor(div: HTMLDivElement, options: DialOptions, value: number);
   constructor(div: HTMLDivElement, options: DialOptions, value?: number) {
     this._div = div;
     if (value) {
@@ -71,10 +70,10 @@ export class Dial {
     this._svg.setAttribute('style', 'width:100%; height:100%');
     this._div.appendChild(this._svg);
     this._path = document.createElementNS(svgns, 'path') as SVGPathElement;
-    this._path.id = this._div.id + "-path";
+    this._path.id = this._div.id + '-path';
     this._svg.appendChild(this._path);
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
-    this._text.id = this._div.id + "-text";
+    this._text.id = this._div.id + '-text';
     this._svg.appendChild(this._text);
     this.options(options);
   }
@@ -88,9 +87,9 @@ export class Dial {
       this._delta = this._options.max - this._options.min;
       if (this._options.autoRedraw) {
         this.redraw();
-      }
+        }
       return this;
-    }
+      }
     return this._options;
   }
 
@@ -111,7 +110,7 @@ export class Dial {
       animate.Animate(this._value, value, this._options.animationDuration,
                       this._options.step, update);
       return this;
-    }
+      }
     return this._value;
   }
 
@@ -119,7 +118,7 @@ export class Dial {
   public redraw(): void {
     const radius =
         Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
-    parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
+        parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
     this.drawPath(this._path, radius, this._value, 0);
 
     // Draw the text.
@@ -144,11 +143,10 @@ export class Dial {
           this._options.angleArc -
           this._options.angleArc * (value - this._options.min) / this._delta -
           this._options.angleOffset;
-      path.setAttribute('d',
-                        describeArc(this._svg.clientWidth / 2,
-                                    this._svg.clientHeight / 2, radius,
-                                    angleEnd + offset,
-                                    this._options.angleOffset - offset));
+      path.setAttribute('d', describeArc(this._svg.clientWidth / 2,
+                                         this._svg.clientHeight / 2, radius,
+                                         angleEnd + offset,
+                                         this._options.angleOffset - offset));
     }
   }
 }
