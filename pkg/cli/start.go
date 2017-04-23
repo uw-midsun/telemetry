@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 
+	log "github.com/golang/glog"
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
@@ -35,6 +37,18 @@ func init() {
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 }
 
+func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
+	r.Get("/ws", ws.ServeHTTP(messageBus))
+	workDir, _ := os.Getwd()
+	filesDir := filepath.Join(workDir, "client", "src")
+	r.FileServer("/", http.Dir(filesDir))
+
+	port := fmt.Sprintf(":%d", serverPort)
+
+	log.Infof("Starting HTTP server on %s", port)
+	log.Fatal(http.ListenAndServe(port, r))
+}
+
 // runStart
 func runStart(cmd *cobra.Command, args []string) error {
 	if len(args) > 0 {
@@ -42,11 +56,9 @@ func runStart(cmd *cobra.Command, args []string) error {
 	}
 
 	// TODO(karl): change this so the process can be "daemonized"
-	messageBus := pubsub.New()
 	r := chi.NewRouter()
-	r.Get("/ws", ws.ServeHTTP(messageBus))
-	port := fmt.Sprintf(":%d", serverPort)
-	http.ListenAndServe(port, r)
+	messageBus := pubsub.New()
+	setupURLRouting(r, messageBus)
 	return nil
 }
 
