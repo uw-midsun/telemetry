@@ -27,7 +27,7 @@
     xAxis.addClass('x-axis-tick');
     var gridlines = new Plottable.Components.Gridlines(xScale1, null);
     var xLabel = new Plottable.Components.AxisLabel('Minutes Ago');
-    xLabel.addClass("x-label");
+    xLabel.addClass('x-label');
     var yScale = new Plottable.Scales.Linear();
     yScale.autoDomain();
     var yAxis = new Plottable.Axes.Numeric(yScale, 'left');
@@ -89,10 +89,10 @@
     motorReadout.value(7.1);
     window.addEventListener('resize', function () {
         chart.redraw();
-        solarReadout.redraw(),
-            motorReadout.redraw(),
-            speedDial.redraw(),
-            batteryDial.redraw();
+        solarReadout.redraw();
+        motorReadout.redraw();
+        speedDial.redraw();
+        batteryDial.redraw();
     });
 });
 //# sourceMappingURL=dd_main.js.map

@@ -12,8 +12,8 @@
     var svgns = 'http://www.w3.org/2000/svg';
     var ReadoutOptions = (function () {
         function ReadoutOptions() {
-            this.formatter = function (d) { return d.toString(); };
             this.autoRedraw = true;
+            this.formatter = function (d) { return d.toString(); };
         }
         return ReadoutOptions;
     }());

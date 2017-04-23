@@ -37,10 +37,10 @@
             this.angleOffset = 0;
             this.angleArc = 2 * Math.PI;
             this.rotation = Direction.Clockwise;
-            this.formatter = function (d) { return d.toString(); };
             this.autoRedraw = true;
             this.animationDuration = 1;
             this.step = 1;
+            this.formatter = function (d) { return d.toString(); };
         }
         return DialOptions;
     }());
@@ -58,10 +58,10 @@
             this._svg.setAttribute('style', 'width:100%; height:100%');
             this._div.appendChild(this._svg);
             this._path = document.createElementNS(svgns, 'path');
-            this._path.id = this._div.id + "-path";
+            this._path.id = this._div.id + '-path';
             this._svg.appendChild(this._path);
             this._text = document.createElementNS(svgns, 'text');
-            this._text.id = this._div.id + "-text";
+            this._text.id = this._div.id + '-text';
             this._svg.appendChild(this._text);
             this.options(options);
         }

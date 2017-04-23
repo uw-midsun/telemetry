@@ -8,15 +8,15 @@ export function Animate(start: number, end: number, duration: number,
   const interations = 60 * duration;
   if (start > end) {
     step = Math.abs(step) * -1;
-    }
+  }
 
   function easeCubic(pos: number): number {
     pos /= 0.5;
     if (pos < 1) {
       return 0.5 * Math.pow(pos, 3);
-      }
-    return 0.5 * (Math.pow(pos - 2, 3) + 2);
     }
+    return 0.5 * (Math.pow(pos - 2, 3) + 2);
+  }
 
   function animate(): void {
     const progress = currentIteration++ / interations;
