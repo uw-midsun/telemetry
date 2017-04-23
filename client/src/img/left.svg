@@ -24,13 +24,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1024"
+     inkscape:window-width="1366"
+     inkscape:window-height="712"
      id="namedview6"
      showgrid="false"
      inkscape:zoom="0.4609375"
-     inkscape:cx="-882.98305"
-     inkscape:cy="256"
+     inkscape:cx="19.525425"
+     inkscape:cy="169.22034"
      inkscape:window-x="0"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
@@ -42,4 +42,4 @@
      transform="matrix(0,-0.78311292,1.0104175,0,-3.0152636,457.36847)"
      id="polygon2"
      points="176.5,448.5 336.5,448.5 336.5,256.5 448.5,256.5 256.5,64.5 64.5,256.5 176.5,256.5 "
-     style="fill:none;stroke:#11b981;stroke-width:30;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /></svg>
+     style="fill:#11b981;stroke:#11b981;stroke-width:30;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1" /></svg>
