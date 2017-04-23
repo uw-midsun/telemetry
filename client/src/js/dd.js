@@ -1,3 +1,2 @@
-requirejs([ './common' ], function(common) {
-  requirejs([ '../js/dd_main' ]);
-});
+requirejs([ './common' ],
+          function(common) { requirejs([ '../src/js/dd_main' ]); });
