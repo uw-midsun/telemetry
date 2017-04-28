@@ -9,7 +9,7 @@ export class ReadoutOptions {
   public units: string;
   public autoRedraw: boolean = true;
   public formatter: (d: number) => string = (d: number) => d.toString();
-  }
+}
 
 // Class for displaying instantaneous readouts of values in a nice format via
 // SVG.
@@ -30,7 +30,7 @@ export class Readout {
       this._value = 0;
     }
     this._svg = document.createElementNS(svgns, 'svg') as SVGElement;
-    this._svg.setAttribute('style', 'width: 100%; height: 100%;');
+    this._svg.setAttribute('style', 'width: 100%; height: 100%;'); 
     this._div.appendChild(this._svg);
     this._circle =
         document.createElementNS(svgns, 'circle') as SVGCircleElement;

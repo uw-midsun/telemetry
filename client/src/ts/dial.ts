@@ -18,7 +18,7 @@ function polarToCartesian(centerX: number, centerY: number, radius: number,
     x : centerX + radius * Math.cos(angle),
     y : centerY + radius * Math.sin(angle)
   };
-  }
+}
 
 // Describes an SVG arc as a string.
 function describeArc(x: number, y: number, radius: number, startAngle: number,
@@ -30,7 +30,7 @@ function describeArc(x: number, y: number, radius: number, startAngle: number,
   return [
     'M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y
   ].join(' ');
-  }
+}
 
 // Options to adjust the behavior of Dial.
 export class DialOptions {
@@ -47,7 +47,7 @@ export class DialOptions {
   public step: number = 1;
 
   public formatter: (d: number) => string = (d: number) => d.toString();
-  }
+}
 
 // Class for drawing SVG based dials.
 export class Dial {

@@ -4,28 +4,27 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readouts"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var streamGraph = require("./streaming_graph");
     var dial = require("./dial");
-    var readout = require("./readouts");
-    var kFifteenMin = 180000;
-    var timeDomain = new streamGraph.TimeWindow(kFifteenMin);
+    var readout = require("./readout");
+    var kWindowMillis = 180000;
+    var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(new Plottable.Scales.Linear(), function (domain) { return timeDomain.cached; });
-    var xScale1 = new Plottable.Scales.Linear().domain([3, 0]);
-    var xScale1TickGenerator = Plottable.Scales.TickGenerators.integerTickGenerator();
-    xScale1.tickGenerator(xScale1TickGenerator);
-    var xAxis = new Plottable.Axes.Numeric(xScale1, 'bottom');
+    var xScaleLabels = new Plottable.Scales.Linear().domain([3, 0]);
+    var xScaleLabelsTickGenerator = Plottable.Scales.TickGenerators.integerTickGenerator();
+    xScaleLabels.tickGenerator(xScaleLabelsTickGenerator);
+    var xAxis = new Plottable.Axes.Numeric(xScaleLabels, 'bottom');
     xAxis.endTickLength(0);
     xAxis.innerTickLength(0);
     xAxis.margin(1);
     xAxis.showEndTickLabels(true);
-    console.log(xAxis.showEndTickLabels());
     xAxis.addClass('x-axis-tick');
-    var gridlines = new Plottable.Components.Gridlines(xScale1, null);
+    var gridlines = new Plottable.Components.Gridlines(xScaleLabels, null);
     var xLabel = new Plottable.Components.AxisLabel('Minutes Ago');
     xLabel.addClass('x-label');
     var yScale = new Plottable.Scales.Linear();

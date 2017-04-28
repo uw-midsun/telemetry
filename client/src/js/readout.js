@@ -83,4 +83,4 @@
     }());
     exports.Readout = Readout;
 });
-//# sourceMappingURL=readouts.js.map
+//# sourceMappingURL=readout.js.map

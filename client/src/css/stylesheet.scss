@@ -74,13 +74,12 @@ body {
       #left-arrow,
       #right-arrow {
         width: 5%;
-      }
-
-      #left-arrow {
         position: relative;
         height: 20%;
         top: 0%;
+      }
 
+      #left-arrow {
         #left-icon {
           position: absolute;
           left: 200%;
@@ -119,10 +118,6 @@ body {
       }
 
       #right-arrow {
-        position: relative;
-        height: 20%;
-        top: 0%;
-
         #right-icon {
           position: absolute;
           right: 200%;
@@ -296,11 +291,14 @@ body {
         fill: white;
       }
 
-      #motor-wrapper {
+      #motor-wrapper,
+      #solar-wrapper {
         position: relative;
         width: 45%;
         height: 45%;
+      }
 
+      #motor-wrapper {
         #motor-readout {
           height: 75%;
           width: 90%;
@@ -322,10 +320,6 @@ body {
       }
 
       #solar-wrapper {
-        position: relative;
-        width: 45%;
-        height: 45%;
-
         #solar-readout {
           height: 75%;
           width: 90%;

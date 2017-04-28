@@ -1,28 +1,27 @@
 import streamGraph = require('./streaming_graph');
 import dial = require('./dial');
-import readout = require('./readouts');
+import readout = require('./readout');
 
 // Graph
 
 // Time windowing (Graph Side).
-const kFifteenMin = 180000;
-const timeDomain = new streamGraph.TimeWindow(kFifteenMin);
+const kWindowMillis = 180000;  // 3 Min
+const timeDomain = new streamGraph.TimeWindow(kWindowMillis);
 
 // x Configuration.
 const xScale = new streamGraph.WindowedScale(
     new Plottable.Scales.Linear(), (domain: any[]) => timeDomain.cached);
-const xScale1 = new Plottable.Scales.Linear().domain([ 3, 0 ]);
-const xScale1TickGenerator =
+const xScaleLabels = new Plottable.Scales.Linear().domain([ 3, 0 ]);
+const xScaleLabelsTickGenerator =
     Plottable.Scales.TickGenerators.integerTickGenerator();
-xScale1.tickGenerator(xScale1TickGenerator);
-const xAxis = new Plottable.Axes.Numeric(xScale1, 'bottom');
+xScaleLabels.tickGenerator(xScaleLabelsTickGenerator);
+const xAxis = new Plottable.Axes.Numeric(xScaleLabels, 'bottom');
 xAxis.endTickLength(0);
 xAxis.innerTickLength(0);
 xAxis.margin(1);
 xAxis.showEndTickLabels(true);
-console.log(xAxis.showEndTickLabels());
 xAxis.addClass('x-axis-tick');
-const gridlines = new Plottable.Components.Gridlines(xScale1, null);
+const gridlines = new Plottable.Components.Gridlines(xScaleLabels, null);
 const xLabel = new Plottable.Components.AxisLabel('Minutes Ago');
 xLabel.addClass('x-label');
 
