@@ -87,9 +87,9 @@ export class Dial {
       this._delta = this._options.max - this._options.min;
       if (this._options.autoRedraw) {
         this.redraw();
-        }
-      return this;
       }
+      return this;
+    }
     return this._options;
   }
 
@@ -110,7 +110,7 @@ export class Dial {
       animate.Animate(this._value, value, this._options.animationDuration,
                       this._options.step, update);
       return this;
-      }
+    }
     return this._value;
   }
 
