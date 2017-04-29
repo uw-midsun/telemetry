@@ -73,7 +73,7 @@ motor_power.dataUpdate = () => UpdatePlot();
 
 function AddData(): void {
   const now = Date.now();
-  motor_power.addData({x : now, y : Math.cos(now / 100000)});
+  motor_power.addData({x : now, y : 9000*Math.cos(now / 10000) + 6000});
 }
 
 window.setInterval(() => AddData(), 50);

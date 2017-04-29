@@ -64,7 +64,7 @@
     motor_power.dataUpdate = function () { return UpdatePlot(); };
     function AddData() {
         var now = Date.now();
-        motor_power.addData({ x: now, y: Math.cos(now / 100000) });
+        motor_power.addData({ x: now, y: 9000 * Math.cos(now / 10000) + 6000 });
     }
     window.setInterval(function () { return AddData(); }, 50);
     var speedDialOptions = new dial.DialOptions();
