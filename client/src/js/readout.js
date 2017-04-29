@@ -61,18 +61,18 @@
             return this._value;
         };
         Readout.prototype.redraw = function () {
-            var half_x = (this._div.clientWidth / 2).toString();
+            var centerX = (this._div.clientWidth / 2).toString();
             var radius = Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
                 parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
-            this._circle.setAttribute('cx', half_x);
+            this._circle.setAttribute('cx', centerX);
             this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
             this._circle.setAttribute('r', (radius).toString());
             this._text.innerHTML = this._options.formatter(this._value);
-            this._text.setAttribute('x', half_x);
+            this._text.setAttribute('x', centerX);
             if (this._options.units) {
                 this._text.setAttribute('y', (this._div.clientHeight / 2 - radius / 6).toString());
                 this._units.innerHTML = this._options.units;
-                this._units.setAttribute('x', half_x);
+                this._units.setAttribute('x', centerX);
                 this._units.setAttribute('y', (this._div.clientHeight / 2 + radius / 2).toString());
             }
             else {

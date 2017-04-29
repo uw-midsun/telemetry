@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -24,45 +34,52 @@
         return TimeWindow;
     }());
     exports.TimeWindow = TimeWindow;
-    var WindowedScale = (function () {
-        function WindowedScale(scale, domainUpdater) {
-            this.domainUpdater = domainUpdater;
-            this._scale = scale;
+    var WindowedScale = (function (_super) {
+        __extends(WindowedScale, _super);
+        function WindowedScale(domainUpdater) {
+            var _this = _super.call(this) || this;
+            _this.domainUpdater = domainUpdater;
+            return _this;
         }
-        WindowedScale.prototype.getScale = function () {
-            if (this.domainUpdater) {
-                this._scale.domain(this.domainUpdater(this._scale.domain()));
+        WindowedScale.prototype.domain = function (domain) {
+            if (domain) {
+                return _super.prototype.domain.call(this, domain);
             }
-            return this._scale;
+            else if (this.domainUpdater) {
+                _super.prototype.domain.call(this, this.domainUpdater(_super.prototype.domain.call(this)));
+            }
+            return _super.prototype.domain.call(this);
         };
         return WindowedScale;
-    }());
+    }(Plottable.Scales.Linear));
     exports.WindowedScale = WindowedScale;
-    var StreamingDataset = (function () {
+    var StreamingDataset = (function (_super) {
+        __extends(StreamingDataset, _super);
         function StreamingDataset(data, metadata) {
-            this._dataset = new Plottable.Dataset(data, metadata);
+            return _super.call(this, data, metadata) || this;
         }
         StreamingDataset.prototype.data = function (data) {
             if (data) {
-                this._dataset.data(data);
+                if (this._filter) {
+                    _super.prototype.data.call(this, this._filter(data));
+                }
+                else {
+                    _super.prototype.data.call(this, data);
+                }
                 if (this.dataUpdate) {
                     this.dataUpdate();
                 }
                 return this;
             }
-            return this._dataset.data();
-        };
-        StreamingDataset.prototype.metadata = function (metadata) {
-            if (metadata) {
-                this._dataset.metadata(metadata);
-                return this;
-            }
-            return this._dataset.metadata();
+            return _super.prototype.data.call(this);
         };
         StreamingDataset.prototype.addData = function (datum) {
-            var data = this._dataset.data();
+            if (this._filter) {
+                _super.prototype.data.call(this, this._filter(_super.prototype.data.call(this)));
+            }
+            var data = _super.prototype.data.call(this);
             data.push(datum);
-            this._dataset.data(data);
+            _super.prototype.data.call(this, data);
             if (this.dataUpdate) {
                 this.dataUpdate();
             }
@@ -70,53 +87,8 @@
         StreamingDataset.prototype.setFilter = function (filter) {
             this._filter = filter;
         };
-        StreamingDataset.prototype.getDataset = function () {
-            if (this._filter) {
-                this._dataset.data(this._filter(this._dataset.data()));
-            }
-            return this._dataset;
-        };
         return StreamingDataset;
-    }());
+    }(Plottable.Dataset));
     exports.StreamingDataset = StreamingDataset;
-    var StreamingPlot = (function () {
-        function StreamingPlot(plot) {
-            this.plot = plot;
-            this.plot.datasets([]);
-        }
-        StreamingPlot.prototype.datasets = function (datasets) {
-            if (datasets) {
-                this._datasets = datasets;
-                this.datasetUpdate();
-                return this;
-            }
-            return this._datasets;
-        };
-        StreamingPlot.prototype.x = function (callback, scale) {
-            this._scale = scale;
-            this._xCallback = callback;
-            this.xUpdate();
-        };
-        StreamingPlot.prototype.redraw = function () {
-            this.datasetUpdate();
-            this.xUpdate();
-            this.plot.redraw();
-        };
-        StreamingPlot.prototype.datasetUpdate = function () {
-            if (this._datasets) {
-                var raw_datasets = [];
-                for (var _i = 0, _a = this._datasets; _i < _a.length; _i++) {
-                    var dataset = _a[_i];
-                    raw_datasets.push(dataset.getDataset());
-                }
-                this.plot.datasets(raw_datasets);
-            }
-        };
-        StreamingPlot.prototype.xUpdate = function () {
-            this.plot.x(this._xCallback, this._scale.getScale());
-        };
-        return StreamingPlot;
-    }());
-    exports.StreamingPlot = StreamingPlot;
 });
 //# sourceMappingURL=streaming_graph.js.map

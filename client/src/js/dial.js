@@ -38,8 +38,7 @@
             this.angleArc = 2 * Math.PI;
             this.rotation = Direction.Clockwise;
             this.autoRedraw = true;
-            this.animationDuration = 1;
-            this.step = 1;
+            this.animationOptions = { duration: 1 };
             this.formatter = function (d) { return d.toString(); };
         }
         return DialOptions;
@@ -57,6 +56,9 @@
             this._svg = document.createElementNS(svgns, 'svg');
             this._svg.setAttribute('style', 'width:100%; height:100%');
             this._div.appendChild(this._svg);
+            this._shadow = document.createElementNS(svgns, 'path');
+            this._shadow.id = this._div.id + '-shadow';
+            this._svg.appendChild(this._shadow);
             this._path = document.createElementNS(svgns, 'path');
             this._path.id = this._div.id + '-path';
             this._svg.appendChild(this._path);
@@ -80,16 +82,10 @@
             var _this = this;
             if (value) {
                 var update = function (new_val) {
-                    if (new_val > _this._options.max) {
-                        new_val = _this._options.max;
-                    }
-                    else if (new_val < _this._options.min) {
-                        new_val = _this._options.min;
-                    }
-                    _this._value = new_val;
+                    _this._value = Math.round(new_val);
                     _this.redraw();
                 };
-                animate.Animate(this._value, value, this._options.animationDuration, this._options.step, update);
+                animate.Animate(this._value, value, this._options.animationOptions, update);
                 return this;
             }
             return this._value;
@@ -98,6 +94,7 @@
             var radius = Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
                 parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
             this.drawPath(this._path, radius, this._value, 0);
+            this.drawPath(this._shadow, radius, this._options.max, 0);
             this._text.innerHTML = this._options.formatter(this._value);
             this._text.setAttribute('x', (this._svg.clientWidth / 2).toString());
             this._text.setAttribute('y', (this._svg.clientHeight / 2).toString());

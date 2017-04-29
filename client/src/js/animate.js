@@ -9,11 +9,12 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function Animate(start, end, duration, step, callback) {
+    function Animate(start, end, options, callback) {
         var currentIteration = 1;
-        var interations = 60 * duration;
+        var interations = 60 * options.duration;
+        var direction = 1;
         if (start > end) {
-            step = Math.abs(step) * -1;
+            direction = -1;
         }
         function easeCubic(pos) {
             pos /= 0.5;
@@ -23,15 +24,19 @@
             return 0.5 * (Math.pow(pos - 2, 3) + 2);
         }
         function animate() {
+            if (start == end) {
+                return;
+            }
             var progress = currentIteration++ / interations;
-            var value = start + step * currentIteration * easeCubic(progress);
-            callback(Math.round(value));
-            if (step > 0 && value < end) {
-                window.requestAnimationFrame(animate);
+            var value = start + direction * currentIteration * easeCubic(progress);
+            if (direction > 0 && value > end) {
+                value = end;
             }
-            else if (step < 0 && value > end) {
-                window.requestAnimationFrame(animate);
+            else if (direction < 0 && value < end) {
+                value = end;
             }
+            callback(value);
+            window.requestAnimationFrame(animate);
         }
         window.requestAnimationFrame(animate);
     }
