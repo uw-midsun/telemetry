@@ -55,7 +55,7 @@ export class Readout {
         this.redraw();
         }
       return this;
-      }
+    }
     return this._options;
   }
 
@@ -67,7 +67,7 @@ export class Readout {
       this._value = value;
       this.redraw();
       return this;
-      }
+    }
     return this._value;
   }
 
