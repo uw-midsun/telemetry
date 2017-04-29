@@ -1,52 +1,68 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>UWMidsun Driver Display</title>
     <meta name="description" content="UWMidsun Driver Display">
     <meta name="author" content="UWMidsun">
     <link href="css/stylesheet.css" rel="stylesheet">
     <link href="css/plottable.css" rel="stylesheet">
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="dash-wrapper">
-      <div id="top-bar">
-        <div id="left-arrow">
-          <object id="left-icon" type="image/svg+xml" data="img/left.svg"></object>
+        <div id="top-bar">
+            <div id="status-bar">
+                <p id="status"></p>
+            </div>
         </div>
-        <div id="status-bar">
-          <p id="status"></p>
+        <div id="left-flex">
+            <div id="left-arrow">
+                <object id="left-icon" type="image/svg+xml" data="img/left.svg"></object>
+            </div>
+            <div id="speedometer-wrapper">
+                <div id="speedometer"></div>
+            </div>
+            <div id="right-arrow">
+                <object id="right-icon" type="image/svg+xml" data="img/right.svg"></object>
+            </div>
+            <div id="state-wrapper">
+                <p id="state">D</p>
+            </div>
+            <div id="cruise-spacer"></div>
+            <div id="cruise-wrapper">
+                <div id="cruise-icon-wrapper">
+                    <object id="cruise-icon" type="image/svg+xml" data="img/cruise.svg"></object>
+                </div>
+                <div id="cruise">
+                    <p id="cruise-value">80</p>
+                </div>
+            </div>
+            <div id="soc-wrapper">
+                <div id="soc-icon">
+                    <object id="battery-icon" type="image/svg+xml" data="img/battery.svg"></object>
+                </div>
+                <div id="soc"></div>
+            </div>
         </div>
-        <div id="right-arrow">
-          <object id="right-icon" type="image/svg+xml" data="img/right.svg"></object>
+        <div id="readout-wrapper">
+            <div id="graph-wrapper">
+                <div id="graph" class="plottable"></div>
+            </div>
+            <div id="graph-spacer">
+            </div>
+            <div id="motor-wrapper">
+                <div id="motor-readout"></div>
+            </div>
+            <div id="solar-wrapper">
+                <div id="solar-readout"></div>
+            </div>
         </div>
-      </div>
-      <div id="speedometer-wrapper">
-        <div id="speedometer"></div>
-        <div id="cruise-wrapper">
-          <div id="cruise-icon-wrapper">
-            <object id="cruise-icon" type="image/svg+xml" data="img/cruise.svg"></object>
-          </div>
-          <div id="cruise">
-            <p id="cruise-value">80</p>
-          </div>
-        </div>
-      </div>
-      <div id="soc-wrapper">
-        <div id="soc-icon">
-          <object id="battery-icon" type="image/svg+xml" data="img/battery.svg"></object>
-        </div>
-        <div id="soc"></div>
-      </div>
-      <div id="graph-wrapper">
-        <div id="graph" class="plottable"></div>
-      </div>
-      <div id="state-wrapper">
-        <p id="state">D</p>
-      </div>
     </div>
     <script src="static/d3.js"></script>
     <script src="static/plottable.js"></script>
     <script data-main="js/dd" src="static/require.js"></script>
-  </body>
-</html >
+</body>
+
+</html>

@@ -1,22 +1,29 @@
 import streamGraph = require('./streaming_graph');
 import dial = require('./dial');
+import readout = require('./readout');
 
-// graph
+// Graph
 
-// time windowing (Graph Side).
-const kFifteenMin = 9000;
-const timeDomain = new streamGraph.TimeWindow(kFifteenMin);
+// Time windowing (Graph Side).
+const kWindowMillis = 180000;  // 3 Min
+const timeDomain = new streamGraph.TimeWindow(kWindowMillis);
 
 // x Configuration.
 const xScale = new streamGraph.WindowedScale(
     new Plottable.Scales.Linear(), (domain: any[]) => timeDomain.cached);
-const xAxis = new Plottable.Axes.Numeric(
-    xScale.getScale() as Plottable.QuantitativeScale<number>, 'bottom');
+const xScaleLabels = new Plottable.Scales.Linear().domain([ 3, 0 ]);
+const xScaleLabelsTickGenerator =
+    Plottable.Scales.TickGenerators.integerTickGenerator();
+xScaleLabels.tickGenerator(xScaleLabelsTickGenerator);
+const xAxis = new Plottable.Axes.Numeric(xScaleLabels, 'bottom');
 xAxis.endTickLength(0);
 xAxis.innerTickLength(0);
+xAxis.margin(1);
+xAxis.showEndTickLabels(true);
 xAxis.addClass('x-axis-tick');
-const xLabel =
-    new Plottable.Components.AxisLabel('Last 15 Minutes').yAlignment('center');
+const gridlines = new Plottable.Components.Gridlines(xScaleLabels, null);
+const xLabel = new Plottable.Components.AxisLabel('Minutes Ago');
+xLabel.addClass('x-label');
 
 // y Configuration.
 const yScale = new Plottable.Scales.Linear();
@@ -27,8 +34,8 @@ yAxis.showEndTickLabels(true);
 yAxis.endTickLength(0);
 yAxis.innerTickLength(0);
 
-// data configuration.
-const motor_data = [ {x : Date.now(), y : Math.cos(Date.now() / 1000)} ];
+// Data configuration.
+const motor_data = [ {x : Date.now(), y : Math.cos(Date.now() / 100000)} ];
 const xTimeBuffer = 1000;
 const motor_power =
     new streamGraph.StreamingDataset(motor_data, {color : 'rgb(88, 86, 214)'});
@@ -37,7 +44,7 @@ motor_power.setFilter((data: any[]) => {
                          datum.x >= timeDomain.begin() - xTimeBuffer);
 });
 
-// plot configuration.
+// Plot configuration.
 const streamingPlot = new streamGraph.StreamingPlot(new Plottable.Plots.Area());
 streamingPlot.datasets([ motor_power ]);
 streamingPlot.plot.y((d: any) => d.y, yScale);
@@ -50,8 +57,8 @@ streamingPlot.plot.attr('fill', (d: any, i: any, ds: Plottable.Dataset) => {
 });
 streamingPlot.plot.attr('stroke-width', 3);
 
-// chart configuration.
-const group = new Plottable.Components.Group([ streamingPlot.plot ]);
+// Chart configuration.
+const group = new Plottable.Components.Group([ streamingPlot.plot, gridlines ]);
 const chart = new Plottable.Components.Table(
     [ [ yAxis, group ], [ null, xAxis ], [ null, xLabel ] ]);
 chart.renderTo('#graph');
@@ -59,40 +66,24 @@ chart.renderTo('#graph');
 function UpdatePlot(): void {
   timeDomain.domain();
   streamingPlot.redraw();
-  chart.redraw();
+  yAxis.redraw();
 }
 
 motor_power.dataUpdate = () => UpdatePlot();
 
 function AddData(): void {
   const now = Date.now();
-  motor_power.addData({x : now, y : Math.cos(now / 1000)});
+  motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
 }
 
-window.setInterval(() => AddData(), 100);
-window.addEventListener('resize', () => chart.redraw());
+window.setInterval(() => AddData(), 50);
 
-// dials
+// Dials
 const speedDialOptions = new dial.DialOptions();
-speedDialOptions.rectColor = '#1d1f26';
-speedDialOptions.rectOpacity = 0;
-speedDialOptions.dialColor = '#11b981';
-speedDialOptions.dialOpacity = 1;
-speedDialOptions.font = 'Open Sans';
-speedDialOptions.fontColor = 'white';
-speedDialOptions.thickness = 30;
 speedDialOptions.angleOffset = 0.5 * Math.PI;
 speedDialOptions.angleArc = 1.5 * Math.PI;
-speedDialOptions.fontSize = 200;
-speedDialOptions.padding = 20;
 
 const socDialOptions = new dial.DialOptions();
-socDialOptions.rectColor = '#1d1f26';
-socDialOptions.rectOpacity = 0;
-socDialOptions.dialColor = '#11b981';
-socDialOptions.dialOpacity = 1;
-socDialOptions.thickness = 80;
-socDialOptions.showText = false;
 socDialOptions.angleOffset = 0.5 * Math.PI;
 socDialOptions.angleArc = Math.PI;
 socDialOptions.rotation = dial.Direction.CounterClockwise;
@@ -101,8 +92,8 @@ const speedDial = new dial.Dial(
 const batteryDial = new dial.Dial(
     document.getElementById('soc') as HTMLDivElement, socDialOptions);
 
-speedDial.updateValue(100);
-batteryDial.updateValue(100);
+speedDial.value(100);
+batteryDial.value(100);
 
 const date = new Date();
 document.getElementById('status').innerHTML = date.toLocaleTimeString();
@@ -113,3 +104,25 @@ document.getElementById('status').innerHTML = date.toLocaleTimeString();
 //  document.getElementById('status').innerHTML = date.toLocaleTimeString();
 //  batteryDial.updateValue(Math.round(Math.random() * 100));
 // }, 1000);
+//
+
+// Readouts
+
+const ReadoutOptions = new readout.ReadoutOptions();
+ReadoutOptions.units = 'kW';
+const solarReadout = new readout.Readout(
+    document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
+solarReadout.value(1.1);
+const motorReadout = new readout.Readout(
+    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
+motorReadout.value(7.1);
+
+// Updates
+
+window.addEventListener('resize', () => {
+  chart.redraw();
+  solarReadout.redraw();
+  motorReadout.redraw();
+  speedDial.redraw();
+  batteryDial.redraw();
+});

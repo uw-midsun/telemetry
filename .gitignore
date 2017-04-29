@@ -104,7 +104,7 @@ typings/
 .eslintcache
 
 # Optional sass cache
-.sass-cache
+.sass-cache.*
 
 # Optional REPL history
 .node_repl_history
