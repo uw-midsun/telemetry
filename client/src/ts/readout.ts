@@ -30,7 +30,7 @@ export class Readout {
       this._value = 0;
     }
     this._svg = document.createElementNS(svgns, 'svg') as SVGElement;
-    this._svg.setAttribute('style', 'width: 100%; height: 100%;'); 
+    this._svg.setAttribute('style', 'width: 100%; height: 100%;');
     this._div.appendChild(this._svg);
     this._circle =
         document.createElementNS(svgns, 'circle') as SVGCircleElement;
