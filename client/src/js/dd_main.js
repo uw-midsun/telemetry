@@ -37,7 +37,7 @@
     var motor_data = [{ x: Date.now(), y: Math.cos(Date.now() / 100000) }];
     var xTimeBuffer = 1000;
     var motor_power = new streamGraph.StreamingDataset(motor_data, { color: 'rgb(88, 86, 214)' });
-    motor_power.setFilter(function (data) {
+    motor_power.filter(function (data) {
         return data.filter(function (datum) {
             return datum.x >= timeDomain.begin() - xTimeBuffer;
         });

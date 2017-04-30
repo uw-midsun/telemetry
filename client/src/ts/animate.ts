@@ -3,8 +3,8 @@
 // Interface for animation options.
 export interface AnimateOptions { duration: number; }
 
-// Animation function for transitions between start and end using a step size.
-// the duration specifies the duration of the animation in seconds (60 fps).
+// Animation function for transitions between start and end. The duration
+// specifies the duration of the animation in seconds (60 fps).
 // the callback is called with the updated value each step.
 export function Animate(start: number, end: number, options: AnimateOptions,
                         callback: (new_val: number) => void): void {

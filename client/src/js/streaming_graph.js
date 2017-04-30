@@ -56,16 +56,13 @@ var __extends = (this && this.__extends) || (function () {
     var StreamingDataset = (function (_super) {
         __extends(StreamingDataset, _super);
         function StreamingDataset(data, metadata) {
-            return _super.call(this, data, metadata) || this;
+            var _this = _super.call(this, data, metadata) || this;
+            _this._filter = function (data) { return data; };
+            return _this;
         }
         StreamingDataset.prototype.data = function (data) {
             if (data) {
-                if (this._filter) {
-                    _super.prototype.data.call(this, this._filter(data));
-                }
-                else {
-                    _super.prototype.data.call(this, data);
-                }
+                _super.prototype.data.call(this, this._filter(data));
                 if (this.dataUpdate) {
                     this.dataUpdate();
                 }
@@ -74,9 +71,7 @@ var __extends = (this && this.__extends) || (function () {
             return _super.prototype.data.call(this);
         };
         StreamingDataset.prototype.addData = function (datum) {
-            if (this._filter) {
-                _super.prototype.data.call(this, this._filter(_super.prototype.data.call(this)));
-            }
+            _super.prototype.data.call(this, this._filter(_super.prototype.data.call(this)));
             var data = _super.prototype.data.call(this);
             data.push(datum);
             _super.prototype.data.call(this, data);
@@ -84,7 +79,7 @@ var __extends = (this && this.__extends) || (function () {
                 this.dataUpdate();
             }
         };
-        StreamingDataset.prototype.setFilter = function (filter) {
+        StreamingDataset.prototype.filter = function (filter) {
             this._filter = filter;
         };
         return StreamingDataset;

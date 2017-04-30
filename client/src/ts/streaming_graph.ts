@@ -50,10 +50,9 @@ export class WindowedScale extends Plottable.Scales.Linear {
 // providing concise windowing and add data functions.
 export class StreamingDataset extends Plottable.Dataset {
   public dataUpdate: () => void;
-  private _filter: (data: any[]) => any[];
 
   constructor(data: any[], metadata: any) {
-     super(data, metadata);
+    super(data, metadata);
   }
 
   // Return or update the data owned by the dataset.
@@ -61,11 +60,7 @@ export class StreamingDataset extends Plottable.Dataset {
   public data(data: any[]): this;
   public data(data?: any[]): this|any[] {
     if (data) {
-      if (this._filter) {
-        super.data(this._filter(data));
-      } else {
-        super.data(data);
-      }
+      super.data(this._filter(data));
       if (this.dataUpdate) {
         this.dataUpdate();
       }
@@ -76,9 +71,7 @@ export class StreamingDataset extends Plottable.Dataset {
 
   // Append a single datum to the dataset.
   public addData(datum: any): void {
-    if (this._filter) {
-      super.data(this._filter(super.data()));
-    }
+    super.data(this._filter(super.data()));
     const data = super.data();
     data.push(datum);
     super.data(data);
@@ -89,7 +82,11 @@ export class StreamingDataset extends Plottable.Dataset {
 
   // Filter the dataset to remove any points outside the window to display.
   // mainly for memory conservation.
-  public setFilter(filter: (dataset: any[]) => any[] | null): void {
+  // TODO(ckitagawa): Consider making the identity function more aggressive in
+  // filtering.
+  public filter(filter: (dataset: any[]) => any[]): void {
     this._filter = filter;
   }
+
+  private _filter: (data: any[]) => any[] = (data: any[]) => data;
 }
