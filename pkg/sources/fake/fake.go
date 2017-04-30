@@ -121,6 +121,7 @@ func GenFake(bus *pubsub.MessageBus) {
 			}
 		}
 
+		// speed
 		if randutil.RandIntInRange(rand, 0, 5) == 0 {
 			value := randutil.RandIntInRange(rand, 0, 100)
 			bus.Publish("CAN", msgs.NewCAN(speed, uint64(value)))
