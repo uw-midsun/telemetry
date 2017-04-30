@@ -129,11 +129,10 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-
 // WebSocket
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
-  let msg = JSON.parse(event.data);
+  const msg = JSON.parse(event.data);
 
   switch (msg.ID) {
     default:
