@@ -134,7 +134,7 @@ window.addEventListener('resize', () => {
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   let msg = JSON.parse(event.data);
-  
+
   switch (msg.ID) {
     default:
       console.log(msg);
