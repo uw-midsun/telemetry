@@ -1,9 +1,7 @@
 // Module for animating displays.
 
 // Interface for animation options.
-export interface AnimateOptions {
-  duration: number;
-}
+export interface AnimateOptions { duration: number; }
 
 // Animation function for transitions between start and end using a step size.
 // the duration specifies the duration of the animation in seconds (60 fps).
@@ -12,7 +10,7 @@ export function Animate(start: number, end: number, options: AnimateOptions,
                         callback: (new_val: number) => void): void {
   let currentIteration = 1;
   const interations = 60 * options.duration;
-  let direction = 1;                         
+  let direction = 1;
   if (start > end) {
     direction = -1;
   }
@@ -26,9 +24,9 @@ export function Animate(start: number, end: number, options: AnimateOptions,
   }
 
   function animate(): void {
-    if (start == end) {
+    if (start === end) {
       return;
-    } 
+    }
     const progress = currentIteration++ / interations;
     let value = start + direction * currentIteration * easeCubic(progress);
     if (direction > 0 && value > end) {

@@ -87,8 +87,8 @@
     motorReadout.value(7.1);
     window.setInterval(function () { return AddData(); }, 50);
     window.setInterval(function () {
-        var date = new Date();
-        document.getElementById('status').innerHTML = date.toLocaleTimeString();
+        var curr_date = new Date();
+        document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
     }, 1000);
     window.addEventListener('resize', function () {
         chart.redraw();

@@ -24,7 +24,7 @@
             return 0.5 * (Math.pow(pos - 2, 3) + 2);
         }
         function animate() {
-            if (start == end) {
+            if (start === end) {
                 return;
             }
             var progress = currentIteration++ / interations;

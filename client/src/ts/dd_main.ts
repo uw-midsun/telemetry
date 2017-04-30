@@ -114,11 +114,11 @@ motorReadout.value(7.1);
 
 window.setInterval(() => AddData(), 50);
 
-window.setInterval(function() {
+window.setInterval(() => {
   // speedDial.updateValue(Math.round(Math.random() * 100));
   // batteryDial.updateValue(Math.round(Math.random() * 100));
-  let date = new Date();
-  document.getElementById('status').innerHTML = date.toLocaleTimeString();
+  const curr_date = new Date();
+  document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
 }, 1000);
 
 window.addEventListener('resize', () => {
