@@ -90,7 +90,7 @@ export class Dial {
       this._delta = this._options.max - this._options.min;
       if (this._options.autoRedraw) {
         this.redraw();
-        }
+      }
       return this;
     }
     return this._options;
