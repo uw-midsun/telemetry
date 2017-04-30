@@ -97,5 +97,14 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
+    var ws = new WebSocket('ws://localhost:8080/ws');
+    ws.onmessage = function (event) {
+        var msg = JSON.parse(event.data);
+        switch (msg.ID) {
+            default:
+                console.log(msg);
+                break;
+        }
+    };
 });
 //# sourceMappingURL=dd_main.js.map
