@@ -1,13 +1,18 @@
-// Animation function for transitions between start and end using a step size.
-// the duration specifies the duration of the animation in seconds (60 fps).
-// the callback is called with the updated value each step.
-export function Animate(start: number, end: number, duration: number,
-                        step: number,
+// Module for animating displays.
+
+// Interface for animation options. The duration specifies the duration of the
+// animation in seconds (60 fps).
+export interface AnimateOptions { duration: number; }
+
+// Animation function for transitions between start and end. The callback is
+// called with the updated value each step.
+export function Animate(start: number, end: number, options: AnimateOptions,
                         callback: (new_val: number) => void): void {
   let currentIteration = 1;
-  const interations = 60 * duration;
+  const interations = 60 * options.duration;
+  let direction = 1;
   if (start > end) {
-    step = Math.abs(step) * -1;
+    direction = -1;
   }
 
   function easeCubic(pos: number): number {
@@ -19,14 +24,18 @@ export function Animate(start: number, end: number, duration: number,
   }
 
   function animate(): void {
-    const progress = currentIteration++ / interations;
-    const value = start + step * currentIteration * easeCubic(progress);
-    callback(Math.round(value));
-    if (step > 0 && value < end) {
-      window.requestAnimationFrame(animate);
-    } else if (step < 0 && value > end) {
-      window.requestAnimationFrame(animate);
+    if (start === end) {
+      return;
     }
+    const progress = currentIteration++ / interations;
+    let value = start + direction * currentIteration * easeCubic(progress);
+    if (direction > 0 && value > end) {
+      value = end;
+    } else if (direction < 0 && value < end) {
+      value = end;
+    }
+    callback(value);
+    window.requestAnimationFrame(animate);
   }
 
   window.requestAnimationFrame(animate);

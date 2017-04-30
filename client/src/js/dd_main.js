@@ -14,7 +14,7 @@
     var readout = require("./readout");
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
-    var xScale = new streamGraph.WindowedScale(new Plottable.Scales.Linear(), function (domain) { return timeDomain.cached; });
+    var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
     var xScaleLabels = new Plottable.Scales.Linear().domain([3, 0]);
     var xScaleLabelsTickGenerator = Plottable.Scales.TickGenerators.integerTickGenerator();
     xScaleLabels.tickGenerator(xScaleLabelsTickGenerator);
@@ -37,36 +37,35 @@
     var motor_data = [{ x: Date.now(), y: Math.cos(Date.now() / 100000) }];
     var xTimeBuffer = 1000;
     var motor_power = new streamGraph.StreamingDataset(motor_data, { color: 'rgb(88, 86, 214)' });
-    motor_power.setFilter(function (data) {
+    motor_power.filter(function (data) {
         return data.filter(function (datum) {
             return datum.x >= timeDomain.begin() - xTimeBuffer;
         });
     });
-    var streamingPlot = new streamGraph.StreamingPlot(new Plottable.Plots.Area());
+    var streamingPlot = new Plottable.Plots.Area();
     streamingPlot.datasets([motor_power]);
-    streamingPlot.plot.y(function (d) { return d.y; }, yScale);
+    streamingPlot.y(function (d) { return d.y; }, yScale);
     streamingPlot.x(function (d) { return d.x; }, xScale);
-    streamingPlot.plot.attr('stroke', function (d, i, ds) {
+    streamingPlot.attr('stroke', function (d, i, ds) {
         return ds.metadata().color;
     });
-    streamingPlot.plot.attr('fill', function (d, i, ds) {
+    streamingPlot.attr('fill', function (d, i, ds) {
         return ds.metadata().color.replace(')', ', 0.6)').replace('rgb', 'rgba');
     });
-    streamingPlot.plot.attr('stroke-width', 3);
-    var group = new Plottable.Components.Group([streamingPlot.plot, gridlines]);
+    streamingPlot.attr('stroke-width', 3);
+    var group = new Plottable.Components.Group([streamingPlot, gridlines]);
     var chart = new Plottable.Components.Table([[yAxis, group], [null, xAxis], [null, xLabel]]);
     chart.renderTo('#graph');
     function UpdatePlot() {
         timeDomain.domain();
-        streamingPlot.redraw();
-        yAxis.redraw();
+        xScale.domain();
+        chart.redraw();
     }
     motor_power.dataUpdate = function () { return UpdatePlot(); };
     function AddData() {
         var now = Date.now();
         motor_power.addData({ x: now, y: 9000 * Math.cos(now / 10000) + 6000 });
     }
-    window.setInterval(function () { return AddData(); }, 50);
     var speedDialOptions = new dial.DialOptions();
     speedDialOptions.angleOffset = 0.5 * Math.PI;
     speedDialOptions.angleArc = 1.5 * Math.PI;
@@ -76,16 +75,21 @@
     socDialOptions.rotation = dial.Direction.CounterClockwise;
     var speedDial = new dial.Dial(document.getElementById('speedometer'), speedDialOptions);
     var batteryDial = new dial.Dial(document.getElementById('soc'), socDialOptions);
-    speedDial.value(100);
-    batteryDial.value(100);
-    var date = new Date();
-    document.getElementById('status').innerHTML = date.toLocaleTimeString();
     var ReadoutOptions = new readout.ReadoutOptions();
     ReadoutOptions.units = 'kW';
     var solarReadout = new readout.Readout(document.getElementById('solar-readout'), ReadoutOptions);
-    solarReadout.value(1.1);
     var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
+    speedDial.value(100);
+    batteryDial.value(75);
+    var date = new Date();
+    document.getElementById('status').innerHTML = date.toLocaleTimeString();
+    solarReadout.value(1.1);
     motorReadout.value(7.1);
+    window.setInterval(function () { return AddData(); }, 50);
+    window.setInterval(function () {
+        var curr_date = new Date();
+        document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
+    }, 1000);
     window.addEventListener('resize', function () {
         chart.redraw();
         solarReadout.redraw();

@@ -81,6 +81,12 @@ body {
             stroke: #ccc;
             stroke-opacity: 1;
             stroke-width: 2rem; }
+          body #dash-wrapper #left-flex #speedometer-wrapper #speedometer #speedometer-shadow {
+            fill-opacity: 0;
+            stroke-linecap: "butt";
+            stroke: #ccc;
+            stroke-opacity: 0;
+            stroke-width: 2rem; }
           body #dash-wrapper #left-flex #speedometer-wrapper #speedometer #speedometer-text {
             text-anchor: middle;
             alignment-baseline: middle;
@@ -150,11 +156,11 @@ body {
             width: 35%;
             height: 30%;
             right: -20%;
-            bottom: 10%; }
+            bottom: 3%; }
         body #dash-wrapper #left-flex #soc-wrapper #soc {
           position: absolute;
           z-index: 3;
-          bottom: 17%;
+          bottom: 11%;
           right: -10%;
           height: 75%;
           width: 100%; }
@@ -162,6 +168,13 @@ body {
             fill-opacity: 0;
             stroke-linecap: "butt";
             stroke: #11b981;
+            stroke-opacity: 1;
+            stroke-width: 2.5rem; }
+          body #dash-wrapper #left-flex #soc-wrapper #soc #soc-shadow {
+            fill-opacity: 0;
+            z-index: -5;
+            stroke-linecap: "butt";
+            stroke: #333;
             stroke-opacity: 1;
             stroke-width: 2.5rem; }
           body #dash-wrapper #left-flex #soc-wrapper #soc #soc-text {

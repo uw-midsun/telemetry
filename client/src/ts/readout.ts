@@ -1,7 +1,5 @@
 // Module that builds a readout for the driver display containing a value and
 // units. The readout is surrounded by a circle. All objects are SVG.
-import animate = require('./animate');
-
 const svgns = 'http://www.w3.org/2000/svg';
 
 // Options to configure the readout.
@@ -73,16 +71,16 @@ export class Readout {
 
   // Redraws/draws the readout.
   public redraw(): void {
-    const half_x = (this._div.clientWidth / 2).toString();
+    const centerX = (this._div.clientWidth / 2).toString();
     const radius =
         Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
         parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
-    this._circle.setAttribute('cx', half_x);
+    this._circle.setAttribute('cx', centerX);
     this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
     this._circle.setAttribute('r', (radius).toString());
 
     this._text.innerHTML = this._options.formatter(this._value);
-    this._text.setAttribute('x', half_x);
+    this._text.setAttribute('x', centerX);
 
     // Only renders the units if present. Otherwise centers the value.
     if (this._options.units) {
@@ -91,7 +89,7 @@ export class Readout {
       this._text.setAttribute(
           'y', (this._div.clientHeight / 2 - radius / 6).toString());
       this._units.innerHTML = this._options.units;
-      this._units.setAttribute('x', half_x);
+      this._units.setAttribute('x', centerX);
       this._units.setAttribute(
           'y', (this._div.clientHeight / 2 + radius / 2).toString());
     } else {

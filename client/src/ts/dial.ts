@@ -43,8 +43,7 @@ export class DialOptions {
   public autoRedraw: boolean = true;
 
   // Animation
-  public animationDuration: number = 1;
-  public step: number = 1;
+  public animationOptions: animate.AnimateOptions = {duration : 1};
 
   public formatter: (d: number) => string = (d: number) => d.toString();
 }
@@ -53,6 +52,7 @@ export class DialOptions {
 export class Dial {
   private _svg: SVGElement;
   private _path: SVGPathElement;
+  private _shadow: SVGPathElement;
   private _text: SVGTextElement;
   private _value: number;
   private _delta: number;
@@ -69,6 +69,9 @@ export class Dial {
     this._svg = document.createElementNS(svgns, 'svg') as SVGElement;
     this._svg.setAttribute('style', 'width:100%; height:100%');
     this._div.appendChild(this._svg);
+    this._shadow = document.createElementNS(svgns, 'path') as SVGPathElement;
+    this._shadow.id = this._div.id + '-shadow';
+    this._svg.appendChild(this._shadow);
     this._path = document.createElementNS(svgns, 'path') as SVGPathElement;
     this._path.id = this._div.id + '-path';
     this._svg.appendChild(this._path);
@@ -99,16 +102,11 @@ export class Dial {
   public value(value?: number): number|this {
     if (value) {
       const update = (new_val: number) => {
-        if (new_val > this._options.max) {
-          new_val = this._options.max;
-        } else if (new_val < this._options.min) {
-          new_val = this._options.min;
-        }
-        this._value = new_val;
+        this._value = Math.round(new_val);
         this.redraw();
       };
-      animate.Animate(this._value, value, this._options.animationDuration,
-                      this._options.step, update);
+      animate.Animate(this._value, value, this._options.animationOptions,
+                      update);
       return this;
     }
     return this._value;
@@ -120,6 +118,7 @@ export class Dial {
         Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
         parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
     this.drawPath(this._path, radius, this._value, 0);
+    this.drawPath(this._shadow, radius, this._options.max, 0);
 
     // Draw the text.
     this._text.innerHTML = this._options.formatter(this._value);

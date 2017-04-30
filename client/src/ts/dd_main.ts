@@ -5,12 +5,12 @@ import readout = require('./readout');
 // Graph
 
 // Time windowing (Graph Side).
-const kWindowMillis = 180000;  // 3 Min
+const kWindowMillis = 180000; // 3 Min
 const timeDomain = new streamGraph.TimeWindow(kWindowMillis);
 
 // x Configuration.
-const xScale = new streamGraph.WindowedScale(
-    new Plottable.Scales.Linear(), (domain: any[]) => timeDomain.cached);
+const xScale =
+    new streamGraph.WindowedScale((domain: any[]) => timeDomain.cached);
 const xScaleLabels = new Plottable.Scales.Linear().domain([ 3, 0 ]);
 const xScaleLabelsTickGenerator =
     Plottable.Scales.TickGenerators.integerTickGenerator();
@@ -39,34 +39,34 @@ const motor_data = [ {x : Date.now(), y : Math.cos(Date.now() / 100000)} ];
 const xTimeBuffer = 1000;
 const motor_power =
     new streamGraph.StreamingDataset(motor_data, {color : 'rgb(88, 86, 214)'});
-motor_power.setFilter((data: any[]) => {
+motor_power.filter((data: any[]) => {
   return data.filter((datum: any) =>
                          datum.x >= timeDomain.begin() - xTimeBuffer);
 });
 
 // Plot configuration.
-const streamingPlot = new streamGraph.StreamingPlot(new Plottable.Plots.Area());
+const streamingPlot = new Plottable.Plots.Area();
 streamingPlot.datasets([ motor_power ]);
-streamingPlot.plot.y((d: any) => d.y, yScale);
+streamingPlot.y((d: any) => d.y, yScale);
 streamingPlot.x((d: any) => d.x, xScale);
-streamingPlot.plot.attr('stroke', (d: any, i: any, ds: Plottable.Dataset) => {
+streamingPlot.attr('stroke', (d: any, i: any, ds: Plottable.Dataset) => {
   return ds.metadata().color;
 });
-streamingPlot.plot.attr('fill', (d: any, i: any, ds: Plottable.Dataset) => {
+streamingPlot.attr('fill', (d: any, i: any, ds: Plottable.Dataset) => {
   return ds.metadata().color.replace(')', ', 0.6)').replace('rgb', 'rgba');
 });
-streamingPlot.plot.attr('stroke-width', 3);
+streamingPlot.attr('stroke-width', 3);
 
 // Chart configuration.
-const group = new Plottable.Components.Group([ streamingPlot.plot, gridlines ]);
+const group = new Plottable.Components.Group([ streamingPlot, gridlines ]);
 const chart = new Plottable.Components.Table(
     [ [ yAxis, group ], [ null, xAxis ], [ null, xLabel ] ]);
 chart.renderTo('#graph');
 
 function UpdatePlot(): void {
   timeDomain.domain();
-  streamingPlot.redraw();
-  yAxis.redraw();
+  xScale.domain();
+  chart.redraw();
 }
 
 motor_power.dataUpdate = () => UpdatePlot();
@@ -75,8 +75,6 @@ function AddData(): void {
   const now = Date.now();
   motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
 }
-
-window.setInterval(() => AddData(), 50);
 
 // Dials
 const speedDialOptions = new dial.DialOptions();
@@ -92,32 +90,36 @@ const speedDial = new dial.Dial(
 const batteryDial = new dial.Dial(
     document.getElementById('soc') as HTMLDivElement, socDialOptions);
 
-speedDial.value(100);
-batteryDial.value(100);
-
-const date = new Date();
-document.getElementById('status').innerHTML = date.toLocaleTimeString();
-
-// window.setInterval(function() {
-//  speedDial.updateValue(Math.round(Math.random() * 100));
-//  let date = new Date();
-//  document.getElementById('status').innerHTML = date.toLocaleTimeString();
-//  batteryDial.updateValue(Math.round(Math.random() * 100));
-// }, 1000);
-//
-
 // Readouts
 
 const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'kW';
 const solarReadout = new readout.Readout(
     document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
-solarReadout.value(1.1);
 const motorReadout = new readout.Readout(
     document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
+
+// Initializations
+
+speedDial.value(100);
+batteryDial.value(75);
+
+const date = new Date();
+document.getElementById('status').innerHTML = date.toLocaleTimeString();
+
+solarReadout.value(1.1);
 motorReadout.value(7.1);
 
 // Updates
+
+window.setInterval(() => AddData(), 50);
+
+window.setInterval(() => {
+  // speedDial.updateValue(Math.round(Math.random() * 100));
+  // batteryDial.updateValue(Math.round(Math.random() * 100));
+  const curr_date = new Date();
+  document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
+}, 1000);
 
 window.addEventListener('resize', () => {
   chart.redraw();
