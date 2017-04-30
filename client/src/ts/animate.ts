@@ -1,11 +1,11 @@
 // Module for animating displays.
 
-// Interface for animation options.
+// Interface for animation options. The duration specifies the duration of the
+// animation in seconds (60 fps).
 export interface AnimateOptions { duration: number; }
 
-// Animation function for transitions between start and end. The duration
-// specifies the duration of the animation in seconds (60 fps).
-// the callback is called with the updated value each step.
+// Animation function for transitions between start and end. The callback is
+// called with the updated value each step.
 export function Animate(start: number, end: number, options: AnimateOptions,
                         callback: (new_val: number) => void): void {
   let currentIteration = 1;
