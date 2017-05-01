@@ -12,21 +12,23 @@ import (
 const (
 	// interval between fake data readings
 	readInterval = 200 * time.Millisecond
+)
 
+const (
 	// TODO(karlding): change these to the actual values
-	rightTurnOn     = 1
-	rightTurnOff    = 2
-	leftTurnOn      = 3
-	leftTurnOff     = 4
-	hazardOn        = 5
-	hazardOff       = 6
-	solarPowerLevel = 7
-	motorPowerLevel = 8
-	batteryState    = 9
-	cruiseOn        = 10
-	cruiseLevel     = 11
-	cruiseOff       = 12
-	speed           = 13
+	rightTurnOn = iota
+	rightTurnOff
+	leftTurnOn
+	leftTurnOff
+	hazardOn
+	hazardOff
+	solarPowerLevel
+	motorPowerLevel
+	batteryState
+	cruiseOn
+	cruiseLevel
+	cruiseOff
+	speed
 )
 
 var startTime = time.Now()
