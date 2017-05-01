@@ -134,7 +134,7 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
 
-  switch (msg.ID) {
+  switch (msg.id) {
     default:
       console.log(msg);
       break;
