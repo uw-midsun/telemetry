@@ -6,9 +6,9 @@ import (
 
 // CAN describes a single message from the CAN bus.
 type CAN struct {
-	ID        uint16
-	Timestamp time.Time
-	Data      uint64
+	ID        uint16    `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
+	Data      uint64    `json:"data"`
 }
 
 // NewCAN creates a CAN struct, this should be used for all incoming messages.
