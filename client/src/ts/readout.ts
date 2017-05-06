@@ -19,6 +19,7 @@ export class Readout {
   private _circle: SVGCircleElement;
   private _units: SVGTextElement;
   private _text: SVGTextElement;
+  private _thickness: number;
 
   constructor(div: HTMLDivElement, options: ReadoutOptions, value?: number) {
     this._div = div;
@@ -40,6 +41,7 @@ export class Readout {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.setAttribute('id', this._div.getAttribute('id') + '-text');
     this._svg.appendChild(this._text);
+    this.updateThickness();
     this.options(options);
   }
 
@@ -69,12 +71,17 @@ export class Readout {
     return this._value;
   }
 
+  public updateThickness() {
+    this._thickness = 
+      parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+  }
+
   // Redraws/draws the readout.
   public redraw(): void {
     const centerX = (this._div.clientWidth / 2).toString();
     const radius =
         Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
-        parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
+        this._thickness / 2;
     this._circle.setAttribute('cx', centerX);
     this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
     this._circle.setAttribute('r', (radius).toString());

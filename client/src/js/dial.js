@@ -65,6 +65,8 @@
             this._text = document.createElementNS(svgns, 'text');
             this._text.id = this._div.id + '-text';
             this._svg.appendChild(this._text);
+            this._thickness =
+                parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
             this.options(options);
         }
         Dial.prototype.options = function (options) {
@@ -92,12 +94,16 @@
         };
         Dial.prototype.redraw = function () {
             var radius = Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
-                parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
+                this._thickness / 2;
             this.drawPath(this._path, radius, this._value, 0);
             this.drawPath(this._shadow, radius, this._options.max, 0);
             this._text.innerHTML = this._options.formatter(this._value);
             this._text.setAttribute('x', (this._svg.clientWidth / 2).toString());
             this._text.setAttribute('y', (this._svg.clientHeight / 2).toString());
+        };
+        Dial.prototype.updateThickness = function () {
+            this._thickness =
+                parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
         };
         Dial.prototype.drawPath = function (path, radius, value, offset) {
             if (this._options.rotation === Direction.Clockwise) {

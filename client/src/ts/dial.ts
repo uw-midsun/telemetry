@@ -58,6 +58,7 @@ export class Dial {
   private _delta: number;
   private _div: HTMLDivElement;
   private _options: DialOptions;
+  private _thickness: number;
 
   constructor(div: HTMLDivElement, options: DialOptions, value?: number) {
     this._div = div;
@@ -78,6 +79,8 @@ export class Dial {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.id = this._div.id + '-text';
     this._svg.appendChild(this._text);
+    this._thickness =
+      parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
     this.options(options);
   }
 
@@ -116,7 +119,7 @@ export class Dial {
   public redraw(): void {
     const radius =
         Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
-        parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
+         this._thickness / 2;
     this.drawPath(this._path, radius, this._value, 0);
     this.drawPath(this._shadow, radius, this._options.max, 0);
 
@@ -124,6 +127,12 @@ export class Dial {
     this._text.innerHTML = this._options.formatter(this._value);
     this._text.setAttribute('x', (this._svg.clientWidth / 2).toString());
     this._text.setAttribute('y', (this._svg.clientHeight / 2).toString());
+  }
+
+  // Update the thickness for redraws.
+  public updateThickness() {
+    this._thickness =
+      parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
   }
 
   // Helper that draws the SVG path component of the dial.

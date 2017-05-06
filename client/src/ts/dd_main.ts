@@ -131,7 +131,9 @@ window.addEventListener('resize', () => {
   chart.redraw();
   solarReadout.redraw();
   motorReadout.redraw();
+  speedDial.updateThickness();
   speedDial.redraw();
+  batteryDial.updateThickness();
   batteryDial.redraw();
 });
 
@@ -154,14 +156,14 @@ const speed           = 12
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   let msg = JSON.parse(event.data);
+  console.log(msg.timestamp); 
 
   switch (msg.id) {
     case solarPowerLevel:
       solarReadout.value(msg.data);
       break;
     case motorPowerLevel:
-      const now = Date.now();
-      motor_power.addData({x : now, y : msg.data});
+      motor_power.addData({x : msg.timestamp, y : msg.data});
       motorReadout.value(msg.data);
       break;
     case speed:

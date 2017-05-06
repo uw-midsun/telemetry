@@ -40,6 +40,7 @@
             this._text = document.createElementNS(svgns, 'text');
             this._text.setAttribute('id', this._div.getAttribute('id') + '-text');
             this._svg.appendChild(this._text);
+            this.updateThickness();
             this.options(options);
         }
         Readout.prototype.options = function (options) {
@@ -60,10 +61,14 @@
             }
             return this._value;
         };
+        Readout.prototype.updateThickness = function () {
+            this._thickness =
+                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+        };
         Readout.prototype.redraw = function () {
             var centerX = (this._div.clientWidth / 2).toString();
             var radius = Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
-                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
+                this._thickness / 2;
             this._circle.setAttribute('cx', centerX);
             this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
             this._circle.setAttribute('r', (radius).toString());

@@ -15,6 +15,7 @@ export class VisibilityController {
   private _options: VisibilityOptions;
   private _blinkId: number|null = null;
   private _state: State;
+  private _visible: boolean;
 
   constructor(element: HTMLElement, options: VisibilityOptions, state?: State) {
     this._element = element;
@@ -46,9 +47,11 @@ export class VisibilityController {
       switch (state) {
         case State.Hidden as number:
           this._element.style.visibility = "hidden";
+          this._visible = false;
           break;
         case State.Shown as number:
           this._element.style.visibility = "visible";
+          this._visible = true;
           break;
         case State.Blink as number:
           this._blinkId = window.setInterval(this._toggleState(),
@@ -66,16 +69,12 @@ export class VisibilityController {
   }
 
   private _toggleState(): void {
-    const visibility = window.getComputedStyle(this._element, null).visibility;
-    switch (visibility) {
-      case "hidden":
-        this._element.style.visibility = "visible";
-        break;
-      case "visible":
-        this._element.style.visibility = "hidden";
-        break;
-      default:
-        break;
+    if (this._visible) {
+      this._element.style.visibility = "hidden";
+      this._visible = false;
+    } else {
+      this._element.style.visibility = "visible";
+      this._visible = true;
     }
   }
 }
