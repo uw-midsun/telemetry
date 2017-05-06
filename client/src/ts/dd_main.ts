@@ -96,30 +96,30 @@ const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'kW';
 const solarReadout = new readout.Readout(
     document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
-const motorReadout = new readout.Readout(
-    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
 
 // Initializations
 
-speedDial.value(100);
-batteryDial.value(75);
+// speedDial.value(100);
+// batteryDial.value(75);
 
 const date = new Date();
 document.getElementById('status').innerHTML = date.toLocaleTimeString();
 
-solarReadout.value(1.1);
-motorReadout.value(7.1);
+solarReadout.value(0);
+const motorReadout = new readout.Readout(
+    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
+motorReadout.value(0);
 
 // Updates
 
 window.setInterval(() => AddData(), 50);
 
-window.setInterval(() => {
-  // speedDial.updateValue(Math.round(Math.random() * 100));
-  // batteryDial.updateValue(Math.round(Math.random() * 100));
-  const curr_date = new Date();
-  document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
-}, 1000);
+// window.setInterval(() => {
+//   // speedDial.updateValue(Math.round(Math.random() * 100));
+//   // batteryDial.updateValue(Math.round(Math.random() * 100));
+//   const curr_date = new Date();
+//   document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
+// }, 1000);
 
 window.addEventListener('resize', () => {
   chart.redraw();
@@ -129,14 +129,40 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-// WebSocket
+
+const rightTurnOn     = 0
+const rightTurnOff    = 1
+const leftTurnOn      = 2
+const leftTurnOff     = 3
+const hazardOn        = 4
+const hazardOff       = 5
+const solarPowerLevel = 6
+const motorPowerLevel = 7
+const batteryState    = 8
+const cruiseOn        = 9
+const cruiseLevel     = 10
+const cruiseOff       = 11
+const speed           = 12
+
+
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
-  const msg = JSON.parse(event.data);
+  let msg = JSON.parse(event.data);
 
   switch (msg.id) {
+    case solarPowerLevel:
+      solarReadout.value(msg.data);
+      break;
+    case motorPowerLevel:
+      motorReadout.value(msg.data);
+      break;
+    case speed:
+      speedDial.value(msg.data);
+      break;
+    case batteryState:
+      batteryDial.value(msg.data);
+      break;
     default:
-      console.log(msg);
       break;
   }
 };

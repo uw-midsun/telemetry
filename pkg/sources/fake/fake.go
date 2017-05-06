@@ -48,6 +48,7 @@ func getCAN(id uint16) msgs.CAN {
 
 // GenFake generates fake data
 func GenFake(bus *pubsub.MessageBus) {
+	batteryValue := uint64(0)
 	rand, _ := randutil.NewPseudoRand()
 	for {
 		// motor power
@@ -58,8 +59,10 @@ func GenFake(bus *pubsub.MessageBus) {
 		bus.Publish("CAN", getCAN(solarPowerLevel))
 
 		// battery state
-		batteryValue := uint64(randutil.RandIntInRange(rand, 0, 100))
-		bus.Publish("CAN", msgs.NewCAN(batteryState, batteryValue))
+		if uint64(randutil.RandIntInRange(rand, 0, 5)) == 0 {
+			batteryValue = uint64(randutil.RandIntInRange(rand, 0, 100))
+			bus.Publish("CAN", msgs.NewCAN(batteryState, batteryValue))
+		}
 
 		// turn signals
 		if randutil.RandIntInRange(rand, 0, 10) == 0 {
@@ -124,10 +127,9 @@ func GenFake(bus *pubsub.MessageBus) {
 		}
 
 		// speed
-		if randutil.RandIntInRange(rand, 0, 5) == 0 {
-			value := randutil.RandIntInRange(rand, 0, 100)
-			bus.Publish("CAN", msgs.NewCAN(speed, uint64(value)))
-		}
+
+		value := 50*math.Sin(float64(5*time.Now().UnixNano()/int64(time.Millisecond))) + 50
+		bus.Publish("CAN", msgs.NewCAN(speed, uint64(value)))
 
 		time.Sleep(readInterval)
 	}

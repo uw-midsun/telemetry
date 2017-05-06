@@ -78,18 +78,12 @@
     var ReadoutOptions = new readout.ReadoutOptions();
     ReadoutOptions.units = 'kW';
     var solarReadout = new readout.Readout(document.getElementById('solar-readout'), ReadoutOptions);
-    var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
-    speedDial.value(100);
-    batteryDial.value(75);
     var date = new Date();
     document.getElementById('status').innerHTML = date.toLocaleTimeString();
-    solarReadout.value(1.1);
-    motorReadout.value(7.1);
+    solarReadout.value(0);
+    var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
+    motorReadout.value(0);
     window.setInterval(function () { return AddData(); }, 50);
-    window.setInterval(function () {
-        var curr_date = new Date();
-        document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
-    }, 1000);
     window.addEventListener('resize', function () {
         chart.redraw();
         solarReadout.redraw();
@@ -97,12 +91,36 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
+    var rightTurnOn = 0;
+    var rightTurnOff = 1;
+    var leftTurnOn = 2;
+    var leftTurnOff = 3;
+    var hazardOn = 4;
+    var hazardOff = 5;
+    var solarPowerLevel = 6;
+    var motorPowerLevel = 7;
+    var batteryState = 8;
+    var cruiseOn = 9;
+    var cruiseLevel = 10;
+    var cruiseOff = 11;
+    var speed = 12;
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
         switch (msg.id) {
+            case solarPowerLevel:
+                solarReadout.value(msg.data);
+                break;
+            case motorPowerLevel:
+                motorReadout.value(msg.data);
+                break;
+            case speed:
+                speedDial.value(msg.data);
+                break;
+            case batteryState:
+                batteryDial.value(msg.data);
+                break;
             default:
-                console.log(msg);
                 break;
         }
     };
