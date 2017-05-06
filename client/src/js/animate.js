@@ -11,7 +11,7 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     function Animate(start, end, options, callback) {
         var currentIteration = 1;
-        var interations = 60 * options.duration;
+        var interations = 60 * options.duration / 1000;
         var direction = 1;
         if (start > end) {
             direction = -1;
