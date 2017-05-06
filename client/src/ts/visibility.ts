@@ -54,7 +54,7 @@ export class VisibilityController {
           this._visible = true;
           break;
         case State.Blink as number:
-          this._blinkId = window.setInterval(this._toggleState(),
+          this._blinkId = window.setInterval(() => this._toggleState(),
             this._options.intervalSecs * 1000);
           break;
       } 

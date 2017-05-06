@@ -36,6 +36,7 @@
             return this._options;
         };
         VisibilityController.prototype.state = function (state) {
+            var _this = this;
             if (state) {
                 this._state = state;
                 this._stopBlink();
@@ -49,7 +50,7 @@
                         this._visible = true;
                         break;
                     case State.Blink:
-                        this._blinkId = window.setInterval(this._toggleState(), this._options.intervalSecs * 1000);
+                        this._blinkId = window.setInterval(function () { return _this._toggleState(); }, this._options.intervalSecs * 1000);
                         break;
                 }
             }
