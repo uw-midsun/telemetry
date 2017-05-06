@@ -60,7 +60,6 @@
     function UpdatePlot() {
         timeDomain.domain();
         xScale.domain();
-        chart.redraw();
     }
     motor_power.dataUpdate = function () { return UpdatePlot(); };
     var speedDialOptions = new dial.DialOptions();
@@ -110,6 +109,7 @@
     var cruiseLevel = 10;
     var cruiseOff = 11;
     var speed = 12;
+    var counter = 0;
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
@@ -118,7 +118,10 @@
                 solarReadout.value(msg.data);
                 break;
             case motorPowerLevel:
-                motor_power.addData({ x: msg.timestamp, y: msg.data });
+                counter += 1;
+                if (counter % 10 === 0) {
+                    motor_power.addData({ x: msg.timestamp, y: msg.data });
+                }
                 motorReadout.value(msg.data);
                 break;
             case speed:

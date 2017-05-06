@@ -43,7 +43,7 @@ export class DialOptions {
   public autoRedraw: boolean = true;
 
   // Animation
-  public animationOptions: animate.AnimateOptions = {duration : 50};
+  public animationOptions: animate.AnimateOptions = {duration : 40};
 
   public formatter: (d: number) => string = (d: number) => d.toString();
 }

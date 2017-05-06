@@ -38,7 +38,7 @@
             this.angleArc = 2 * Math.PI;
             this.rotation = Direction.Clockwise;
             this.autoRedraw = true;
-            this.animationOptions = { duration: 50 };
+            this.animationOptions = { duration: 40 };
             this.formatter = function (d) { return d.toString(); };
         }
         return DialOptions;

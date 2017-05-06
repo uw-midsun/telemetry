@@ -67,7 +67,6 @@ chart.renderTo('#graph');
 function UpdatePlot(): void {
   timeDomain.domain();
   xScale.domain();
-  chart.redraw();
 }
 
 motor_power.dataUpdate = () => UpdatePlot();
@@ -150,6 +149,7 @@ const cruiseLevel     = 10
 const cruiseOff       = 11
 const speed           = 12
 
+let counter = 0;
 
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
@@ -160,7 +160,10 @@ ws.onmessage = (event) => {
       solarReadout.value(msg.data);
       break;
     case motorPowerLevel:
-      motor_power.addData({x : msg.timestamp, y : msg.data});
+      counter += 1;
+      if (counter % 10 === 0) {
+        motor_power.addData({x : msg.timestamp, y : msg.data});
+      }
       motorReadout.value(msg.data);
       break;
     case speed:
