@@ -11,7 +11,7 @@ import (
 
 const (
 	// interval between fake data readings
-	readInterval = 200 * time.Millisecond
+	readInterval = 1000 * time.Millisecond
 )
 
 const (

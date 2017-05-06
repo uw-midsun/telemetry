@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readout"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,6 +12,7 @@
     var streamGraph = require("./streaming_graph");
     var dial = require("./dial");
     var readout = require("./readout");
+    var vis = require("./visibility");
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -62,10 +63,6 @@
         chart.redraw();
     }
     motor_power.dataUpdate = function () { return UpdatePlot(); };
-    function AddData() {
-        var now = Date.now();
-        motor_power.addData({ x: now, y: 9000 * Math.cos(now / 10000) + 6000 });
-    }
     var speedDialOptions = new dial.DialOptions();
     speedDialOptions.angleOffset = 0.5 * Math.PI;
     speedDialOptions.angleArc = 1.5 * Math.PI;
@@ -77,13 +74,22 @@
     var batteryDial = new dial.Dial(document.getElementById('soc'), socDialOptions);
     var ReadoutOptions = new readout.ReadoutOptions();
     ReadoutOptions.units = 'kW';
+    ReadoutOptions.formatter = function (d) { return (Math.round(d / 100) / 10).toString(); };
     var solarReadout = new readout.Readout(document.getElementById('solar-readout'), ReadoutOptions);
+    var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
+    var opts = { intervalSecs: 1 };
+    var right = new vis.VisibilityController(document.getElementById("right-icon"), opts);
+    var left = new vis.VisibilityController(document.getElementById("left-icon"), opts);
+    speedDial.value(100);
+    batteryDial.value(100);
+    solarReadout.value(0);
+    motorReadout.value(0);
     var date = new Date();
     document.getElementById('status').innerHTML = date.toLocaleTimeString();
-    solarReadout.value(0);
-    var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
-    motorReadout.value(0);
-    window.setInterval(function () { return AddData(); }, 50);
+    window.setInterval(function () {
+        var curr_date = new Date();
+        document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
+    }, 1000);
     window.addEventListener('resize', function () {
         chart.redraw();
         solarReadout.redraw();
@@ -112,6 +118,8 @@
                 solarReadout.value(msg.data);
                 break;
             case motorPowerLevel:
+                var now = Date.now();
+                motor_power.addData({ x: now, y: msg.data });
                 motorReadout.value(msg.data);
                 break;
             case speed:
@@ -119,6 +127,26 @@
                 break;
             case batteryState:
                 batteryDial.value(msg.data);
+                break;
+            case rightTurnOn:
+                right.state(vis.State.Blink);
+                break;
+            case rightTurnOff:
+                right.state(vis.State.Hidden);
+                break;
+            case leftTurnOn:
+                left.state(vis.State.Blink);
+                break;
+            case leftTurnOff:
+                left.state(vis.State.Hidden);
+                break;
+            case hazardOn:
+                left.state(vis.State.Blink);
+                right.state(vis.State.Blink);
+                break;
+            case leftTurnOff:
+                left.state(vis.State.Hidden);
+                right.state(vis.State.Hidden);
                 break;
             default:
                 break;

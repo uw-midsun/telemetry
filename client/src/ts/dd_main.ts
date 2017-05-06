@@ -1,6 +1,7 @@
 import streamGraph = require('./streaming_graph');
 import dial = require('./dial');
 import readout = require('./readout');
+import vis = require('./visibility');
 
 // Graph
 
@@ -71,10 +72,10 @@ function UpdatePlot(): void {
 
 motor_power.dataUpdate = () => UpdatePlot();
 
-function AddData(): void {
-  const now = Date.now();
-  motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
-}
+// function AddData(): void {
+//  const now = Date.now();
+//  motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
+// }
 
 // Dials
 const speedDialOptions = new dial.DialOptions();
@@ -94,32 +95,37 @@ const batteryDial = new dial.Dial(
 
 const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'kW';
+ReadoutOptions.formatter = (d: number) => (Math.round(d / 100) / 10).toString();
 const solarReadout = new readout.Readout(
-    document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
+  document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
+const motorReadout = new readout.Readout(
+    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
+
+// Arrows
+
+const opts = {intervalSecs: 1};
+const right = 
+  new vis.VisibilityController(document.getElementById("right-icon"), opts);
+const left = 
+  new vis.VisibilityController(document.getElementById("left-icon"), opts);
 
 // Initializations
 
-// speedDial.value(100);
-// batteryDial.value(75);
-
+speedDial.value(100);
+batteryDial.value(100);
+solarReadout.value(0);
+motorReadout.value(0);
 const date = new Date();
 document.getElementById('status').innerHTML = date.toLocaleTimeString();
 
-solarReadout.value(0);
-const motorReadout = new readout.Readout(
-    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
-motorReadout.value(0);
-
 // Updates
 
-window.setInterval(() => AddData(), 50);
+// window.setInterval(() => AddData(), 50);
 
-// window.setInterval(() => {
-//   // speedDial.updateValue(Math.round(Math.random() * 100));
-//   // batteryDial.updateValue(Math.round(Math.random() * 100));
-//   const curr_date = new Date();
-//   document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
-// }, 1000);
+window.setInterval(() => {
+  const curr_date = new Date();
+  document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
+}, 1000);
 
 window.addEventListener('resize', () => {
   chart.redraw();
@@ -154,6 +160,8 @@ ws.onmessage = (event) => {
       solarReadout.value(msg.data);
       break;
     case motorPowerLevel:
+      const now = Date.now();
+      motor_power.addData({x : now, y : msg.data});
       motorReadout.value(msg.data);
       break;
     case speed:
@@ -161,6 +169,26 @@ ws.onmessage = (event) => {
       break;
     case batteryState:
       batteryDial.value(msg.data);
+      break;
+    case rightTurnOn:
+      right.state(vis.State.Blink);
+      break;
+    case rightTurnOff:
+      right.state(vis.State.Hidden);
+      break;
+    case leftTurnOn:
+      left.state(vis.State.Blink);
+      break;
+    case leftTurnOff:
+      left.state(vis.State.Hidden);
+      break;
+    case hazardOn:
+      left.state(vis.State.Blink);
+      right.state(vis.State.Blink);
+      break;
+    case leftTurnOff:
+      left.state(vis.State.Hidden);
+      right.state(vis.State.Hidden);
       break;
     default:
       break;
