@@ -11,9 +11,9 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     var State;
     (function (State) {
-        State[State["Hidden"] = 0] = "Hidden";
-        State[State["Shown"] = 1] = "Shown";
-        State[State["Blink"] = 2] = "Blink";
+        State[State["Hidden"] = 1] = "Hidden";
+        State[State["Shown"] = 2] = "Shown";
+        State[State["Blink"] = 3] = "Blink";
     })(State = exports.State || (exports.State = {}));
     var VisibilityController = (function () {
         function VisibilityController(element, options, state) {
@@ -38,7 +38,6 @@
         VisibilityController.prototype.state = function (state) {
             var _this = this;
             if (state) {
-                this._state = state;
                 this._stopBlink();
                 switch (state) {
                     case State.Hidden:
@@ -50,9 +49,10 @@
                         this._visible = true;
                         break;
                     case State.Blink:
-                        this._blinkId = window.setInterval(function () { return _this._toggleState(); }, this._options.intervalSecs * 1000);
+                        this._blinkId = window.setInterval(function () { return _this._toggleState(); }, this._options.intervalMillis);
                         break;
                 }
+                this._state = state;
             }
             return this._state;
         };

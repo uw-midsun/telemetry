@@ -9,37 +9,64 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function Animate(start, end, options, callback) {
-        var currentIteration = 1;
-        var interations = 60 * options.duration / 1000;
-        var direction = 1;
-        if (start > end) {
-            direction = -1;
+    var Animator = (function () {
+        function Animator(options) {
+            this._animationId = null;
+            this.options(options);
         }
-        function easeCubic(pos) {
+        Animator.prototype.options = function (options) {
+            if (options) {
+                this._options = options;
+                this._iterations = 60 * options.durationMillis / 1000;
+            }
+            return this._options;
+        };
+        Animator.prototype.animate = function (start, end, callback) {
+            this.cancel();
+            this._direction = 1;
+            if (start > end) {
+                this._direction = -1;
+            }
+            this._currentIteration = 1;
+            this._start = start;
+            this._end = end;
+            this._callback = callback;
+            this._animate();
+        };
+        Animator.prototype.cancel = function () {
+            if (this._animationId) {
+                window.cancelAnimationFrame(this._animationId);
+            }
+        };
+        Animator.prototype._easeCubic = function (pos) {
             pos /= 0.5;
             if (pos < 1) {
                 return 0.5 * Math.pow(pos, 3);
             }
             return 0.5 * (Math.pow(pos - 2, 3) + 2);
-        }
-        function animate() {
-            if (start === end) {
+        };
+        Animator.prototype._animate = function () {
+            var _this = this;
+            this.cancel();
+            if (this._start === this._end) {
                 return;
             }
-            var progress = currentIteration++ / interations;
-            var value = start + direction * currentIteration * easeCubic(progress);
-            if (direction > 0 && value > end) {
-                value = end;
+            var progress = this._currentIteration++ / this._iterations;
+            var value = this._start +
+                this._direction * this._currentIteration * this._easeCubic(progress);
+            if (this._direction > 0 && value > this._end) {
+                value = this._end;
             }
-            else if (direction < 0 && value < end) {
-                value = end;
+            else if (this._direction < 0 && value < this._end) {
+                value = this._end;
             }
-            callback(value);
-            window.requestAnimationFrame(animate);
-        }
-        window.requestAnimationFrame(animate);
-    }
-    exports.Animate = Animate;
+            this._callback(value);
+            var run = function () { return _this._animate(); };
+            this._animationId = window.requestAnimationFrame(run);
+        };
+        return Animator;
+    }());
+    exports.Animator = Animator;
+    ;
 });
 //# sourceMappingURL=animate.js.map

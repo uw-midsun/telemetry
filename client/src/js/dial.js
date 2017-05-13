@@ -4,12 +4,11 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./animate"], factory);
+        define(["require", "exports"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var animate = require("./animate");
     var svgns = 'http://www.w3.org/2000/svg';
     var Direction;
     (function (Direction) {
@@ -38,14 +37,13 @@
             this.angleArc = 2 * Math.PI;
             this.rotation = Direction.Clockwise;
             this.autoRedraw = true;
-            this.animationOptions = { duration: 40 };
             this.formatter = function (d) { return d.toString(); };
         }
         return DialOptions;
     }());
     exports.DialOptions = DialOptions;
     var Dial = (function () {
-        function Dial(div, options, value) {
+        function Dial(div, options, animator, value) {
             var _this = this;
             this._div = div;
             if (value) {
@@ -70,6 +68,7 @@
                 _this._update();
             });
             this._update();
+            this._animator = animator;
             this.options(options);
         }
         Dial.prototype.options = function (options) {
@@ -90,7 +89,7 @@
                     _this._value = Math.round(new_val);
                     _this.redraw();
                 };
-                animate.Animate(this._value, value, this._options.animationOptions, update);
+                this._animator.animate(this._value, value, update);
                 return this;
             }
             return this._value;

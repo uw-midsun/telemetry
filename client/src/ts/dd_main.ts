@@ -2,6 +2,7 @@ import streamGraph = require('./streaming_graph');
 import dial = require('./dial');
 import readout = require('./readout');
 import vis = require('./visibility');
+import animate = require('./animate');
 
 // Graph
 
@@ -85,10 +86,16 @@ const socDialOptions = new dial.DialOptions();
 socDialOptions.angleOffset = 0.5 * Math.PI;
 socDialOptions.angleArc = Math.PI;
 socDialOptions.rotation = dial.Direction.CounterClockwise;
+
+// Animation
+const animationOptions = {durationMillis : 60};
+
 const speedDial = new dial.Dial(
-    document.getElementById('speedometer') as HTMLDivElement, speedDialOptions);
+  document.getElementById('speedometer') as HTMLDivElement, speedDialOptions,
+  new animate.Animator(animationOptions));
 const batteryDial = new dial.Dial(
-    document.getElementById('soc') as HTMLDivElement, socDialOptions);
+  document.getElementById('soc') as HTMLDivElement, socDialOptions,
+  new animate.Animator(animationOptions));
 
 // Readouts
 
@@ -102,11 +109,18 @@ const motorReadout = new readout.Readout(
 
 // Arrows
 
-const opts = {intervalSecs: 1};
+const opts = {intervalMillis: 500};
 const right = 
   new vis.VisibilityController(document.getElementById("right-icon"), opts);
 const left = 
   new vis.VisibilityController(document.getElementById("left-icon"), opts);
+
+// Cruise
+
+const copts = {intervalMillis: 1};
+const cruise =
+  new vis.VisibilityController(document.getElementById("cruise-wrapper"),
+    copts);
 
 // Initializations
 
@@ -118,8 +132,6 @@ const date = new Date();
 document.getElementById('status').innerHTML = date.toLocaleTimeString();
 
 // Updates
-
-// window.setInterval(() => AddData(), 50);
 
 window.setInterval(() => {
   const curr_date = new Date();
@@ -134,6 +146,9 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
+// Set to just blink hazards for now.
+right.state(vis.State.Blink);
+left.state(vis.State.Blink);
 
 const rightTurnOn     = 0
 const rightTurnOff    = 1
@@ -149,8 +164,6 @@ const cruiseLevel     = 10
 const cruiseOff       = 11
 const speed           = 12
 
-let counter = 0;
-
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
@@ -160,10 +173,7 @@ ws.onmessage = (event) => {
       solarReadout.value(msg.data);
       break;
     case motorPowerLevel:
-      counter += 1;
-      if (counter % 10 === 0) {
-        motor_power.addData({x : msg.timestamp, y : msg.data});
-      }
+      motor_power.addData({x : msg.timestamp, y : msg.data});
       motorReadout.value(msg.data);
       break;
     case speed:
@@ -172,25 +182,39 @@ ws.onmessage = (event) => {
     case batteryState:
       batteryDial.value(msg.data);
       break;
-    case rightTurnOn:
-      right.state(vis.State.Blink);
+      //    case rightTurnOn:
+      //      right.state(vis.State.Blink);
+      //      break;
+      //    case rightTurnOff:
+      //      right.state(vis.State.Hidden);
+      //      break;
+      //    case leftTurnOn:
+      //      left.state(vis.State.Blink);
+      //      break;
+      //    case leftTurnOff:
+      //      left.state(vis.State.Hidden);
+      //      break;
+      //    case hazardOn:
+      //      left.state(vis.State.Blink);
+      //      right.state(vis.State.Blink);
+      //      break;
+      //    case leftTurnOff:
+      //      left.state(vis.State.Hidden);
+      //      right.state(vis.State.Hidden);
+      //      break;
+    case cruiseOff:
+      console.log("Off");
+      cruise.state(vis.State.Hidden);
+      break; 
+    case cruiseOn:
+      console.log("On");
+      cruise.state(vis.State.Shown);
+      document.getElementById('cruise-value').innerHTML =
+        speedDial.value().toString();
       break;
-    case rightTurnOff:
-      right.state(vis.State.Hidden);
-      break;
-    case leftTurnOn:
-      left.state(vis.State.Blink);
-      break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
-      break;
-    case hazardOn:
-      left.state(vis.State.Blink);
-      right.state(vis.State.Blink);
-      break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
-      right.state(vis.State.Hidden);
+    case cruiseLevel:
+      document.getElementById('cruise-value').innerHTML =
+        Math.round(msg.data).toString();
       break;
     default:
       break;

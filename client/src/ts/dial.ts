@@ -42,8 +42,6 @@ export class DialOptions {
   public rotation: Direction = Direction.Clockwise;
   public autoRedraw: boolean = true;
 
-  // Animation
-  public animationOptions: animate.AnimateOptions = {duration : 40};
 
   public formatter: (d: number) => string = (d: number) => d.toString();
 }
@@ -61,8 +59,10 @@ export class Dial {
   private _thickness: number;
   private _width: number;
   private _height: number;
+  private _animator: animate.Animator;
 
-  constructor(div: HTMLDivElement, options: DialOptions, value?: number) {
+  constructor(div: HTMLDivElement, options: DialOptions, 
+              animator: animate.Animator, value?: number) {
     this._div = div;
     if (value) {
       this._value = value;
@@ -85,7 +85,8 @@ export class Dial {
     window.addEventListener('resize', () => {
       this._update(); 
     });
-    this._update(); 
+    this._update();
+    this._animator = animator;
     this.options(options);
   }
 
@@ -113,15 +114,14 @@ export class Dial {
         this._value = Math.round(new_val);
         this.redraw();
       };
-      animate.Animate(this._value, value, this._options.animationOptions,
-                      update);
+      this._animator.animate(this._value, value, update);
       return this;
     }
     return this._value;
   }
 
   // Draws the actual dial.
-  public redraw(): void {
+  public redraw(): void { 
     const radius =
         Math.min(this._width, this._height) / 2 -
          this._thickness / 2;

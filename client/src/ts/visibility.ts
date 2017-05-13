@@ -1,15 +1,18 @@
+// Visibility controller for elements that need to toggle on events.
 
-
+// Possible states for the visibility control.
 export enum State {
-  Hidden = 0,
-  Shown = 1,
-  Blink = 2
+  Hidden = 1,
+  Shown = 2,
+  Blink = 3
 }
 
+// Options for the visibility.
 export interface VisibilityOptions {
-  intervalSecs: number;
+  intervalMillis: number;
 }
 
+// Controller for the visibility.
 export class VisibilityController {
   private _element: HTMLElement;
   private _options: VisibilityOptions;
@@ -42,7 +45,6 @@ export class VisibilityController {
   public state(state: State): this;
   public state(state?: State): State|this {
     if (state) {
-      this._state = state;
       this._stopBlink(); 
       switch (state) {
         case State.Hidden as number:
@@ -55,9 +57,10 @@ export class VisibilityController {
           break;
         case State.Blink as number:
           this._blinkId = window.setInterval(() => this._toggleState(),
-            this._options.intervalSecs * 1000);
+            this._options.intervalMillis);
           break;
-      } 
+      }
+      this._state = state;
     }
     return this._state;
   }

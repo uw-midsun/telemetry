@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -13,6 +13,7 @@
     var dial = require("./dial");
     var readout = require("./readout");
     var vis = require("./visibility");
+    var animate = require("./animate");
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -69,16 +70,19 @@
     socDialOptions.angleOffset = 0.5 * Math.PI;
     socDialOptions.angleArc = Math.PI;
     socDialOptions.rotation = dial.Direction.CounterClockwise;
-    var speedDial = new dial.Dial(document.getElementById('speedometer'), speedDialOptions);
-    var batteryDial = new dial.Dial(document.getElementById('soc'), socDialOptions);
+    var animationOptions = { durationMillis: 60 };
+    var speedDial = new dial.Dial(document.getElementById('speedometer'), speedDialOptions, new animate.Animator(animationOptions));
+    var batteryDial = new dial.Dial(document.getElementById('soc'), socDialOptions, new animate.Animator(animationOptions));
     var ReadoutOptions = new readout.ReadoutOptions();
     ReadoutOptions.units = 'kW';
     ReadoutOptions.formatter = function (d) { return (Math.round(d / 100) / 10).toString(); };
     var solarReadout = new readout.Readout(document.getElementById('solar-readout'), ReadoutOptions);
     var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
-    var opts = { intervalSecs: 1 };
+    var opts = { intervalMillis: 500 };
     var right = new vis.VisibilityController(document.getElementById("right-icon"), opts);
     var left = new vis.VisibilityController(document.getElementById("left-icon"), opts);
+    var copts = { intervalMillis: 1 };
+    var cruise = new vis.VisibilityController(document.getElementById("cruise-wrapper"), copts);
     speedDial.value(100);
     batteryDial.value(100);
     solarReadout.value(0);
@@ -96,6 +100,8 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
+    right.state(vis.State.Blink);
+    left.state(vis.State.Blink);
     var rightTurnOn = 0;
     var rightTurnOff = 1;
     var leftTurnOn = 2;
@@ -109,7 +115,6 @@
     var cruiseLevel = 10;
     var cruiseOff = 11;
     var speed = 12;
-    var counter = 0;
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
@@ -118,10 +123,7 @@
                 solarReadout.value(msg.data);
                 break;
             case motorPowerLevel:
-                counter += 1;
-                if (counter % 10 === 0) {
-                    motor_power.addData({ x: msg.timestamp, y: msg.data });
-                }
+                motor_power.addData({ x: msg.timestamp, y: msg.data });
                 motorReadout.value(msg.data);
                 break;
             case speed:
@@ -130,25 +132,19 @@
             case batteryState:
                 batteryDial.value(msg.data);
                 break;
-            case rightTurnOn:
-                right.state(vis.State.Blink);
+            case cruiseOff:
+                console.log("Off");
+                cruise.state(vis.State.Hidden);
                 break;
-            case rightTurnOff:
-                right.state(vis.State.Hidden);
+            case cruiseOn:
+                console.log("On");
+                cruise.state(vis.State.Shown);
+                document.getElementById('cruise-value').innerHTML =
+                    speedDial.value().toString();
                 break;
-            case leftTurnOn:
-                left.state(vis.State.Blink);
-                break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
-                break;
-            case hazardOn:
-                left.state(vis.State.Blink);
-                right.state(vis.State.Blink);
-                break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
-                right.state(vis.State.Hidden);
+            case cruiseLevel:
+                document.getElementById('cruise-value').innerHTML =
+                    Math.round(msg.data).toString();
                 break;
             default:
                 break;
