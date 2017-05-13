@@ -203,11 +203,9 @@ ws.onmessage = (event) => {
       //      right.state(vis.State.Hidden);
       //      break;
     case cruiseOff:
-      console.log("Off");
       cruise.state(vis.State.Hidden);
       break; 
     case cruiseOn:
-      console.log("On");
       cruise.state(vis.State.Shown);
       document.getElementById('cruise-value').innerHTML =
         speedDial.value().toString();
