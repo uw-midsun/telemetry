@@ -70,7 +70,9 @@
     socDialOptions.angleOffset = 0.5 * Math.PI;
     socDialOptions.angleArc = Math.PI;
     socDialOptions.rotation = dial.Direction.CounterClockwise;
-    var animationOptions = { durationMillis: 60 };
+    var animationOptions = {
+        durationMillis: 60
+    };
     var speedDial = new dial.Dial(document.getElementById('speedometer'), speedDialOptions, new animate.Animator(animationOptions));
     var batteryDial = new dial.Dial(document.getElementById('soc'), socDialOptions, new animate.Animator(animationOptions));
     var ReadoutOptions = new readout.ReadoutOptions();
@@ -78,11 +80,15 @@
     ReadoutOptions.formatter = function (d) { return (Math.round(d / 100) / 10).toString(); };
     var solarReadout = new readout.Readout(document.getElementById('solar-readout'), ReadoutOptions);
     var motorReadout = new readout.Readout(document.getElementById('motor-readout'), ReadoutOptions);
-    var opts = { intervalMillis: 500 };
-    var right = new vis.VisibilityController(document.getElementById("right-icon"), opts);
-    var left = new vis.VisibilityController(document.getElementById("left-icon"), opts);
-    var copts = { intervalMillis: 1 };
-    var cruise = new vis.VisibilityController(document.getElementById("cruise-wrapper"), copts);
+    var opts = {
+        intervalMillis: 500
+    };
+    var right = new vis.VisibilityController(document.getElementById('right-icon'), opts);
+    var left = new vis.VisibilityController(document.getElementById('left-icon'), opts);
+    var copts = {
+        intervalMillis: 1
+    };
+    var cruise = new vis.VisibilityController(document.getElementById('cruise-wrapper'), copts);
     speedDial.value(100);
     batteryDial.value(100);
     solarReadout.value(0);

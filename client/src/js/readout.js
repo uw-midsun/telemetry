@@ -63,16 +63,9 @@
             }
             return this._value;
         };
-        Readout.prototype._update = function () {
-            this._thickness =
-                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
-            this._width = this._div.clientWidth;
-            this._height = this._div.clientHeight;
-        };
         Readout.prototype.redraw = function () {
             var centerX = (this._width / 2).toString();
-            var radius = Math.min(this._width, this._height) / 2 -
-                this._thickness / 2;
+            var radius = Math.min(this._width, this._height) / 2 - this._thickness / 2;
             this._circle.setAttribute('cx', centerX);
             this._circle.setAttribute('cy', (this._height / 2).toString());
             this._circle.setAttribute('r', (radius).toString());
@@ -87,6 +80,12 @@
             else {
                 this._text.setAttribute('y', (this._height / 2).toString());
             }
+        };
+        Readout.prototype._update = function () {
+            this._thickness =
+                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+            this._width = this._div.clientWidth;
+            this._height = this._div.clientHeight;
         };
         return Readout;
     }());

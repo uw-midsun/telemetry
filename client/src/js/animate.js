@@ -22,7 +22,6 @@
             return this._options;
         };
         Animator.prototype.animate = function (start, end, callback) {
-            this.cancel();
             this._direction = 1;
             if (start > end) {
                 this._direction = -1;
@@ -67,6 +66,5 @@
         return Animator;
     }());
     exports.Animator = Animator;
-    ;
 });
 //# sourceMappingURL=animate.js.map
