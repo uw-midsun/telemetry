@@ -42,7 +42,7 @@ export class DialOptions {
   public rotation: Direction = Direction.Clockwise;
   public autoRedraw: boolean = true;
 
-
+  // String formatter for the number.
   public formatter: (d: number) => string = (d: number) => d.toString();
 }
 
@@ -61,7 +61,7 @@ export class Dial {
   private _height: number;
   private _animator: animate.Animator;
 
-  constructor(div: HTMLDivElement, options: DialOptions, 
+  constructor(div: HTMLDivElement, options: DialOptions,
               animator: animate.Animator, value?: number) {
     this._div = div;
     if (value) {
@@ -81,9 +81,9 @@ export class Dial {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.id = this._div.id + '-text';
     this._svg.appendChild(this._text);
-    
+
     window.addEventListener('resize', () => {
-      this._update(); 
+      this._update();
     });
     this._update();
     this._animator = animator;
@@ -121,7 +121,7 @@ export class Dial {
   }
 
   // Draws the actual dial.
-  public redraw(): void { 
+  public redraw(): void {
     const radius =
         Math.min(this._width, this._height) / 2 -
          this._thickness / 2;
@@ -134,7 +134,8 @@ export class Dial {
     this._text.setAttribute('y', (this._height / 2).toString());
   }
 
-  private _update() {
+  // Internal function to recompute DOM element measurements on resize.
+  private _update(): void {
     this._thickness =
       parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
     this._width = this._svg.clientWidth;

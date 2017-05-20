@@ -88,14 +88,16 @@ socDialOptions.angleArc = Math.PI;
 socDialOptions.rotation = dial.Direction.CounterClockwise;
 
 // Animation
-const animationOptions = {durationMillis : 60};
+const animationOptions = {
+  durationMillis : 60
+};
 
-const speedDial = new dial.Dial(
-  document.getElementById('speedometer') as HTMLDivElement, speedDialOptions,
-  new animate.Animator(animationOptions));
-const batteryDial = new dial.Dial(
-  document.getElementById('soc') as HTMLDivElement, socDialOptions,
-  new animate.Animator(animationOptions));
+const speedDial =
+    new dial.Dial(document.getElementById('speedometer') as HTMLDivElement,
+                  speedDialOptions, new animate.Animator(animationOptions));
+const batteryDial =
+    new dial.Dial(document.getElementById('soc') as HTMLDivElement,
+                  socDialOptions, new animate.Animator(animationOptions));
 
 // Readouts
 
@@ -109,18 +111,21 @@ const motorReadout = new readout.Readout(
 
 // Arrows
 
-const opts = {intervalMillis: 500};
-const right = 
-  new vis.VisibilityController(document.getElementById("right-icon"), opts);
-const left = 
-  new vis.VisibilityController(document.getElementById("left-icon"), opts);
+const opts = {
+  intervalMillis : 500
+};
+const right =
+    new vis.VisibilityController(document.getElementById('right-icon'), opts);
+const left =
+    new vis.VisibilityController(document.getElementById('left-icon'), opts);
 
 // Cruise
 
-const copts = {intervalMillis: 1};
-const cruise =
-  new vis.VisibilityController(document.getElementById("cruise-wrapper"),
-    copts);
+const copts = {
+  intervalMillis : 1
+};
+const cruise = new vis.VisibilityController(
+    document.getElementById('cruise-wrapper'), copts);
 
 // Initializations
 
@@ -150,71 +155,71 @@ window.addEventListener('resize', () => {
 right.state(vis.State.Blink);
 left.state(vis.State.Blink);
 
-const rightTurnOn     = 0
-const rightTurnOff    = 1
-const leftTurnOn      = 2
-const leftTurnOff     = 3
-const hazardOn        = 4
-const hazardOff       = 5
-const solarPowerLevel = 6
-const motorPowerLevel = 7
-const batteryState    = 8
-const cruiseOn        = 9
-const cruiseLevel     = 10
-const cruiseOff       = 11
-const speed           = 12
+const rightTurnOn = 0;
+const rightTurnOff = 1;
+const leftTurnOn = 2;
+const leftTurnOff = 3;
+const hazardOn = 4;
+const hazardOff = 5;
+const solarPowerLevel = 6;
+const motorPowerLevel = 7;
+const batteryState = 8;
+const cruiseOn = 9;
+const cruiseLevel = 10;
+const cruiseOff = 11;
+const speed = 12;
 
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
 
   switch (msg.id) {
-    case solarPowerLevel:
-      solarReadout.value(msg.data);
-      break;
-    case motorPowerLevel:
-      motor_power.addData({x : msg.timestamp, y : msg.data});
-      motorReadout.value(msg.data);
-      break;
-    case speed:
-      speedDial.value(msg.data);
-      break;
-    case batteryState:
-      batteryDial.value(msg.data);
-      break;
-      //    case rightTurnOn:
-      //      right.state(vis.State.Blink);
-      //      break;
-      //    case rightTurnOff:
-      //      right.state(vis.State.Hidden);
-      //      break;
-      //    case leftTurnOn:
-      //      left.state(vis.State.Blink);
-      //      break;
-      //    case leftTurnOff:
-      //      left.state(vis.State.Hidden);
-      //      break;
-      //    case hazardOn:
-      //      left.state(vis.State.Blink);
-      //      right.state(vis.State.Blink);
-      //      break;
-      //    case leftTurnOff:
-      //      left.state(vis.State.Hidden);
-      //      right.state(vis.State.Hidden);
-      //      break;
-    case cruiseOff:
-      cruise.state(vis.State.Hidden);
-      break; 
-    case cruiseOn:
-      cruise.state(vis.State.Shown);
-      document.getElementById('cruise-value').innerHTML =
+  case solarPowerLevel:
+    solarReadout.value(msg.data);
+    break;
+  case motorPowerLevel:
+    motor_power.addData({x : msg.timestamp, y : msg.data});
+    motorReadout.value(msg.data);
+    break;
+  case speed:
+    speedDial.value(msg.data);
+    break;
+  case batteryState:
+    batteryDial.value(msg.data);
+    break;
+  //    case rightTurnOn:
+  //      right.state(vis.State.Blink);
+  //      break;
+  //    case rightTurnOff:
+  //      right.state(vis.State.Hidden);
+  //      break;
+  //    case leftTurnOn:
+  //      left.state(vis.State.Blink);
+  //      break;
+  //    case leftTurnOff:
+  //      left.state(vis.State.Hidden);
+  //      break;
+  //    case hazardOn:
+  //      left.state(vis.State.Blink);
+  //      right.state(vis.State.Blink);
+  //      break;
+  //    case leftTurnOff:
+  //      left.state(vis.State.Hidden);
+  //      right.state(vis.State.Hidden);
+  //      break;
+  case cruiseOff:
+    cruise.state(vis.State.Hidden);
+    break;
+  case cruiseOn:
+    cruise.state(vis.State.Shown);
+    document.getElementById('cruise-value').innerHTML =
         speedDial.value().toString();
-      break;
-    case cruiseLevel:
-      document.getElementById('cruise-value').innerHTML =
+    break;
+  case cruiseLevel:
+    document.getElementById('cruise-value').innerHTML =
         Math.round(msg.data).toString();
-      break;
-    default:
-      break;
+    break;
+  default:
+    break;
   }
 };

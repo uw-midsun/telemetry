@@ -41,15 +41,17 @@
                 this._stopBlink();
                 switch (state) {
                     case State.Hidden:
-                        this._element.style.visibility = "hidden";
+                        this._element.style.visibility = 'hidden';
                         this._visible = false;
                         break;
                     case State.Shown:
-                        this._element.style.visibility = "visible";
+                        this._element.style.visibility = 'visible';
                         this._visible = true;
                         break;
                     case State.Blink:
                         this._blinkId = window.setInterval(function () { return _this._toggleState(); }, this._options.intervalMillis);
+                        break;
+                    default:
                         break;
                 }
                 this._state = state;
@@ -63,11 +65,11 @@
         };
         VisibilityController.prototype._toggleState = function () {
             if (this._visible) {
-                this._element.style.visibility = "hidden";
+                this._element.style.visibility = 'hidden';
                 this._visible = false;
             }
             else {
-                this._element.style.visibility = "visible";
+                this._element.style.visibility = 'visible';
                 this._visible = true;
             }
         };

@@ -30,34 +30,36 @@ export class VisibilityController {
     }
   }
 
-  public options() : VisibilityOptions;
-  public options(options: VisibilityOptions): this; 
+  public options(): VisibilityOptions;
+  public options(options: VisibilityOptions): this;
   public options(options?: VisibilityOptions): VisibilityOptions|this {
     if (options) {
       this._options = options;
       this.state(this._state);
-      return this; 
+      return this;
     }
     return this._options;
   }
-  
+
   public state(): State;
   public state(state: State): this;
   public state(state?: State): State|this {
     if (state) {
-      this._stopBlink(); 
+      this._stopBlink();
       switch (state) {
         case State.Hidden as number:
-          this._element.style.visibility = "hidden";
+          this._element.style.visibility = 'hidden';
           this._visible = false;
           break;
         case State.Shown as number:
-          this._element.style.visibility = "visible";
+          this._element.style.visibility = 'visible';
           this._visible = true;
           break;
         case State.Blink as number:
           this._blinkId = window.setInterval(() => this._toggleState(),
             this._options.intervalMillis);
+          break;
+        default:
           break;
       }
       this._state = state;
@@ -65,7 +67,7 @@ export class VisibilityController {
     return this._state;
   }
 
-  private _stopBlink() {
+  private _stopBlink(): void {
     if (this._blinkId) {
       window.clearInterval(this._blinkId);
     }
@@ -73,10 +75,10 @@ export class VisibilityController {
 
   private _toggleState(): void {
     if (this._visible) {
-      this._element.style.visibility = "hidden";
+      this._element.style.visibility = 'hidden';
       this._visible = false;
     } else {
-      this._element.style.visibility = "visible";
+      this._element.style.visibility = 'visible';
       this._visible = true;
     }
   }

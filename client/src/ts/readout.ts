@@ -43,7 +43,7 @@ export class Readout {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.setAttribute('id', this._div.getAttribute('id') + '-text');
     this._svg.appendChild(this._text);
-    this._update()
+    this._update();
 
     window.addEventListener('resize', () => this._update());
 
@@ -76,19 +76,11 @@ export class Readout {
     return this._value;
   }
 
-  private _update() {
-    this._thickness = 
-      parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
-    this._width = this._div.clientWidth; 
-    this._height = this._div.clientHeight; 
-  }
-
   // Redraws/draws the readout.
   public redraw(): void {
     const centerX = (this._width / 2).toString();
     const radius =
-        Math.min(this._width, this._height) / 2 -
-        this._thickness / 2;
+        Math.min(this._width, this._height) / 2 - this._thickness / 2;
     this._circle.setAttribute('cx', centerX);
     this._circle.setAttribute('cy', (this._height / 2).toString());
     this._circle.setAttribute('r', (radius).toString());
@@ -109,5 +101,13 @@ export class Readout {
     } else {
       this._text.setAttribute('y', (this._height / 2).toString());
     }
+  }
+
+  // Internal method to update DOM measurements on window resize.
+  private _update(): void {
+    this._thickness =
+      parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+    this._width = this._div.clientWidth;
+    this._height = this._div.clientHeight;
   }
 }
