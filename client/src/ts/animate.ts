@@ -31,7 +31,6 @@ export class Animator {
 
   public animate(start: number, end: number,
                  callback: (new_val: number) => void): void {
-    this.cancel();
     this._direction = 1;
     if (start > end) {
       this._direction = -1;
