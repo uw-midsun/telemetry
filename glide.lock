@@ -1,5 +1,5 @@
-hash: f70c0f37fa5040fda16cfcb9956aa5d8e8ad4402c8402c300d88e9364b5e8042
-updated: 2017-05-20T16:14:45.625634913-04:00
+hash: edd0b08c5c71b7ecb3c00869d695859510191b3d6024182572335157419d8509
+updated: 2017-05-20T18:43:32.525911422-04:00
 imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
@@ -7,6 +7,21 @@ imports:
   version: 3f3e394da2b801fbe732a935ef40724762a67a07
 - name: github.com/graphql-go/graphql
   version: fe52096df4714b0c66bd7921ade11c976acb51a2
+  subpackages:
+  - gqlerrors
+  - language/ast
+  - language/kinds
+  - language/lexer
+  - language/location
+  - language/parser
+  - language/printer
+  - language/source
+  - language/typeInfo
+  - language/visitor
+- name: github.com/graphql-go/graphql-go-handler
+  version: 07e3dd439c1f4ec14e685af7c48e8863bcc42c9d
+- name: github.com/graphql-go/handler
+  version: 07e3dd439c1f4ec14e685af7c48e8863bcc42c9d
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/mattn/go-sqlite3
@@ -19,8 +34,8 @@ imports:
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
 - name: github.com/spf13/pflag
   version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
-testImports:
 - name: golang.org/x/net
   version: a6577fac2d73be281a500b310739095313165611
   subpackages:
   - context
+testImports: []

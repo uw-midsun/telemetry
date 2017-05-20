@@ -7,3 +7,4 @@ import:
 - package: github.com/spf13/cobra
 - package: github.com/mattn/go-sqlite3
 - package: github.com/graphql-go/graphql
+- package: github.com/graphql-go/handler
