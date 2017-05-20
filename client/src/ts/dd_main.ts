@@ -37,7 +37,7 @@ yAxis.endTickLength(0);
 yAxis.innerTickLength(0);
 
 // Data configuration.
-const motor_data = [ {x : Date.now(), y : Math.cos(Date.now() / 100000)} ];
+const motor_data: any[] = [];
 const xTimeBuffer = 1000;
 const motor_power =
     new streamGraph.StreamingDataset(motor_data, {color : 'rgb(88, 86, 214)'});
@@ -71,11 +71,6 @@ function UpdatePlot(): void {
 }
 
 motor_power.dataUpdate = () => UpdatePlot();
-
-// function AddData(): void {
-//  const now = Date.now();
-//  motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
-// }
 
 // Dials
 const speedDialOptions = new dial.DialOptions();

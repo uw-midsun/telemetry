@@ -36,7 +36,7 @@
     yAxis.showEndTickLabels(true);
     yAxis.endTickLength(0);
     yAxis.innerTickLength(0);
-    var motor_data = [{ x: Date.now(), y: Math.cos(Date.now() / 100000) }];
+    var motor_data = [];
     var xTimeBuffer = 1000;
     var motor_power = new streamGraph.StreamingDataset(motor_data, { color: 'rgb(88, 86, 214)' });
     motor_power.filter(function (data) {
