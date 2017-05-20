@@ -1,6 +1,8 @@
 import streamGraph = require('./streaming_graph');
 import dial = require('./dial');
 import readout = require('./readout');
+import vis = require('./visibility');
+import animate = require('./animate');
 
 // Graph
 
@@ -35,7 +37,7 @@ yAxis.endTickLength(0);
 yAxis.innerTickLength(0);
 
 // Data configuration.
-const motor_data = [ {x : Date.now(), y : Math.cos(Date.now() / 100000)} ];
+const motor_data: any[] = [];
 const xTimeBuffer = 1000;
 const motor_power =
     new streamGraph.StreamingDataset(motor_data, {color : 'rgb(88, 86, 214)'});
@@ -66,15 +68,9 @@ chart.renderTo('#graph');
 function UpdatePlot(): void {
   timeDomain.domain();
   xScale.domain();
-  chart.redraw();
 }
 
 motor_power.dataUpdate = () => UpdatePlot();
-
-function AddData(): void {
-  const now = Date.now();
-  motor_power.addData({x : now, y : 9000 * Math.cos(now / 10000) + 6000});
-}
 
 // Dials
 const speedDialOptions = new dial.DialOptions();
@@ -85,38 +81,59 @@ const socDialOptions = new dial.DialOptions();
 socDialOptions.angleOffset = 0.5 * Math.PI;
 socDialOptions.angleArc = Math.PI;
 socDialOptions.rotation = dial.Direction.CounterClockwise;
-const speedDial = new dial.Dial(
-    document.getElementById('speedometer') as HTMLDivElement, speedDialOptions);
-const batteryDial = new dial.Dial(
-    document.getElementById('soc') as HTMLDivElement, socDialOptions);
+
+// Animation
+const animationOptions = {
+  durationMillis : 60
+};
+
+const speedDial =
+    new dial.Dial(document.getElementById('speedometer') as HTMLDivElement,
+                  speedDialOptions, new animate.Animator(animationOptions));
+const batteryDial =
+    new dial.Dial(document.getElementById('soc') as HTMLDivElement,
+                  socDialOptions, new animate.Animator(animationOptions));
 
 // Readouts
 
 const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'kW';
+ReadoutOptions.formatter = (d: number) => (Math.round(d / 100) / 10).toString();
 const solarReadout = new readout.Readout(
     document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
 const motorReadout = new readout.Readout(
     document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
 
+// Arrows
+
+const opts = {
+  intervalMillis : 500
+};
+const right =
+    new vis.VisibilityController(document.getElementById('right-icon'), opts);
+const left =
+    new vis.VisibilityController(document.getElementById('left-icon'), opts);
+
+// Cruise
+
+const copts = {
+  intervalMillis : 1
+};
+const cruise = new vis.VisibilityController(
+    document.getElementById('cruise-wrapper'), copts);
+
 // Initializations
 
 speedDial.value(100);
-batteryDial.value(75);
-
+batteryDial.value(100);
+solarReadout.value(0);
+motorReadout.value(0);
 const date = new Date();
 document.getElementById('status').innerHTML = date.toLocaleTimeString();
 
-solarReadout.value(1.1);
-motorReadout.value(7.1);
-
 // Updates
 
-window.setInterval(() => AddData(), 50);
-
 window.setInterval(() => {
-  // speedDial.updateValue(Math.round(Math.random() * 100));
-  // batteryDial.updateValue(Math.round(Math.random() * 100));
   const curr_date = new Date();
   document.getElementById('status').innerHTML = curr_date.toLocaleTimeString();
 }, 1000);
@@ -129,14 +146,75 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-// WebSocket
+// Set to just blink hazards for now.
+right.state(vis.State.Blink);
+left.state(vis.State.Blink);
+
+const rightTurnOn = 0;
+const rightTurnOff = 1;
+const leftTurnOn = 2;
+const leftTurnOff = 3;
+const hazardOn = 4;
+const hazardOff = 5;
+const solarPowerLevel = 6;
+const motorPowerLevel = 7;
+const batteryState = 8;
+const cruiseOn = 9;
+const cruiseLevel = 10;
+const cruiseOff = 11;
+const speed = 12;
+
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
 
   switch (msg.id) {
-    default:
-      console.log(msg);
-      break;
+  case solarPowerLevel:
+    solarReadout.value(msg.data);
+    break;
+  case motorPowerLevel:
+    motor_power.addData({x : msg.timestamp, y : msg.data});
+    motorReadout.value(msg.data);
+    break;
+  case speed:
+    speedDial.value(msg.data);
+    break;
+  case batteryState:
+    batteryDial.value(msg.data);
+    break;
+  //    case rightTurnOn:
+  //      right.state(vis.State.Blink);
+  //      break;
+  //    case rightTurnOff:
+  //      right.state(vis.State.Hidden);
+  //      break;
+  //    case leftTurnOn:
+  //      left.state(vis.State.Blink);
+  //      break;
+  //    case leftTurnOff:
+  //      left.state(vis.State.Hidden);
+  //      break;
+  //    case hazardOn:
+  //      left.state(vis.State.Blink);
+  //      right.state(vis.State.Blink);
+  //      break;
+  //    case leftTurnOff:
+  //      left.state(vis.State.Hidden);
+  //      right.state(vis.State.Hidden);
+  //      break;
+  case cruiseOff:
+    cruise.state(vis.State.Hidden);
+    break;
+  case cruiseOn:
+    cruise.state(vis.State.Shown);
+    document.getElementById('cruise-value').innerHTML =
+        speedDial.value().toString();
+    break;
+  case cruiseLevel:
+    document.getElementById('cruise-value').innerHTML =
+        Math.round(msg.data).toString();
+    break;
+  default:
+    break;
   }
 };

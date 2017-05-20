@@ -20,6 +20,7 @@
     exports.ReadoutOptions = ReadoutOptions;
     var Readout = (function () {
         function Readout(div, options, value) {
+            var _this = this;
             this._div = div;
             if (value) {
                 this._value = value;
@@ -40,6 +41,8 @@
             this._text = document.createElementNS(svgns, 'text');
             this._text.setAttribute('id', this._div.getAttribute('id') + '-text');
             this._svg.appendChild(this._text);
+            this._update();
+            window.addEventListener('resize', function () { return _this._update(); });
             this.options(options);
         }
         Readout.prototype.options = function (options) {
@@ -61,23 +64,28 @@
             return this._value;
         };
         Readout.prototype.redraw = function () {
-            var centerX = (this._div.clientWidth / 2).toString();
-            var radius = Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
-                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
+            var centerX = (this._width / 2).toString();
+            var radius = Math.min(this._width, this._height) / 2 - this._thickness / 2;
             this._circle.setAttribute('cx', centerX);
-            this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
+            this._circle.setAttribute('cy', (this._height / 2).toString());
             this._circle.setAttribute('r', (radius).toString());
             this._text.innerHTML = this._options.formatter(this._value);
             this._text.setAttribute('x', centerX);
             if (this._options.units) {
-                this._text.setAttribute('y', (this._div.clientHeight / 2 - radius / 6).toString());
+                this._text.setAttribute('y', (this._height / 2 - radius / 6).toString());
                 this._units.innerHTML = this._options.units;
                 this._units.setAttribute('x', centerX);
-                this._units.setAttribute('y', (this._div.clientHeight / 2 + radius / 2).toString());
+                this._units.setAttribute('y', (this._height / 2 + radius / 2).toString());
             }
             else {
-                this._text.setAttribute('y', (this._div.clientHeight / 2).toString());
+                this._text.setAttribute('y', (this._height / 2).toString());
             }
+        };
+        Readout.prototype._update = function () {
+            this._thickness =
+                parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+            this._width = this._div.clientWidth;
+            this._height = this._div.clientHeight;
         };
         return Readout;
     }());

@@ -19,6 +19,9 @@ export class Readout {
   private _circle: SVGCircleElement;
   private _units: SVGTextElement;
   private _text: SVGTextElement;
+  private _thickness: number;
+  private _width: number;
+  private _height: number;
 
   constructor(div: HTMLDivElement, options: ReadoutOptions, value?: number) {
     this._div = div;
@@ -40,6 +43,10 @@ export class Readout {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.setAttribute('id', this._div.getAttribute('id') + '-text');
     this._svg.appendChild(this._text);
+    this._update();
+
+    window.addEventListener('resize', () => this._update());
+
     this.options(options);
   }
 
@@ -71,12 +78,11 @@ export class Readout {
 
   // Redraws/draws the readout.
   public redraw(): void {
-    const centerX = (this._div.clientWidth / 2).toString();
+    const centerX = (this._width / 2).toString();
     const radius =
-        Math.min(this._div.clientWidth, this._div.clientHeight) / 2 -
-        parseFloat(window.getComputedStyle(this._circle, null).strokeWidth) / 2;
+        Math.min(this._width, this._height) / 2 - this._thickness / 2;
     this._circle.setAttribute('cx', centerX);
-    this._circle.setAttribute('cy', (this._div.clientHeight / 2).toString());
+    this._circle.setAttribute('cy', (this._height / 2).toString());
     this._circle.setAttribute('r', (radius).toString());
 
     this._text.innerHTML = this._options.formatter(this._value);
@@ -87,13 +93,21 @@ export class Readout {
       // TODO(ckitagawa): Determine if it is possible to get font height that
       // will make this calculation more consistent/resizeable.
       this._text.setAttribute(
-          'y', (this._div.clientHeight / 2 - radius / 6).toString());
+          'y', (this._height / 2 - radius / 6).toString());
       this._units.innerHTML = this._options.units;
       this._units.setAttribute('x', centerX);
       this._units.setAttribute(
-          'y', (this._div.clientHeight / 2 + radius / 2).toString());
+          'y', (this._height / 2 + radius / 2).toString());
     } else {
-      this._text.setAttribute('y', (this._div.clientHeight / 2).toString());
+      this._text.setAttribute('y', (this._height / 2).toString());
     }
+  }
+
+  // Internal method to update DOM measurements on window resize.
+  private _update(): void {
+    this._thickness =
+      parseFloat(window.getComputedStyle(this._circle, null).strokeWidth);
+    this._width = this._div.clientWidth;
+    this._height = this._div.clientHeight;
   }
 }

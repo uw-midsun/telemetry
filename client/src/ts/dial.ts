@@ -42,9 +42,7 @@ export class DialOptions {
   public rotation: Direction = Direction.Clockwise;
   public autoRedraw: boolean = true;
 
-  // Animation
-  public animationOptions: animate.AnimateOptions = {duration : 1};
-
+  // String formatter for the number.
   public formatter: (d: number) => string = (d: number) => d.toString();
 }
 
@@ -58,8 +56,13 @@ export class Dial {
   private _delta: number;
   private _div: HTMLDivElement;
   private _options: DialOptions;
+  private _thickness: number;
+  private _width: number;
+  private _height: number;
+  private _animator: animate.Animator;
 
-  constructor(div: HTMLDivElement, options: DialOptions, value?: number) {
+  constructor(div: HTMLDivElement, options: DialOptions,
+              animator: animate.Animator, value?: number) {
     this._div = div;
     if (value) {
       this._value = value;
@@ -78,6 +81,12 @@ export class Dial {
     this._text = document.createElementNS(svgns, 'text') as SVGTextElement;
     this._text.id = this._div.id + '-text';
     this._svg.appendChild(this._text);
+
+    window.addEventListener('resize', () => {
+      this._update();
+    });
+    this._update();
+    this._animator = animator;
     this.options(options);
   }
 
@@ -105,8 +114,7 @@ export class Dial {
         this._value = Math.round(new_val);
         this.redraw();
       };
-      animate.Animate(this._value, value, this._options.animationOptions,
-                      update);
+      this._animator.animate(this._value, value, update);
       return this;
     }
     return this._value;
@@ -115,15 +123,23 @@ export class Dial {
   // Draws the actual dial.
   public redraw(): void {
     const radius =
-        Math.min(this._svg.clientWidth, this._svg.clientHeight) / 2 -
-        parseFloat(window.getComputedStyle(this._path, null).strokeWidth) / 2;
+        Math.min(this._width, this._height) / 2 -
+         this._thickness / 2;
     this.drawPath(this._path, radius, this._value, 0);
     this.drawPath(this._shadow, radius, this._options.max, 0);
 
     // Draw the text.
     this._text.innerHTML = this._options.formatter(this._value);
-    this._text.setAttribute('x', (this._svg.clientWidth / 2).toString());
-    this._text.setAttribute('y', (this._svg.clientHeight / 2).toString());
+    this._text.setAttribute('x', (this._width / 2).toString());
+    this._text.setAttribute('y', (this._height / 2).toString());
+  }
+
+  // Internal function to recompute DOM element measurements on resize.
+  private _update(): void {
+    this._thickness =
+      parseFloat(window.getComputedStyle(this._path, null).strokeWidth);
+    this._width = this._svg.clientWidth;
+    this._height = this._svg.clientHeight;
   }
 
   // Helper that draws the SVG path component of the dial.
@@ -133,8 +149,8 @@ export class Dial {
       const angleEnd =
           this._options.angleArc * (value - this._options.min) / this._delta +
           this._options.angleOffset;
-      path.setAttribute('d', describeArc(this._svg.clientWidth / 2,
-                                         this._svg.clientHeight / 2, radius,
+      path.setAttribute('d', describeArc(this._width / 2,
+                                         this._height / 2, radius,
                                          this._options.angleOffset + offset,
                                          angleEnd + offset));
     } else {
@@ -142,8 +158,8 @@ export class Dial {
           this._options.angleArc -
           this._options.angleArc * (value - this._options.min) / this._delta -
           this._options.angleOffset;
-      path.setAttribute('d', describeArc(this._svg.clientWidth / 2,
-                                         this._svg.clientHeight / 2, radius,
+      path.setAttribute('d', describeArc(this._width / 2,
+                                         this._height / 2, radius,
                                          angleEnd + offset,
                                          this._options.angleOffset - offset));
     }
