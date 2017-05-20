@@ -49,7 +49,7 @@
                         this._visible = true;
                         break;
                     case State.Blink:
-                        this._blinkId = window.setInterval(function () { return _this._toggleState(); }, this._options.intervalMillis);
+                        this._blinkId = window.setInterval(function () { return _this._toggleVisState(); }, this._options.intervalMillis);
                         break;
                     default:
                         break;
@@ -63,7 +63,7 @@
                 window.clearInterval(this._blinkId);
             }
         };
-        VisibilityController.prototype._toggleState = function () {
+        VisibilityController.prototype._toggleVisState = function () {
             if (this._visible) {
                 this._element.style.visibility = 'hidden';
                 this._visible = false;

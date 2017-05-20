@@ -56,7 +56,7 @@ export class VisibilityController {
           this._visible = true;
           break;
         case State.Blink as number:
-          this._blinkId = window.setInterval(() => this._toggleState(),
+          this._blinkId = window.setInterval(() => this._toggleVisState(),
             this._options.intervalMillis);
           break;
         default:
@@ -73,7 +73,7 @@ export class VisibilityController {
     }
   }
 
-  private _toggleState(): void {
+  private _toggleVisState(): void {
     if (this._visible) {
       this._element.style.visibility = 'hidden';
       this._visible = false;
