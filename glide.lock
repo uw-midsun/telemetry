@@ -1,10 +1,12 @@
-hash: fdc062d3586107dfe67955db912a32ef139f388fabaf212aaf8743fe57e7d3ac
-updated: 2017-03-19T18:10:32.966371705-04:00
+hash: f70c0f37fa5040fda16cfcb9956aa5d8e8ad4402c8402c300d88e9364b5e8042
+updated: 2017-05-20T16:14:45.625634913-04:00
 imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/gorilla/websocket
   version: 3f3e394da2b801fbe732a935ef40724762a67a07
+- name: github.com/graphql-go/graphql
+  version: fe52096df4714b0c66bd7921ade11c976acb51a2
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/mattn/go-sqlite3
