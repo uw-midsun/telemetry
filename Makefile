@@ -2,9 +2,9 @@ PACKAGE  = telemetry
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
-GOPATH   := $(CURDIR)/.gopath~
-BIN      = $(GOPATH)/bin
-BASE     = $(GOPATH)/src/$(PACKAGE)
+GOPATH   := ${PWD}/.gopath~
+GOBIN    := $(GOPATH)/bin
+BASE     := $(GOPATH)/src/$(PACKAGE)
 
 # use user-given PKG variable
 # otherwise do `go list ./...`, but ignore files in vendor/ directory
@@ -17,8 +17,8 @@ GODOC    = godoc
 GOFMT    = gofmt
 GLIDE    = glide
 TIMEOUT  = 15
-V = 0
-Q = $(if $(filter 1,$V),,@)
+V := 0
+Q := $(if $(filter 1,$V),,@)
 
 .PHONY: all
 all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build program binary
@@ -36,24 +36,24 @@ $(BASE): ; $(info setting $$GOPATH...)
 #########
 # Tools #
 #########
-GOLINT = $(BIN)/golint
-$(BIN)/golint: | $(BASE) ; $(info building golint...)
+GOLINT = $(GOBIN)/golint
+$(GOBIN)/golint: | $(BASE) ; $(info building golint...)
 	$Q go get github.com/golang/lint/golint
 
-GOCOVMERGE = $(BIN)/gocovmerge
-$(BIN)/gocovmerge: | $(BASE) ; $(info building gocovmerge...)
+GOCOVMERGE = $(GOBIN)/gocovmerge
+$(GOBIN)/gocovmerge: | $(BASE) ; $(info building gocovmerge...)
 	$Q go get github.com/wadey/gocovmerge
 
-GOCOV = $(BIN)/gocov
-$(BIN)/gocov: | $(BASE) ; $(info building gocov...)
+GOCOV = $(GOBIN)/gocov
+$(GOBIN)/gocov: | $(BASE) ; $(info building gocov...)
 	$Q go get github.com/axw/gocov/...
 
-GOCOVXML = $(BIN)/gocov-xml
-$(BIN)/gocov-xml: | $(BASE) ; $(info building gocov-xml...)
+GOCOVXML = $(GOBIN)/gocov-xml
+$(GOBIN)/gocov-xml: | $(BASE) ; $(info building gocov-xml...)
 	$Q go get github.com/AlekSi/gocov-xml
 
-GO2XUNIT = $(BIN)/go2xunit
-$(BIN)/go2xunit: | $(BASE) ; $(info building go2xunit...)
+GO2XUNIT = $(GOBIN)/go2xunit
+$(GOBIN)/go2xunit: | $(BASE) ; $(info building go2xunit...)
 	$Q go get github.com/tebeka/go2xunit
 
 
