@@ -1,4 +1,4 @@
-package canD
+package candb
 
 import (
 	"database/sql"
