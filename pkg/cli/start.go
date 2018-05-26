@@ -22,7 +22,7 @@ var startCmd = &cobra.Command{
 	Start the telemetry server, which will start listening for data on
 	the input device specified via the --source flags
 	`,
-	Example: `  telemetry start -source=/dev/tty.* [--port=port] [--fake]`,
+	Example: `  telemetry start -source=/dev/tty.* [--port=port] [--fake] [--tty=/dev/...]`,
 	RunE:    runStart,
 }
 
@@ -38,7 +38,7 @@ var ttyPort string
 func init() {
 	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
-	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "port")
+	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
