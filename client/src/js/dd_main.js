@@ -131,6 +131,7 @@
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
+        console.log(msg);
         switch (msg.id) {
             case solarPowerLevel:
                 solarReadout.value(msg.data);

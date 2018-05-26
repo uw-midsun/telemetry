@@ -175,6 +175,7 @@ const speed = 12;
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
+  console.log(msg);
 
   switch (msg.id) {
     case solarPowerLevel:

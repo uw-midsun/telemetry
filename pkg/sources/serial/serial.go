@@ -1,9 +1,9 @@
 package serial
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"io"
 	"os"
 
@@ -15,12 +15,10 @@ import (
 )
 
 type canPacket struct {
-	header uint32
-	id     uint32
-	data   uint64
+	Header uint32
+	ID     uint32
+	Data   uint64
 }
-
-const canPacketBytes = 16
 
 // Run starts reading canPacket from the specified serial port and serving those on bus.
 func Run(port string, bus *pubsub.MessageBus) {
@@ -38,18 +36,21 @@ func Run(port string, bus *pubsub.MessageBus) {
 		os.Exit(-1)
 	}
 	defer tty.Close()
+	reader := bufio.NewReader(tty)
 
 	for {
-		buf := make([]byte, canPacketBytes)
-		n, err := tty.Read(buf)
+		// Need to read an extra byte to account for null char.
+		buf, err := reader.ReadBytes('\n')
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println("Error: failed to read from port", err)
+				log.Error("Error: failed to read from port", err)
 			}
 		} else {
 			packet := canPacket{}
-			binary.Read(bytes.NewBuffer(buf[:n]), binary.LittleEndian, &packet)
-			bus.Publish("CAN", msgs.NewCAN(packet.id, packet.data))
+			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
+			log.Info(buf)
+			log.Info(packet.ID, packet.Data)
+			bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
 		}
 	}
 }
