@@ -38,18 +38,22 @@ func Run(port string, bus *pubsub.MessageBus) {
 	defer tty.Close()
 	reader := bufio.NewReader(tty)
 
+	// Discard the first message as it may be garbled due to power/serial timings.
+	buf, err := reader.ReadBytes('\n')
 	for {
-		// Need to read an extra byte to account for null char.
-		buf, err := reader.ReadBytes('\n')
+		// Read a complete message at a time. (Blocking).
+		buf, err = reader.ReadBytes('\n')
 		if err != nil {
+			// Except io.EOF errors. Output any others.
 			if err != io.EOF {
 				log.Error("Error: failed to read from port", err)
 			}
 		} else {
+			// Parse the input and store it into a canPacket. Note that this ignores
+			// the header and the newline.
 			packet := canPacket{}
 			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
-			log.Info(buf)
-			log.Info(packet.ID, packet.Data)
+
 			bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
 		}
 	}
