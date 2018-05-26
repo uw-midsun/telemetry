@@ -7,6 +7,7 @@ import (
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
 	"telemetry/pkg/sources/fake"
+	"telemetry/pkg/sources/serial"
 
 	"sync"
 
@@ -29,7 +30,7 @@ var upgrader = websocket.Upgrader{
 }
 
 // handleMessages handles messages on the websocket
-func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, uf bool) {
+func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf bool) {
 	// pingTicker := time.NewTicker(pingPeriod)
 	// defer pingTicker.Stop()
 
@@ -48,16 +49,12 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, uf bool) {
 			time.Sleep(time.Millisecond * 500)
 		}
 	} else {
-		for {
-			// TODO: actually parse received messages for bidirectional data exchange
-			// msgType, message, err := conn.ReadMessage()
-			time.Sleep(time.Second * 5)
-		}
+		serial.Run(tty, bus)
 	}
 }
 
 // ServeHTTP serves the websocket connection
-func ServeHTTP(b *pubsub.MessageBus, fake bool) func(http.ResponseWriter, *http.Request) {
+func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 
@@ -71,6 +68,6 @@ func ServeHTTP(b *pubsub.MessageBus, fake bool) func(http.ResponseWriter, *http.
 			return
 		}
 
-		handleMessages(b, conn, fake)
+		handleMessages(b, conn, tty, fake)
 	}
 }

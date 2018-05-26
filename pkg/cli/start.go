@@ -31,22 +31,23 @@ var startCmd = &cobra.Command{
 // can change this.
 var ErrorCode = 1
 
-var serverPort int
 var fake bool
+var serverPort int
+var ttyPort string
 
 func init() {
-	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
+	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
+	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "port")
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
-	r.Get("/ws", ws.ServeHTTP(messageBus, fake))
+	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, fake))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
 	r.FileServer("/", http.Dir(filesDir))
 
 	port := fmt.Sprintf(":%d", serverPort)
-
 	log.Infof("Starting HTTP server on %s", port)
 	log.Fatal(http.ListenAndServe(port, r))
 }
