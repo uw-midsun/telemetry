@@ -38,10 +38,10 @@ var leftTurnState = false
 var hazardState = false
 var cruiseControlState = false
 
-func getCAN(id uint16) msgs.CAN {
+func getCAN(id uint32) msgs.CAN {
 	t := time.Since(startTime)
 	fid := float64(id)
-	data := uint64(33000 + 3000*math.Sin((t.Seconds()/20)+fid))
+	data := uint64(800 + 150*math.Sin((t.Seconds()/20)+fid))
 
 	return msgs.NewCAN(id, data)
 }
