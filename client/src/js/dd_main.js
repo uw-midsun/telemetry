@@ -100,13 +100,14 @@
     batteryDial.value(100);
     solarReadout.value(0);
     motorReadout.value(0);
-    var date = new Date();
-    document.getElementById('status').innerHTML =
-        date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    window.setInterval(function () {
-        var curr_date = new Date();
+    function updateDate() {
+        var date = new Date();
         document.getElementById('status').innerHTML =
-            curr_date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    updateDate();
+    window.setInterval(function () {
+        updateDate();
     }, 60000);
     window.addEventListener('resize', function () {
         chart.redraw();

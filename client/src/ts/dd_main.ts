@@ -138,16 +138,18 @@ speedDial.value(120);
 batteryDial.value(100);
 solarReadout.value(0);
 motorReadout.value(0);
-const date = new Date();
-document.getElementById('status').innerHTML =
-    date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+
+function updateDate(): void {
+  const date = new Date();
+  document.getElementById('status').innerHTML =
+      date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+}
+updateDate();
 
 // Updates
 
 window.setInterval(() => {
-  const curr_date = new Date();
-  document.getElementById('status').innerHTML =
-      curr_date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  updateDate();
 }, 60000);
 
 window.addEventListener('resize', () => {
