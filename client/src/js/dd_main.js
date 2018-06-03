@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate", "./can_id", "./can_msg_defs"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,6 +14,8 @@
     var readout = require("./readout");
     var vis = require("./visibility");
     var animate = require("./animate");
+    var canId = require("./can_id");
+    var canDefs = require("./can_msg_defs");
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -133,51 +135,48 @@
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
         console.log(msg);
-        switch (msg.id) {
-            case solarPowerLevel:
-                solarReadout.value(msg.data);
+        var can_id = new canId.CanId(msg.id);
+        switch (can_id.msgId()) {
+            case 46:
                 break;
-            case motorPowerLevel:
-                motor_power.addData({ x: msg.timestamp, y: msg.data });
-                motorReadout.value(msg.data);
+            case 36:
+                speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6);
                 break;
-            case speed:
-                speedDial.value(msg.data);
+            case 35:
+                var power = msg.data32[0] * msg.data32[1];
+                motor_power.addData({ x: msg.timestamp, y: power });
+                motorReadout.value(power);
                 break;
-            case batteryState:
-                batteryDial.value(msg.data);
+            case 18:
+                var cruiseVal = msg.data16[2] / (1 << 12);
+                if (cruiseVal) {
+                    cruise.state(vis.State.Shown);
+                    document.getElementById('cruise-value').innerHTML =
+                        Math.round(cruiseVal).toString();
+                }
+                else {
+                    cruise.state(vis.State.Hidden);
+                }
                 break;
-            case rightTurnOn:
-                right.state(vis.State.Blink);
+            case 31:
                 break;
-            case rightTurnOff:
-                right.state(vis.State.Hidden);
-                break;
-            case leftTurnOn:
-                left.state(vis.State.Blink);
-                break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
-                break;
-            case hazardOn:
-                left.state(vis.State.Blink);
-                right.state(vis.State.Blink);
-                break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
-                right.state(vis.State.Hidden);
-                break;
-            case cruiseOff:
-                cruise.state(vis.State.Hidden);
-                break;
-            case cruiseOn:
-                cruise.state(vis.State.Shown);
-                document.getElementById('cruise-value').innerHTML =
-                    speedDial.value().toString();
-                break;
-            case cruiseLevel:
-                document.getElementById('cruise-value').innerHTML =
-                    Math.round(msg.data).toString();
+            case 24:
+                var state = vis.State.Blink;
+                if (msg.data8[1] === 0) {
+                    state = vis.State.Hidden;
+                }
+                if (msg.data8[0] === 4) {
+                    right.state(state);
+                }
+                if (msg.data8[0] === 5) {
+                    left.state(state);
+                }
+                if (msg.data8[0] === 6) {
+                    right.state(vis.State.Hidden);
+                    left.state(vis.State.Hidden);
+                    right.state(state);
+                    left.state(state);
+                }
                 break;
             default:
                 break;
