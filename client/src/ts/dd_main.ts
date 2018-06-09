@@ -187,7 +187,7 @@ ws.onmessage = (event) => {
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
-      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6);
+      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6); // m/s->km/h
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
       const power = msg.data32[0] * msg.data32[1];
