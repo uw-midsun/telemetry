@@ -3,6 +3,8 @@ import dial = require('./dial');
 import readout = require('./readout');
 import vis = require('./visibility');
 import animate = require('./animate');
+import canId = require('./can_id');
+import canDefs = require('./can_msg_defs');
 
 // Graph
 
@@ -160,70 +162,71 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-const rightTurnOn = 0;
-const rightTurnOff = 1;
-const leftTurnOn = 2;
-const leftTurnOff = 3;
-const hazardOn = 4;
-const hazardOff = 5;
-const solarPowerLevel = 6;
-const motorPowerLevel = 7;
-const batteryState = 8;
-const cruiseOn = 9;
-const cruiseLevel = 10;
-const cruiseOff = 11;
-const speed = 12;
+// const rightTurnOn = 0;
+// const rightTurnOff = 1;
+// const leftTurnOn = 2;
+// const leftTurnOff = 3;
+// const hazardOn = 4;
+// const hazardOff = 5;
+// const solarPowerLevel = 6;
+// const motorPowerLevel = 7;
+// const batteryState = 8;
+// const cruiseOn = 9;
+// const cruiseLevel = 10;
+// const cruiseOff = 11;
+// const speed = 12;
 
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
   console.log(msg);
+  const can_id = new canId.CanId(msg.id);
 
-  switch (msg.id) {
-    case solarPowerLevel:
-      solarReadout.value(msg.data);
+  switch (can_id.msgId()) {
+    case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
+      // solarReadout.value(msg.data);
       break;
-    case motorPowerLevel:
-      motor_power.addData({x: msg.timestamp, y: msg.data});
-      motorReadout.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
+      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6); // m/s->km/h
       break;
-    case speed:
-      speedDial.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
+      const power = msg.data32[0] * msg.data32[1];
+      motor_power.addData({x: msg.timestamp, y: power});
+      motorReadout.value(power);
       break;
-    case batteryState:
-      batteryDial.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
+      const cruiseVal = msg.data16[2] / (1 << 12);
+      if (cruiseVal) {
+        cruise.state(vis.State.Shown);
+        document.getElementById('cruise-value').innerHTML =
+            Math.round(cruiseVal).toString();
+      } else {
+        cruise.state(vis.State.Hidden);
+      }
       break;
-    case rightTurnOn:
-      right.state(vis.State.Blink);
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_SOC:  // Currently not supplied.
+      // batteryDial.value(msg.data);
       break;
-    case rightTurnOff:
-      right.state(vis.State.Hidden);
-      break;
-    case leftTurnOn:
-      left.state(vis.State.Blink);
-      break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
-      break;
-    case hazardOn:
-      left.state(vis.State.Blink);
-      right.state(vis.State.Blink);
-      break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
-      right.state(vis.State.Hidden);
-      break;
-    case cruiseOff:
-      cruise.state(vis.State.Hidden);
-      break;
-    case cruiseOn:
-      cruise.state(vis.State.Shown);
-      document.getElementById('cruise-value').innerHTML =
-          speedDial.value().toString();
-      break;
-    case cruiseLevel:
-      document.getElementById('cruise-value').innerHTML =
-          Math.round(msg.data).toString();
+    case canDefs.CanMessage.CAN_MESSAGE_LIGHTS_STATE:
+      let state = vis.State.Blink;
+      if (msg.data8[1] === 0) {
+        state = vis.State.Hidden;
+      }
+      // Right
+      if (msg.data8[0] === 4) {
+        right.state(state);
+      }
+      // Left
+      if (msg.data8[0] === 5) {
+        left.state(state);
+      }
+      // Hazard
+      if (msg.data8[0] === 6) {
+        right.state(vis.State.Hidden);
+        left.state(vis.State.Hidden);
+        right.state(state);
+        left.state(state);
+      }
       break;
     default:
       break;

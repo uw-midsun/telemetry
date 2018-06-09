@@ -1,29 +1,29 @@
 {
-  "name": "telemetry-client",
-  "version": "0.0.1",
-  "description": "telemetry client",
-  "repository": "https://github.com/uw-midsun/telemetry",
-  "author": "Midnight Sun",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/d3": "^4.7.0",
-    "@types/plottable": "^1.4.32",
-    "@types/requirejs": "^2.1.29",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "node-sass": "^4.5.2",
-    "npm-run-all": "^4.0.2",
-    "stylelint": "^7.10.1",
-    "stylelint-config-standard": "^16.0.0",
-    "tslint": "^5.0.0",
-    "typescript": "^2.2.2"
-  },
-  "scripts": {
-    "compile:ts": "tsc",
-    "compile:scss": "node-sass --include-path src/css --output-style compressed src/css/stylesheet.scss src/css/stylesheet.css",
-    "compile": "npm-run-all compile:ts compile:scss",
-    "lint:ts": "tslint src/**/*.ts",
-    "lint:scss": "stylelint src/css/**/*.scss",
-    "lint": "npm-run-all lint:ts lint:scss"
-  }
+    "name": "telemetry-client",
+    "version": "0.0.1",
+    "description": "telemetry client",
+    "repository": "https://github.com/uw-midsun/telemetry",
+    "author": "Midnight Sun",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/d3": "^4.7.0",
+        "@types/plottable": "^1.4.32",
+        "@types/requirejs": "^2.1.29",
+        "chai": "^3.5.0",
+        "mocha": "^3.2.0",
+        "node-sass": "^4.5.2",
+        "npm-run-all": "^4.0.2",
+        "stylelint": "^7.10.1",
+        "stylelint-config-standard": "^16.0.0",
+        "tslint": "^5.0.0",
+        "typescript": "^2.2.2"
+    },
+    "scripts": {
+        "compile:ts": "tsc",
+        "compile:scss": "node-sass --include-path src/css --output-style compressed src/css/stylesheet.scss src/css/stylesheet.css",
+        "compile": "npm-run-all compile:ts compile:scss",
+        "lint:ts": "tslint --type-check --project .",
+        "lint:scss": "stylelint src/css/**/*.scss",
+        "lint": "npm-run-all lint:ts lint:scss"
+    }
 }
