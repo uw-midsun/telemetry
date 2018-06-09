@@ -5,16 +5,16 @@ export class CanId {
   public constructor(rawId: number) {
     this.rawId = rawId;
   }
-  
-  public sourceId() {
+
+  public sourceId(): number {
     return this.rawId & 0xF;
   }
 
-  public msgType() {
+  public msgType(): number {
     return (this.rawId >> 4) & 0x1;
   }
 
-  public msgId() {
+  public msgId(): number {
     return (this.rawId >> 5) & 0x3F;
   }
 }

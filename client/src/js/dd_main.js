@@ -118,19 +118,6 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
-    var rightTurnOn = 0;
-    var rightTurnOff = 1;
-    var leftTurnOn = 2;
-    var leftTurnOff = 3;
-    var hazardOn = 4;
-    var hazardOff = 5;
-    var solarPowerLevel = 6;
-    var motorPowerLevel = 7;
-    var batteryState = 8;
-    var cruiseOn = 9;
-    var cruiseLevel = 10;
-    var cruiseOff = 11;
-    var speed = 12;
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);

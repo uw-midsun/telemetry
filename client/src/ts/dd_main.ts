@@ -162,19 +162,19 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-const rightTurnOn = 0;
-const rightTurnOff = 1;
-const leftTurnOn = 2;
-const leftTurnOff = 3;
-const hazardOn = 4;
-const hazardOff = 5;
-const solarPowerLevel = 6;
-const motorPowerLevel = 7;
-const batteryState = 8;
-const cruiseOn = 9;
-const cruiseLevel = 10;
-const cruiseOff = 11;
-const speed = 12;
+// const rightTurnOn = 0;
+// const rightTurnOff = 1;
+// const leftTurnOn = 2;
+// const leftTurnOff = 3;
+// const hazardOn = 4;
+// const hazardOff = 5;
+// const solarPowerLevel = 6;
+// const motorPowerLevel = 7;
+// const batteryState = 8;
+// const cruiseOn = 9;
+// const cruiseLevel = 10;
+// const cruiseOff = 11;
+// const speed = 12;
 
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
