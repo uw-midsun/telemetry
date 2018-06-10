@@ -141,18 +141,21 @@ batteryDial.value(100);
 solarReadout.value(0);
 motorReadout.value(0);
 
-function updateDate(): void {
-  const date = new Date();
-  document.getElementById('status').innerHTML =
-      date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-}
-updateDate();
+// function updateDate(): void {
+//   const date = new Date();
+//   document.getElementById('status').innerHTML =
+//       date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+// }
+// updateDate();
+//
+// // Updates
+//
+// window.setInterval(() => {
+//   updateDate();
+// }, 60000);
 
-// Updates
 
-window.setInterval(() => {
-  updateDate();
-}, 60000);
+document.getElementById('state').innerHTML = 'N';
 
 window.addEventListener('resize', () => {
   chart.redraw();
@@ -176,10 +179,19 @@ window.addEventListener('resize', () => {
 // const cruiseOff = 11;
 // const speed = 12;
 
+let auxCurrent = 0;
+let auxVoltage = 0;
+let dcdcCurrent = 0;
+let dcdcVoltage = 0;
+let hvCurrent = 0;
+const hvVoltage = new Array<number>(36);
+for (let i = 0; i < 36; ++i) {
+  hvVoltage[i] = 0;
+}
+
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
-  console.log(msg);
   const can_id = new canId.CanId(msg.id);
 
   switch (can_id.msgId()) {
@@ -187,7 +199,7 @@ ws.onmessage = (event) => {
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
-      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6); // m/s->km/h
+      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6);  // m/s->km/h
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
       const power = msg.data32[0] * msg.data32[1];
@@ -228,7 +240,40 @@ ws.onmessage = (event) => {
         left.state(state);
       }
       break;
+    case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
+      auxVoltage = msg.data16[0] / 1000;
+      auxCurrent = msg.data16[1] / 1000;
+      dcdcVoltage = msg.data16[2] / 1000;
+      dcdcCurrent = msg.data16[3] / 1000;
+      break;
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
+      hvVoltage[msg.data16[0]] = msg.data16[1] / 10000;
+      console.log(hvVoltage);
+      break;
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
+      console.log('Current');
+      hvCurrent = msg.data32[0];
+      break;
+    case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
+      if (msg.data16[2] === 0) {
+        document.getElementById('state').innerHTML = 'N';
+      } else if (msg.data16[2] === 1) {
+        document.getElementById('state').innerHTML = 'D';
+      } else if (msg.data16[2] === 2) {
+        document.getElementById('state').innerHTML = 'R';
+      }
+      break;
     default:
       break;
   }
+  document.getElementById('status').innerHTML =
+      'Aux: ' + auxVoltage.toString() + ' V ' + auxCurrent.toString() +
+      ' mA | DCDC: ' + dcdcVoltage.toString() + ' V ' + dcdcCurrent.toString() +
+      ' mA | HV: ' +
+      hvVoltage
+          .reduce((acc: number, val: number) => {
+            return acc + val;
+          })
+          .toString() +
+      ' V ' + hvCurrent.toString() + ' A';
 };

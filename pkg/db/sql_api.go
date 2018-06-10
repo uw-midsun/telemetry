@@ -20,7 +20,7 @@ func WriteMsg(db *sql.DB, msg msgs.CAN) error {
 
 	defer insert.Close()
 
-	insert.Exec(msg.ID, msg.Timestamp, msg.Data)
+	insert.Exec(msg.ID, msg.Timestamp, msg.Data64)
 
 	tx.Commit()
 	return nil
@@ -48,7 +48,7 @@ func TimeWindowedRead(db *sql.DB, canID uint16, from time.Time, to time.Time) ([
 	var canMsgs []msgs.CAN
 	for rows.Next() {
 		var msg msgs.CAN
-		err = rows.Scan(&msg.ID, &msg.Timestamp, &msg.Data)
+		err = rows.Scan(&msg.ID, &msg.Timestamp, &msg.Data64)
 		if err != nil {
 			return nil, err
 		}

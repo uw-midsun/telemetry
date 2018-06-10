@@ -102,15 +102,7 @@
     batteryDial.value(100);
     solarReadout.value(0);
     motorReadout.value(0);
-    function updateDate() {
-        var date = new Date();
-        document.getElementById('status').innerHTML =
-            date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    updateDate();
-    window.setInterval(function () {
-        updateDate();
-    }, 60000);
+    document.getElementById('state').innerHTML = 'N';
     window.addEventListener('resize', function () {
         chart.redraw();
         solarReadout.redraw();
@@ -118,10 +110,18 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
+    var auxCurrent = 0;
+    var auxVoltage = 0;
+    var dcdcCurrent = 0;
+    var dcdcVoltage = 0;
+    var hvCurrent = 0;
+    var hvVoltage = new Array(36);
+    for (var i = 0; i < 36; ++i) {
+        hvVoltage[i] = 0;
+    }
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        console.log(msg);
         var can_id = new canId.CanId(msg.id);
         switch (can_id.msgId()) {
             case 46:
@@ -165,9 +165,44 @@
                     left.state(state);
                 }
                 break;
+            case 43:
+                auxVoltage = msg.data16[0] / 1000;
+                auxCurrent = msg.data16[1] / 1000;
+                dcdcVoltage = msg.data16[2] / 1000;
+                dcdcCurrent = msg.data16[3] / 1000;
+                break;
+            case 32:
+                hvVoltage[msg.data16[0]] = msg.data16[1] / 10000;
+                console.log(hvVoltage);
+                break;
+            case 33:
+                console.log('Current');
+                hvCurrent = msg.data32[0];
+                break;
+            case 18:
+                if (msg.data16[2] === 0) {
+                    document.getElementById('state').innerHTML = 'N';
+                }
+                else if (msg.data16[2] === 1) {
+                    document.getElementById('state').innerHTML = 'D';
+                }
+                else if (msg.data16[2] === 2) {
+                    document.getElementById('state').innerHTML = 'R';
+                }
+                break;
             default:
                 break;
         }
+        document.getElementById('status').innerHTML =
+            'Aux: ' + auxVoltage.toString() + ' V ' + auxCurrent.toString() +
+                ' mA | DCDC: ' + dcdcVoltage.toString() + ' V ' + dcdcCurrent.toString() +
+                ' mA | HV: ' +
+                hvVoltage
+                    .reduce(function (acc, val) {
+                    return acc + val;
+                })
+                    .toString() +
+                ' V ' + hvCurrent.toString() + ' A';
     };
 });
 //# sourceMappingURL=dd_main.js.map

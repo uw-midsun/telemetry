@@ -11,19 +11,21 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     var CanDevice;
     (function (CanDevice) {
-        CanDevice[CanDevice["CAN_DEVICE_PLUTUS"] = 0] = "CAN_DEVICE_PLUTUS";
-        CanDevice[CanDevice["CAN_DEVICE_CHAOS"] = 1] = "CAN_DEVICE_CHAOS";
-        CanDevice[CanDevice["CAN_DEVICE_TELEMETRY"] = 2] = "CAN_DEVICE_TELEMETRY";
-        CanDevice[CanDevice["CAN_DEVICE_LIGHTS_FRONT"] = 3] = "CAN_DEVICE_LIGHTS_FRONT";
-        CanDevice[CanDevice["CAN_DEVICE_LIGHTS_REAR"] = 4] = "CAN_DEVICE_LIGHTS_REAR";
-        CanDevice[CanDevice["CAN_DEVICE_MOTOR_CONTROLLER"] = 5] = "CAN_DEVICE_MOTOR_CONTROLLER";
-        CanDevice[CanDevice["CAN_DEVICE_DRIVER_CONTROLS"] = 6] = "CAN_DEVICE_DRIVER_CONTROLS";
-        CanDevice[CanDevice["CAN_DEVICE_DRIVER_DISPLAY"] = 7] = "CAN_DEVICE_DRIVER_DISPLAY";
-        CanDevice[CanDevice["CAN_DEVICE_SOLAR_MASTER_FRONT"] = 8] = "CAN_DEVICE_SOLAR_MASTER_FRONT";
-        CanDevice[CanDevice["CAN_DEVICE_SOLAR_MASTER_REAR"] = 9] = "CAN_DEVICE_SOLAR_MASTER_REAR";
-        CanDevice[CanDevice["CAN_DEVICE_SENSOR_BOARD"] = 10] = "CAN_DEVICE_SENSOR_BOARD";
-        CanDevice[CanDevice["CAN_DEVICE_CHARGER"] = 11] = "CAN_DEVICE_CHARGER";
-        CanDevice[CanDevice["NUM_CAN_DEVICES"] = 12] = "NUM_CAN_DEVICES";
+        CanDevice[CanDevice["CAN_DEVICE_RESERVED"] = 0] = "CAN_DEVICE_RESERVED";
+        CanDevice[CanDevice["CAN_DEVICE_PLUTUS"] = 1] = "CAN_DEVICE_PLUTUS";
+        CanDevice[CanDevice["CAN_DEVICE_PLUTUS_SLAVE"] = 2] = "CAN_DEVICE_PLUTUS_SLAVE";
+        CanDevice[CanDevice["CAN_DEVICE_CHAOS"] = 3] = "CAN_DEVICE_CHAOS";
+        CanDevice[CanDevice["CAN_DEVICE_TELEMETRY"] = 4] = "CAN_DEVICE_TELEMETRY";
+        CanDevice[CanDevice["CAN_DEVICE_LIGHTS_FRONT"] = 5] = "CAN_DEVICE_LIGHTS_FRONT";
+        CanDevice[CanDevice["CAN_DEVICE_LIGHTS_REAR"] = 6] = "CAN_DEVICE_LIGHTS_REAR";
+        CanDevice[CanDevice["CAN_DEVICE_MOTOR_CONTROLLER"] = 7] = "CAN_DEVICE_MOTOR_CONTROLLER";
+        CanDevice[CanDevice["CAN_DEVICE_DRIVER_CONTROLS"] = 8] = "CAN_DEVICE_DRIVER_CONTROLS";
+        CanDevice[CanDevice["CAN_DEVICE_DRIVER_DISPLAY"] = 9] = "CAN_DEVICE_DRIVER_DISPLAY";
+        CanDevice[CanDevice["CAN_DEVICE_SOLAR_MASTER_FRONT"] = 10] = "CAN_DEVICE_SOLAR_MASTER_FRONT";
+        CanDevice[CanDevice["CAN_DEVICE_SOLAR_MASTER_REAR"] = 11] = "CAN_DEVICE_SOLAR_MASTER_REAR";
+        CanDevice[CanDevice["CAN_DEVICE_SENSOR_BOARD"] = 12] = "CAN_DEVICE_SENSOR_BOARD";
+        CanDevice[CanDevice["CAN_DEVICE_CHARGER"] = 13] = "CAN_DEVICE_CHARGER";
+        CanDevice[CanDevice["NUM_CAN_DEVICES"] = 14] = "NUM_CAN_DEVICES";
     })(CanDevice = exports.CanDevice || (exports.CanDevice = {}));
     var CanMessage;
     (function (CanMessage) {
@@ -47,7 +49,8 @@
         CanMessage[CanMessage["CAN_MESSAGE_CHARGER_SET_RELAY_STATE"] = 27] = "CAN_MESSAGE_CHARGER_SET_RELAY_STATE";
         CanMessage[CanMessage["CAN_MESSAGE_STEERING_ANGLE"] = 28] = "CAN_MESSAGE_STEERING_ANGLE";
         CanMessage[CanMessage["CAN_MESSAGE_BATTERY_SOC"] = 31] = "CAN_MESSAGE_BATTERY_SOC";
-        CanMessage[CanMessage["CAN_MESSAGE_BATTERY_VCT"] = 32] = "CAN_MESSAGE_BATTERY_VCT";
+        CanMessage[CanMessage["CAN_MESSAGE_BATTERY_VT"] = 32] = "CAN_MESSAGE_BATTERY_VT";
+        CanMessage[CanMessage["CAN_MESSAGE_BATTERY_CURRENT"] = 33] = "CAN_MESSAGE_BATTERY_CURRENT";
         CanMessage[CanMessage["CAN_MESSAGE_MOTOR_CONTROLLER_VC"] = 35] = "CAN_MESSAGE_MOTOR_CONTROLLER_VC";
         CanMessage[CanMessage["CAN_MESSAGE_MOTOR_VELOCITY"] = 36] = "CAN_MESSAGE_MOTOR_VELOCITY";
         CanMessage[CanMessage["CAN_MESSAGE_MOTOR_ANGULAR_FREQUENCY"] = 37] = "CAN_MESSAGE_MOTOR_ANGULAR_FREQUENCY";
@@ -60,7 +63,7 @@
         CanMessage[CanMessage["CAN_MESSAGE_SOLAR_DATA_REAR"] = 46] = "CAN_MESSAGE_SOLAR_DATA_REAR";
         CanMessage[CanMessage["CAN_MESSAGE_LINEAR_ACCELERATION"] = 51] = "CAN_MESSAGE_LINEAR_ACCELERATION";
         CanMessage[CanMessage["CAN_MESSAGE_ANGULAR_ROTATION"] = 52] = "CAN_MESSAGE_ANGULAR_ROTATION";
-        CanMessage[CanMessage["NUM_CAN_MESSAGES"] = 33] = "NUM_CAN_MESSAGES";
+        CanMessage[CanMessage["NUM_CAN_MESSAGES"] = 34] = "NUM_CAN_MESSAGES";
     })(CanMessage = exports.CanMessage || (exports.CanMessage = {}));
 });
 //# sourceMappingURL=can_msg_defs.js.map

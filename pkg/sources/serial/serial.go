@@ -53,7 +53,6 @@ func Run(port string, bus *pubsub.MessageBus) {
 			// the header and the newline.
 			packet := canPacket{}
 			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
-
 			bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
 		}
 	}
