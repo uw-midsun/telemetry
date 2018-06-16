@@ -201,7 +201,6 @@ for (let i = 0; i < 36; ++i) {
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
-  console.log(msg.id);
 
   switch (msg.id) {
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
@@ -228,13 +227,14 @@ ws.onmessage = (event) => {
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
       if (msg.data.direction === 0) {
         document.getElementById('state').innerHTML = 'N';
+        speedDial.value(0);
       } else if (msg.data.direction === 1) {
         document.getElementById('state').innerHTML = 'D';
       } else if (msg.data.direction === 2) {
         document.getElementById('state').innerHTML = 'R';
       }
       const cruiseVal = msg.data.cruise_control / (1 << 12);
-      if (cruiseVal > 5) {
+      if (cruiseVal > 10) {
         cruise.state(vis.State.Shown);
         document.getElementById('cruise-value').innerHTML =
             Math.round(cruiseVal).toString();
@@ -267,6 +267,7 @@ ws.onmessage = (event) => {
       }
       break;
     case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
+      console.log(msg);
       auxVoltage = msg.data.aux_voltage / 1000;
       auxCurrent = msg.data.aux_current / 1000;
       dcdcVoltage = msg.data.dcdc_voltage / 1000;

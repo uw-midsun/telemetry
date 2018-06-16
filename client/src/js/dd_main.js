@@ -132,7 +132,6 @@
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        console.log(msg.id);
         switch (msg.id) {
             case 46:
                 break;
@@ -157,6 +156,7 @@
             case 18:
                 if (msg.data.direction === 0) {
                     document.getElementById('state').innerHTML = 'N';
+                    speedDial.value(0);
                 }
                 else if (msg.data.direction === 1) {
                     document.getElementById('state').innerHTML = 'D';
@@ -165,7 +165,7 @@
                     document.getElementById('state').innerHTML = 'R';
                 }
                 var cruiseVal = msg.data.cruise_control / (1 << 12);
-                if (cruiseVal > 5) {
+                if (cruiseVal > 10) {
                     cruise.state(vis.State.Shown);
                     document.getElementById('cruise-value').innerHTML =
                         Math.round(cruiseVal).toString();
@@ -195,6 +195,7 @@
                 }
                 break;
             case 43:
+                console.log(msg);
                 auxVoltage = msg.data.aux_voltage / 1000;
                 auxCurrent = msg.data.aux_current / 1000;
                 dcdcVoltage = msg.data.dcdc_voltage / 1000;
