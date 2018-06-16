@@ -3,6 +3,7 @@ ignore:
 - telemetry
 import:
 - package: github.com/golang/glog
+- package: github.com/golang/protobuf
 - package: github.com/gorilla/websocket
 - package: github.com/pkg/errors
 - package: github.com/pressly/chi

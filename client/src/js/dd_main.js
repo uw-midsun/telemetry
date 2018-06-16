@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate", "./can_id", "./can_msg_defs"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate", "./can_msg_defs"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,8 +14,18 @@
     var readout = require("./readout");
     var vis = require("./visibility");
     var animate = require("./animate");
-    var canId = require("./can_id");
     var canDefs = require("./can_msg_defs");
+    function toFixedTrunc(value, n) {
+        var v = value.toString().split('.');
+        if (n <= 0)
+            return v[0];
+        var f = v[1] || '';
+        if (f.length > n)
+            return v[0] + "." + f.substr(0, n);
+        while (f.length < n)
+            f += '0';
+        return v[0] + "." + f;
+    }
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -122,21 +132,40 @@
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        var can_id = new canId.CanId(msg.id);
-        switch (can_id.msgId()) {
+        console.log(msg.id);
+        switch (msg.id) {
             case 46:
                 break;
             case 36:
-                speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6);
+                var value = (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
+                    2 * 0.036;
+                console.log(msg);
+                if (value <= 120 && value >= 0) {
+                    speedDial.value(value);
+                }
+                else {
+                    speedDial.value(0);
+                }
+                console.log(value);
                 break;
             case 35:
-                var power = msg.data32[0] * msg.data32[1];
+                var power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
+                    msg.data.mc_voltage_2 * msg.data.mc_current_2;
                 motor_power.addData({ x: msg.timestamp, y: power });
                 motorReadout.value(power);
                 break;
             case 18:
-                var cruiseVal = msg.data16[2] / (1 << 12);
-                if (cruiseVal) {
+                if (msg.data.direction === 0) {
+                    document.getElementById('state').innerHTML = 'N';
+                }
+                else if (msg.data.direction === 1) {
+                    document.getElementById('state').innerHTML = 'D';
+                }
+                else if (msg.data.direction === 2) {
+                    document.getElementById('state').innerHTML = 'R';
+                }
+                var cruiseVal = msg.data.cruise_control / (1 << 12);
+                if (cruiseVal > 5) {
                     cruise.state(vis.State.Shown);
                     document.getElementById('cruise-value').innerHTML =
                         Math.round(cruiseVal).toString();
@@ -149,16 +178,16 @@
                 break;
             case 24:
                 var state = vis.State.Blink;
-                if (msg.data8[1] === 0) {
+                if (msg.data.light_state === 0) {
                     state = vis.State.Hidden;
                 }
-                if (msg.data8[0] === 4) {
+                if (msg.data.light_id === 4) {
                     right.state(state);
                 }
-                if (msg.data8[0] === 5) {
+                if (msg.data.light_id === 5) {
                     left.state(state);
                 }
-                if (msg.data8[0] === 6) {
+                if (msg.data.light_id === 6) {
                     right.state(vis.State.Hidden);
                     left.state(vis.State.Hidden);
                     right.state(state);
@@ -166,43 +195,30 @@
                 }
                 break;
             case 43:
-                auxVoltage = msg.data16[0] / 1000;
-                auxCurrent = msg.data16[1] / 1000;
-                dcdcVoltage = msg.data16[2] / 1000;
-                dcdcCurrent = msg.data16[3] / 1000;
+                auxVoltage = msg.data.aux_voltage / 1000;
+                auxCurrent = msg.data.aux_current / 1000;
+                dcdcVoltage = msg.data.dcdc_voltage / 1000;
+                dcdcCurrent = msg.data.dcdc_current / 1000;
                 break;
             case 32:
-                hvVoltage[msg.data16[0]] = msg.data16[1] / 10000;
-                console.log(hvVoltage);
+                if (msg.data.module_id < 36) {
+                    hvVoltage[msg.data.module_id] = msg.data.voltage / 10000;
+                }
                 break;
             case 33:
-                console.log('Current');
-                hvCurrent = msg.data32[0];
-                break;
-            case 18:
-                if (msg.data16[2] === 0) {
-                    document.getElementById('state').innerHTML = 'N';
-                }
-                else if (msg.data16[2] === 1) {
-                    document.getElementById('state').innerHTML = 'D';
-                }
-                else if (msg.data16[2] === 2) {
-                    document.getElementById('state').innerHTML = 'R';
-                }
+                hvCurrent = msg.data.current;
                 break;
             default:
                 break;
         }
-        document.getElementById('status').innerHTML =
-            'Aux: ' + auxVoltage.toString() + ' V ' + auxCurrent.toString() +
-                ' mA | DCDC: ' + dcdcVoltage.toString() + ' V ' + dcdcCurrent.toString() +
-                ' mA | HV: ' +
-                hvVoltage
-                    .reduce(function (acc, val) {
-                    return acc + val;
-                })
-                    .toString() +
-                ' V ' + hvCurrent.toString() + ' A';
+        document.getElementById('status').innerHTML = 'Aux: ' +
+            toFixedTrunc(auxVoltage, 2) + ' V ' + toFixedTrunc(auxCurrent, 2) +
+            ' mA | DCDC: ' + toFixedTrunc(dcdcVoltage, 2) + ' V ' +
+            toFixedTrunc(dcdcCurrent, 2) + ' mA | HV: ' +
+            toFixedTrunc(hvVoltage.reduce(function (acc, val) {
+                return acc + val;
+            }), 2) +
+            ' V ' + toFixedTrunc(hvCurrent, 2) + ' A';
     };
 });
 //# sourceMappingURL=dd_main.js.map

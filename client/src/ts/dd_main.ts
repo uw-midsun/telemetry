@@ -6,6 +6,15 @@ import animate = require('./animate');
 import canId = require('./can_id');
 import canDefs = require('./can_msg_defs');
 
+function toFixedTrunc(value: number, n: number): string {
+  const v = value.toString().split('.');
+  if (n <= 0) return v[0];
+  let f = v[1] || '';
+  if (f.length > n) return `${v[0]}.${f.substr(0, n)}`;
+  while (f.length < n) f += '0';
+  return `${v[0]}.${f}`
+}
+
 // Graph
 
 // Time windowing (Graph Side).
@@ -192,23 +201,40 @@ for (let i = 0; i < 36; ++i) {
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
-  const can_id = new canId.CanId(msg.id);
+  console.log(msg.id);
 
-  switch (can_id.msgId()) {
+  switch (msg.id) {
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
-      speedDial.value((msg.data32[0] + msg.data32[1]) / 2 * 3.6);  // m/s->km/h
+      const value =
+          (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
+          2 * 0.036;  // cm/s->km/h
+      console.log(msg);
+      if (value <= 120 && value >= 0) {
+        speedDial.value(value);
+      } else {
+        speedDial.value(0);
+      }
+      console.log(value);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
-      const power = msg.data32[0] * msg.data32[1];
+      const power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
+          msg.data.mc_voltage_2 * msg.data.mc_current_2;
       motor_power.addData({x: msg.timestamp, y: power});
       motorReadout.value(power);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
-      const cruiseVal = msg.data16[2] / (1 << 12);
-      if (cruiseVal) {
+      if (msg.data.direction === 0) {
+        document.getElementById('state').innerHTML = 'N';
+      } else if (msg.data.direction === 1) {
+        document.getElementById('state').innerHTML = 'D';
+      } else if (msg.data.direction === 2) {
+        document.getElementById('state').innerHTML = 'R';
+      }
+      const cruiseVal = msg.data.cruise_control / (1 << 12);
+      if (cruiseVal > 5) {
         cruise.state(vis.State.Shown);
         document.getElementById('cruise-value').innerHTML =
             Math.round(cruiseVal).toString();
@@ -221,19 +247,19 @@ ws.onmessage = (event) => {
       break;
     case canDefs.CanMessage.CAN_MESSAGE_LIGHTS_STATE:
       let state = vis.State.Blink;
-      if (msg.data8[1] === 0) {
+      if (msg.data.light_state === 0) {
         state = vis.State.Hidden;
       }
       // Right
-      if (msg.data8[0] === 4) {
+      if (msg.data.light_id === 4) {
         right.state(state);
       }
       // Left
-      if (msg.data8[0] === 5) {
+      if (msg.data.light_id === 5) {
         left.state(state);
       }
       // Hazard
-      if (msg.data8[0] === 6) {
+      if (msg.data.light_id === 6) {
         right.state(vis.State.Hidden);
         left.state(vis.State.Hidden);
         right.state(state);
@@ -241,39 +267,29 @@ ws.onmessage = (event) => {
       }
       break;
     case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
-      auxVoltage = msg.data16[0] / 1000;
-      auxCurrent = msg.data16[1] / 1000;
-      dcdcVoltage = msg.data16[2] / 1000;
-      dcdcCurrent = msg.data16[3] / 1000;
+      auxVoltage = msg.data.aux_voltage / 1000;
+      auxCurrent = msg.data.aux_current / 1000;
+      dcdcVoltage = msg.data.dcdc_voltage / 1000;
+      dcdcCurrent = msg.data.dcdc_current / 1000;
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
-      hvVoltage[msg.data16[0]] = msg.data16[1] / 10000;
-      console.log(hvVoltage);
+      if (msg.data.module_id < 36) {
+        hvVoltage[msg.data.module_id] = msg.data.voltage / 10000;
+      }
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
-      console.log('Current');
-      hvCurrent = msg.data32[0];
-      break;
-    case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
-      if (msg.data16[2] === 0) {
-        document.getElementById('state').innerHTML = 'N';
-      } else if (msg.data16[2] === 1) {
-        document.getElementById('state').innerHTML = 'D';
-      } else if (msg.data16[2] === 2) {
-        document.getElementById('state').innerHTML = 'R';
-      }
+      hvCurrent = msg.data.current;
       break;
     default:
       break;
   }
-  document.getElementById('status').innerHTML =
-      'Aux: ' + auxVoltage.toString() + ' V ' + auxCurrent.toString() +
-      ' mA | DCDC: ' + dcdcVoltage.toString() + ' V ' + dcdcCurrent.toString() +
-      ' mA | HV: ' +
-      hvVoltage
-          .reduce((acc: number, val: number) => {
-            return acc + val;
-          })
-          .toString() +
-      ' V ' + hvCurrent.toString() + ' A';
+  document.getElementById('status').innerHTML = 'Aux: ' +
+      toFixedTrunc(auxVoltage, 2) + ' V ' + toFixedTrunc(auxCurrent, 2) +
+      ' mA | DCDC: ' + toFixedTrunc(dcdcVoltage, 2) + ' V ' +
+      toFixedTrunc(dcdcCurrent, 2) + ' mA | HV: ' +
+      toFixedTrunc(hvVoltage.reduce((acc: number, val: number) => {
+                                                  return acc + val;
+                                                }),
+                   2) +
+      ' V ' + toFixedTrunc(hvCurrent, 2) + ' A';
 };

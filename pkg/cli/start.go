@@ -7,9 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"database/sql"
 	log "github.com/golang/glog"
-	_ "github.com/mattn/go-sqlite3" // impl
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
@@ -17,8 +15,6 @@ import (
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
 	"telemetry/pkg/ws"
-
-	"sync"
 )
 
 var startCmd = &cobra.Command{
@@ -28,7 +24,7 @@ var startCmd = &cobra.Command{
 	Start the telemetry server, which will start listening for data on
 	the input device specified via the --source flags
 	`,
-	Example: `  telemetry start [--port=port] [--fake] [--tty=/dev/...]`,
+	Example: `  telemetry start --schema=/foo.asciipb [--port=port] [--fake] [--tty=/dev/...] [--db=a.db]`,
 	RunE:    runStart,
 }
 
@@ -41,10 +37,12 @@ var fake bool
 var serverPort int
 var ttyPort string
 var dbName string
+var schemaFile string
 
 func init() {
-	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
+	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
+	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
 	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
 	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
 }
@@ -60,41 +58,21 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
 	log.Fatal(http.ListenAndServe(port, r))
 }
 
-func runDb(bus *pubsub.MessageBus) {
-	db, err := sql.Open("sqlite3", dbName)
-	defer db.Close()
-	if err != nil {
-		log.Errorf("Failed to open in memory db " + err.Error())
-	}
-	createTbl := `
-      CREATE TABLE IF NOT EXISTS
-        can (id INTEGER NOT NULL, timestamp DATETIME NOT NULL, data INTEGER NOT NULL);`
-	_, err = db.Exec(createTbl)
-	if err != nil {
-		log.Errorf("Failed to create table " + err.Error())
-	}
-	l := sync.Mutex{}
-	bus.Subscribe("CAN", func(msg msgs.CAN) {
-		l.Lock()
-		defer l.Unlock()
-		_ = candb.WriteMsg(db, msg)
-	})
-	for {
-		select {}
-	}
-}
-
 // runStart
 func runStart(cmd *cobra.Command, args []string) error {
-	if len(args) > 0 {
+	if len(args) > 0 || schemaFile == "" {
 		return usageAndError(cmd)
+	}
+	err := msgs.CanMsgInit(schemaFile)
+	if err != nil {
+		return fmt.Errorf("Schema file is bad or not found")
 	}
 
 	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
 	if dbName != "" {
-		go runDb(messageBus)
+		go candb.RunDb(messageBus, dbName)
 	}
 	setupURLRouting(r, messageBus)
 	return nil

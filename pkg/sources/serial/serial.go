@@ -46,14 +46,17 @@ func Run(port string, bus *pubsub.MessageBus) {
 		if err != nil {
 			// Except io.EOF errors. Output any others.
 			if err != io.EOF {
-				log.Error("Error: failed to read from port", err)
+				log.Errorf("Error: failed to read from port", err)
 			}
 		} else {
 			// Parse the input and store it into a canPacket. Note that this ignores
 			// the header and the newline.
 			packet := canPacket{}
 			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
-			bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
+			hdr := packet.Header & 0xFFFFFF
+			if hdr == 0x585443 || hdr == 0x585243 {
+				bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
+			}
 		}
 	}
 }
