@@ -9,6 +9,10 @@
   font-size: 16px;
 }
 
+li {
+  color: white;
+}
+
 p {
   color: white;
 }
@@ -311,14 +315,14 @@ body {
       #motor-wrapper,
       #solar-wrapper {
         position: relative;
-        width: 45%;
-        height: 45%;
+        width: 40%;
+        height: 40%;
       }
 
       #motor-wrapper {
         #motor-readout {
           height: 75%;
-          width: 90%;
+          width: 95%;
 
           #motor-readout-circle {
             fill: rgba(0, 0, 0, 0);
@@ -339,7 +343,7 @@ body {
       #solar-wrapper {
         #solar-readout {
           height: 75%;
-          width: 90%;
+          width: 95%;
 
           #solar-readout-circle {
             fill: rgba(0, 0, 0, 0);
@@ -361,6 +365,16 @@ body {
           #solar-readout-text {
             font-size: 5em;
           }
+        }
+      }
+
+      #electric-wrapper {
+        position: relative;
+        height: 40%;
+
+        #electric-data {
+          padding-left: 20px;
+          list-style-type: none;
         }
       }
     }

@@ -3,9 +3,9 @@ import dial = require('./dial');
 import readout = require('./readout');
 import vis = require('./visibility');
 import animate = require('./animate');
-import canId = require('./can_id');
 import canDefs = require('./can_msg_defs');
 
+// Helpers
 function toFixedTrunc(value: number, n: number): string {
   const v = value.toString().split('.');
   if (n <= 0) return v[0];
@@ -116,7 +116,6 @@ const batteryDial = new dial.Dial(
     new animate.Animator(animationOptions));
 
 // Readouts
-
 const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'W';
 ReadoutOptions.formatter = (d: number) => d.toString();
@@ -126,7 +125,6 @@ const motorReadout = new readout.Readout(
     document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
 
 // Arrows
-
 const opts = {
   intervalMillis: 500
 };
@@ -136,7 +134,6 @@ const left =
     new vis.VisibilityController(document.getElementById('left-icon'), opts);
 
 // Cruise
-
 const copts = {
   intervalMillis: 1
 };
@@ -150,19 +147,18 @@ batteryDial.value(100);
 solarReadout.value(0);
 motorReadout.value(0);
 
-// function updateDate(): void {
-//   const date = new Date();
-//   document.getElementById('status').innerHTML =
-//       date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-// }
-// updateDate();
-//
-// // Updates
-//
-// window.setInterval(() => {
-//   updateDate();
-// }, 60000);
+function updateDate(): void {
+  const date = new Date();
+  document.getElementById('status').innerHTML =
+      date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+}
+updateDate();
 
+// Updates
+
+window.setInterval(() => {
+  updateDate();
+}, 60000);
 
 document.getElementById('state').innerHTML = 'N';
 
@@ -174,28 +170,10 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-// const rightTurnOn = 0;
-// const rightTurnOff = 1;
-// const leftTurnOn = 2;
-// const leftTurnOff = 3;
-// const hazardOn = 4;
-// const hazardOff = 5;
-// const solarPowerLevel = 6;
-// const motorPowerLevel = 7;
-// const batteryState = 8;
-// const cruiseOn = 9;
-// const cruiseLevel = 10;
-// const cruiseOff = 11;
-// const speed = 12;
-
-let auxCurrent = 0;
-let auxVoltage = 0;
-let dcdcCurrent = 0;
-let dcdcVoltage = 0;
-let hvCurrent = 0;
-const hvVoltage = new Array<number>(36);
-for (let i = 0; i < 36; ++i) {
-  hvVoltage[i] = 0;
+const mpSize = 36;
+const mpVoltage = new Array<number>(mpSize);
+for (let i = 0; i < mpSize; ++i) {
+  mpVoltage[i] = 0;
 }
 
 const ws = new WebSocket('ws://localhost:8080/ws');
@@ -210,13 +188,11 @@ ws.onmessage = (event) => {
       const value =
           (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
           2 * 0.036;  // cm/s->km/h
-      console.log(msg);
       if (value <= 120 && value >= 0) {
         speedDial.value(value);
       } else {
         speedDial.value(0);
       }
-      console.log(value);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
       const power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
@@ -267,30 +243,29 @@ ws.onmessage = (event) => {
       }
       break;
     case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
-      console.log(msg);
-      auxVoltage = msg.data.aux_voltage / 1000;
-      auxCurrent = msg.data.aux_current / 1000;
-      dcdcVoltage = msg.data.dcdc_voltage / 1000;
-      dcdcCurrent = msg.data.dcdc_current / 1000;
+      document.getElementById('aux-current').innerHTML =
+          toFixedTrunc(msg.data.aux_current / 1000, 2) + ' mA';
+      document.getElementById('aux-voltage').innerHTML =
+          toFixedTrunc(msg.data.aux_voltage / 1000, 2) + ' V';
+      document.getElementById('dcdc-current').innerHTML =
+          toFixedTrunc(msg.data.dcdc_current / 1000, 2) + ' mA';
+      document.getElementById('dcdc-voltage').innerHTML =
+          toFixedTrunc(msg.data.dcdc_voltage / 1000, 2) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
       if (msg.data.module_id < 36) {
-        hvVoltage[msg.data.module_id] = msg.data.voltage / 10000;
+        mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
       }
+      document.getElementById('mp-voltage').innerHTML =
+          toFixedTrunc(mpVoltage.reduce((acc: number, val: number) => {
+            return acc + val;
+          }), 2) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
-      hvCurrent = msg.data.current;
+      document.getElementById('mp-current').innerHTML =
+          toFixedTrunc(msg.data.current, 2) + ' A';
       break;
     default:
       break;
   }
-  document.getElementById('status').innerHTML = 'Aux: ' +
-      toFixedTrunc(auxVoltage, 2) + ' V ' + toFixedTrunc(auxCurrent, 2) +
-      ' mA | DCDC: ' + toFixedTrunc(dcdcVoltage, 2) + ' V ' +
-      toFixedTrunc(dcdcCurrent, 2) + ' mA | HV: ' +
-      toFixedTrunc(hvVoltage.reduce((acc: number, val: number) => {
-                                                  return acc + val;
-                                                }),
-                   2) +
-      ' V ' + toFixedTrunc(hvCurrent, 2) + ' A';
 };

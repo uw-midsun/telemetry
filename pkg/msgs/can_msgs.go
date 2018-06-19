@@ -1,8 +1,10 @@
 package msgs
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"sort"
+	"strconv"
 	"time"
 
 	log "github.com/golang/glog"
@@ -18,6 +20,18 @@ type CAN struct {
 	RTR       bool                   `json:"rtr"`
 	Timestamp uint64                 `json:"timestamp"`
 	Data      map[string]interface{} `json:"data"`
+}
+
+// ToSlice converts a CAN object to a list of string with the Data field as a JSON object.
+func (c CAN) ToSlice() []string {
+	mapBytes, _ := json.Marshal(c.Data)
+	return []string{
+		strconv.FormatUint(uint64(c.Source), 10),
+		strconv.FormatUint(uint64(c.ID), 10),
+		strconv.FormatBool(c.RTR),
+		strconv.FormatUint(c.Timestamp, 10),
+		string(mapBytes),
+	}
 }
 
 var schema canpb.CanSchema

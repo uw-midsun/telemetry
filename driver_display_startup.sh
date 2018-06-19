@@ -1,9 +1,13 @@
 #! /bin/sh
 
-# Start serving the website. Use 'nice' so the process plays nice with priority.
-nice ./bin/telemetry start --fake &
+# Start serving the website. Use 'nice' so the process plays nice with
+# scheduling priority otherwise it can overrun.
+nice ./bin/telemetry start --tty=/dev/ttyAMA0 --db=can.db \
+  --schema=can_messages.asciipb &
 
-chromium --kiosk --disable-infobars http://localhost:8080/driver_display.html &
+# Start a very minimal version of Chromium in fullscreen
+chromium-browser --kiosk --incognito --noerrdialogs --disable-infobars \ 
+  http://localhost:8080/driver_display.html &
 
 
 

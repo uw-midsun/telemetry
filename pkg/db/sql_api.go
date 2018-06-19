@@ -16,17 +16,29 @@ func WriteMsg(db *sql.DB, msg msgs.CAN) error {
 		return err
 	}
 
-	insert, err := tx.Prepare("INSERT INTO can(source, id, rtr, timestamp, data) VALUES(?, ?, ?)")
+	insert, err := tx.Prepare(`
+    INSERT INTO can(source, id, rtr, timestamp, data) VALUES(?, ?, ?, ?, ?)
+  `)
 	if err != nil {
 		return err
 	}
-
 	defer insert.Close()
+
+	rtrbit := 0
+	if msg.RTR {
+		rtrbit = 1
+	}
 
 	b := new(bytes.Buffer)
 	e := json.NewEncoder(b)
-	e.Encode(msg.Data)
-	insert.Exec(msg.Source, msg.ID, msg.RTR, msg.Timestamp, b.String())
+	err = e.Encode(msg.Data)
+	if err != nil {
+		return err
+	}
+	_, err = insert.Exec(msg.Source, msg.ID, rtrbit, msg.Timestamp, b.String())
+	if err != nil {
+		return err
+	}
 
 	tx.Commit()
 	return nil

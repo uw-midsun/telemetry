@@ -72,7 +72,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
 	if dbName != "" {
-		go candb.RunDb(messageBus, dbName)
+		candb.RunDb(messageBus, dbName)
 	}
 	setupURLRouting(r, messageBus)
 	return nil

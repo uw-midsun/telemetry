@@ -1,4 +1,3 @@
-// +build linux
 // +build !arm
 
 package candb
@@ -17,9 +16,9 @@ import (
 // RunDb creates a table and sinks all "CAN" pubsub messages into it via the WirteMsg method.
 func RunDb(bus *pubsub.MessageBus, dbName string) {
 	db, err := sql.Open("sqlite3", dbName)
-	defer db.Close()
 	if err != nil {
-		log.Errorf("Failed to open in memory db " + err.Error())
+		log.Errorf("Failed to open db", err.Error())
+		return
 	}
 	createTbl := `
       CREATE TABLE IF NOT EXISTS
@@ -36,9 +35,9 @@ func RunDb(bus *pubsub.MessageBus, dbName string) {
 	bus.Subscribe("CAN", func(msg msgs.CAN) {
 		l.Lock()
 		defer l.Unlock()
-		_ = WriteMsg(db, msg)
+		err = WriteMsg(db, msg)
+		if err != nil {
+			log.Errorf("Failed to write", err.Error())
+		}
 	})
-	for {
-		select {}
-	}
 }
