@@ -8,6 +8,21 @@ import (
 	"time"
 )
 
+func msgsEqual(expected msgs.CAN, actual msgs.CAN) bool {
+	eStrs := expected.ToSlice()
+	aStrs := actual.ToSlice()
+	eLen := len(eStrs)
+	if eLen != len(aStrs) {
+		return false
+	}
+	for i := 0; i < eLen; i++ {
+		if eStrs[i] != aStrs[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func TestEnd2End(t *testing.T) {
 	db, err := sql.Open("sqlite3", ":memory:")
 	defer db.Close()
@@ -20,7 +35,7 @@ func TestEnd2End(t *testing.T) {
              id INTEGER NOT NULL,
              rtr INTEGER NOT NULL,
              dlc INTEGER NOT NULL,
-             timestamp DATETIME NOT NULL,
+             timestamp INTEGER NOT NULL,
              data TEXT NOT NULL);`
 	_, err = db.Exec(createTbl)
 	if err != nil {
@@ -28,9 +43,9 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	tm := time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
-	data = make(map[string]interface{})
+	data := make(map[string]interface{})
 	data["raw"] = 1
-	msg := msgs.CAN{ID: 1, Timestamp: tm, Data: data, DLC: 0, RTR: false, Source: 1}
+	msg := msgs.CAN{ID: 1, Timestamp: uint64(tm.UnixNano()) / uint64(time.Millisecond), Data: data, DLC: 0, RTR: false, Source: 1}
 	err = WriteMsg(db, msg)
 	if err != nil {
 		t.Errorf("WriteMsg failed " + err.Error())
@@ -44,7 +59,7 @@ func TestEnd2End(t *testing.T) {
 		t.Errorf("TimeWindowedRead failed " + err.Error())
 	} else if len(msgs) != 1 {
 		t.Errorf("msgs length is not 1: %d", len(msgs))
-	} else if msgs[0] != msg {
+	} else if !msgsEqual(msgs[0], msg) {
 		t.Errorf("Message is not correct")
 	}
 }

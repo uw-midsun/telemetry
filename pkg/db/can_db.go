@@ -26,7 +26,7 @@ func RunDb(bus *pubsub.MessageBus, dbName string) {
              id INTEGER NOT NULL,
              rtr INTEGER NOT NULL,
              dlc INTEGER NOT NULL,
-             timestamp DATETIME NOT NULL,
+             timestamp INTEGER NOT NULL,
              data TEXT NOT NULL);`
 	_, err = db.Exec(createTbl)
 	if err != nil {

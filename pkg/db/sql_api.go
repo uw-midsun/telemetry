@@ -17,7 +17,7 @@ func WriteMsg(db *sql.DB, msg msgs.CAN) error {
 	}
 
 	insert, err := tx.Prepare(`
-    INSERT INTO can(source, id, rtr, timestamp, data) VALUES(?, ?, ?, ?, ?)
+    INSERT INTO can(source, id, rtr, dlc, timestamp, data) VALUES(?, ?, ?, ?, ?, ?)
   `)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func TimeWindowedRead(db *sql.DB, canID uint16, from time.Time, to time.Time) ([
      can.id = ?
      AND can.timestamp <= ?
      AND can.timestamp >= ?
-    `, canID, to, from)
+    `, canID, uint64(to.UnixNano())/uint64(time.Millisecond), uint64(from.UnixNano())/uint64(time.Millisecond))
 	if err != nil {
 		return nil, err
 	}

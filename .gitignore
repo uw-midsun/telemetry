@@ -1,6 +1,13 @@
 
 # Created by https://www.gitignore.io/api/go,vim,visualstudiocode,macos,windows,sublimetext,node
 
+# Generated Client Code
+client/src/js
+client/src/css/stylesheet.css*
+
+# Zipfiles
+*.zip
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe
