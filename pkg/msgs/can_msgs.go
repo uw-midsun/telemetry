@@ -13,10 +13,12 @@ import (
 	canpb "telemetry/pkg/protos"
 )
 
-// CAN describes a single message from the CAN bus.
+// CAN describes a single message from the CAN bus. This assumes network layer CAN! ID is the
+// message ID for the network.
 type CAN struct {
 	Source    uint8                  `json:"source"`
 	ID        uint16                 `json:"id"`
+	DLC       uint8                  `json:"dlc"`
 	RTR       bool                   `json:"rtr"`
 	Timestamp uint64                 `json:"timestamp"`
 	Data      map[string]interface{} `json:"data"`
@@ -52,8 +54,9 @@ func CanMsgInit(filename string) error {
 }
 
 // NewCAN creates a CAN struct, this should be used for all incoming messages.
-func NewCAN(rawID uint32, rawData uint64) CAN {
+func NewCAN(rawID uint32, rawData uint64, dlc uint8) CAN {
 	var canMsg CAN
+	canMsg.DLC = dlc
 	canMsg.Data = make(map[string]interface{})
 	parse(rawID, rawData, &canMsg)
 	return canMsg

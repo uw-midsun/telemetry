@@ -14,6 +14,8 @@ import (
 	"telemetry/pkg/pubsub"
 )
 
+const canRxHeader = 0x585243
+
 type canPacket struct {
 	Header uint32
 	ID     uint32
@@ -54,8 +56,9 @@ func Run(port string, bus *pubsub.MessageBus) {
 			packet := canPacket{}
 			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
 			hdr := packet.Header & 0xFFFFFF
-			if hdr == 0x585443 || hdr == 0x585243 {
-				bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
+			dlc := uint8((packet.Header >> 28) & 0xF)
+			if hdr == canRxHeader {
+				bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data, dlc))
 			}
 		}
 	}

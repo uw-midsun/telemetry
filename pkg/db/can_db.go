@@ -13,7 +13,7 @@ import (
 	"telemetry/pkg/pubsub"
 )
 
-// RunDb creates a table and sinks all "CAN" pubsub messages into it via the WirteMsg method.
+// RunDb creates a table and sinks all "CAN" pubsub messages into it via the WriteMsg method.
 func RunDb(bus *pubsub.MessageBus, dbName string) {
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
@@ -25,6 +25,7 @@ func RunDb(bus *pubsub.MessageBus, dbName string) {
         can (source INTEGER NOT NULL,
              id INTEGER NOT NULL,
              rtr INTEGER NOT NULL,
+             dlc INTEGER NOT NULL,
              timestamp DATETIME NOT NULL,
              data TEXT NOT NULL);`
 	_, err = db.Exec(createTbl)

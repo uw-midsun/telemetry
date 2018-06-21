@@ -5,16 +5,6 @@ import vis = require('./visibility');
 import animate = require('./animate');
 import canDefs = require('./can_msg_defs');
 
-// Helpers
-function toFixedTrunc(value: number, n: number): string {
-  const v = value.toString().split('.');
-  if (n <= 0) return v[0];
-  let f = v[1] || '';
-  if (f.length > n) return `${v[0]}.${f.substr(0, n)}`;
-  while (f.length < n) f += '0';
-  return `${v[0]}.${f}`
-}
-
 // Graph
 
 // Time windowing (Graph Side).
@@ -244,26 +234,26 @@ ws.onmessage = (event) => {
       break;
     case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
       document.getElementById('aux-current').innerHTML =
-          toFixedTrunc(msg.data.aux_current / 1000, 2) + ' mA';
+          (msg.data.aux_current / 1000).toPrecision(2) + ' mA';
       document.getElementById('aux-voltage').innerHTML =
-          toFixedTrunc(msg.data.aux_voltage / 1000, 2) + ' V';
+          (msg.data.aux_voltage / 1000).toPrecision(2) + ' V';
       document.getElementById('dcdc-current').innerHTML =
-          toFixedTrunc(msg.data.dcdc_current / 1000, 2) + ' mA';
+          (msg.data.dcdc_current / 1000).toPrecision(2) + ' mA';
       document.getElementById('dcdc-voltage').innerHTML =
-          toFixedTrunc(msg.data.dcdc_voltage / 1000, 2) + ' V';
+          (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
       if (msg.data.module_id < 36) {
         mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
       }
       document.getElementById('mp-voltage').innerHTML =
-          toFixedTrunc(mpVoltage.reduce((acc: number, val: number) => {
+          (mpVoltage.reduce((acc: number, val: number) => {
             return acc + val;
-          }), 2) + ' V';
+          })).toPrecision(2) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
       document.getElementById('mp-current').innerHTML =
-          toFixedTrunc(msg.data.current, 2) + ' A';
+          (msg.data.current).toPrecision(2) + ' A';
       break;
     default:
       break;

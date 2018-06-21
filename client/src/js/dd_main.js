@@ -15,17 +15,6 @@
     var vis = require("./visibility");
     var animate = require("./animate");
     var canDefs = require("./can_msg_defs");
-    function toFixedTrunc(value, n) {
-        var v = value.toString().split('.');
-        if (n <= 0)
-            return v[0];
-        var f = v[1] || '';
-        if (f.length > n)
-            return v[0] + "." + f.substr(0, n);
-        while (f.length < n)
-            f += '0';
-        return v[0] + "." + f;
-    }
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -199,26 +188,26 @@
                 break;
             case 43:
                 document.getElementById('aux-current').innerHTML =
-                    toFixedTrunc(msg.data.aux_current / 1000, 2) + ' mA';
+                    (msg.data.aux_current / 1000).toPrecision(2) + ' mA';
                 document.getElementById('aux-voltage').innerHTML =
-                    toFixedTrunc(msg.data.aux_voltage / 1000, 2) + ' V';
+                    (msg.data.aux_voltage / 1000).toPrecision(2) + ' V';
                 document.getElementById('dcdc-current').innerHTML =
-                    toFixedTrunc(msg.data.dcdc_current / 1000, 2) + ' mA';
+                    (msg.data.dcdc_current / 1000).toPrecision(2) + ' mA';
                 document.getElementById('dcdc-voltage').innerHTML =
-                    toFixedTrunc(msg.data.dcdc_voltage / 1000, 2) + ' V';
+                    (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
                 break;
             case 32:
                 if (msg.data.module_id < 36) {
                     mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
                 }
                 document.getElementById('mp-voltage').innerHTML =
-                    toFixedTrunc(mpVoltage.reduce(function (acc, val) {
+                    (mpVoltage.reduce(function (acc, val) {
                         return acc + val;
-                    }), 2) + ' V';
+                    })).toPrecision(2) + ' V';
                 break;
             case 33:
                 document.getElementById('mp-current').innerHTML =
-                    toFixedTrunc(msg.data.current, 2) + ' A';
+                    (msg.data.current).toPrecision(2) + ' A';
                 break;
             default:
                 break;
