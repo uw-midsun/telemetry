@@ -33,9 +33,9 @@ script:
   - sass src/css/stylesheet.scss src/css/stylesheet.css
   - tsc
   - cd ..
-  - zip -r x86_linux.zip . -x "*.zip"
+  - zip -r x86_linux.zip bin/ client/src/ can_messages.asciipb driver_display_startup.sh
   - env GOOS=linux GOARCH=arm GOARM=5 make
-  - zip -r arm_linux.zip . -x "*.zip"
+  - zip -r arm32_linux.zip bin/ client/src/ can_messages.asciipb driver_display_startup.sh
 
 deploy:
   provider: releases
