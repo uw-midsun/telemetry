@@ -3,6 +3,7 @@ import dial = require('./dial');
 import readout = require('./readout');
 import vis = require('./visibility');
 import animate = require('./animate');
+import canDefs = require('./can_msg_defs');
 
 // Graph
 
@@ -105,7 +106,6 @@ const batteryDial = new dial.Dial(
     new animate.Animator(animationOptions));
 
 // Readouts
-
 const ReadoutOptions = new readout.ReadoutOptions();
 ReadoutOptions.units = 'W';
 ReadoutOptions.formatter = (d: number) => d.toString();
@@ -115,7 +115,6 @@ const motorReadout = new readout.Readout(
     document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
 
 // Arrows
-
 const opts = {
   intervalMillis: 500
 };
@@ -125,7 +124,6 @@ const left =
     new vis.VisibilityController(document.getElementById('left-icon'), opts);
 
 // Cruise
-
 const copts = {
   intervalMillis: 1
 };
@@ -152,6 +150,8 @@ window.setInterval(() => {
   updateDate();
 }, 60000);
 
+document.getElementById('state').innerHTML = 'N';
+
 window.addEventListener('resize', () => {
   chart.redraw();
   solarReadout.redraw();
@@ -160,70 +160,100 @@ window.addEventListener('resize', () => {
   batteryDial.redraw();
 });
 
-const rightTurnOn = 0;
-const rightTurnOff = 1;
-const leftTurnOn = 2;
-const leftTurnOff = 3;
-const hazardOn = 4;
-const hazardOff = 5;
-const solarPowerLevel = 6;
-const motorPowerLevel = 7;
-const batteryState = 8;
-const cruiseOn = 9;
-const cruiseLevel = 10;
-const cruiseOff = 11;
-const speed = 12;
+const mpSize = 36;
+const mpVoltage = new Array<number>(mpSize);
+for (let i = 0; i < mpSize; ++i) {
+  mpVoltage[i] = 0;
+}
 
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
-  console.log(msg);
 
   switch (msg.id) {
-    case solarPowerLevel:
-      solarReadout.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
+      // solarReadout.value(msg.data);
       break;
-    case motorPowerLevel:
-      motor_power.addData({x: msg.timestamp, y: msg.data});
-      motorReadout.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
+      const value =
+          (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
+          2 * 0.036;  // cm/s->km/h
+      if (value <= 120 && value >= 0) {
+        speedDial.value(value);
+      } else {
+        speedDial.value(0);
+      }
       break;
-    case speed:
-      speedDial.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
+      const power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
+          msg.data.mc_voltage_2 * msg.data.mc_current_2;
+      motor_power.addData({x: msg.timestamp, y: power});
+      motorReadout.value(power);
       break;
-    case batteryState:
-      batteryDial.value(msg.data);
+    case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
+      if (msg.data.direction === 0) {
+        document.getElementById('state').innerHTML = 'N';
+        speedDial.value(0);
+      } else if (msg.data.direction === 1) {
+        document.getElementById('state').innerHTML = 'D';
+      } else if (msg.data.direction === 2) {
+        document.getElementById('state').innerHTML = 'R';
+      }
+      const cruiseVal = msg.data.cruise_control / (1 << 12);
+      if (cruiseVal > 10) {
+        cruise.state(vis.State.Shown);
+        document.getElementById('cruise-value').innerHTML =
+            Math.round(cruiseVal).toString();
+      } else {
+        cruise.state(vis.State.Hidden);
+      }
       break;
-    case rightTurnOn:
-      right.state(vis.State.Blink);
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_SOC:  // Currently not supplied.
+      // batteryDial.value(msg.data);
       break;
-    case rightTurnOff:
-      right.state(vis.State.Hidden);
+    case canDefs.CanMessage.CAN_MESSAGE_LIGHTS_STATE:
+      let state = vis.State.Blink;
+      if (msg.data.light_state === 0) {
+        state = vis.State.Hidden;
+      }
+      // Right
+      if (msg.data.light_id === 4) {
+        right.state(state);
+      }
+      // Left
+      if (msg.data.light_id === 5) {
+        left.state(state);
+      }
+      // Hazard
+      if (msg.data.light_id === 6) {
+        right.state(vis.State.Hidden);
+        left.state(vis.State.Hidden);
+        right.state(state);
+        left.state(state);
+      }
       break;
-    case leftTurnOn:
-      left.state(vis.State.Blink);
+    case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
+      document.getElementById('aux-current').innerHTML =
+          (msg.data.aux_current / 1000).toPrecision(2) + ' mA';
+      document.getElementById('aux-voltage').innerHTML =
+          (msg.data.aux_voltage / 1000).toPrecision(2) + ' V';
+      document.getElementById('dcdc-current').innerHTML =
+          (msg.data.dcdc_current / 1000).toPrecision(2) + ' mA';
+      document.getElementById('dcdc-voltage').innerHTML =
+          (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
       break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
+      if (msg.data.module_id < 36) {
+        mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
+      }
+      document.getElementById('mp-voltage').innerHTML =
+          (mpVoltage.reduce((acc: number, val: number) => {
+            return acc + val;
+          })).toPrecision(2) + ' V';
       break;
-    case hazardOn:
-      left.state(vis.State.Blink);
-      right.state(vis.State.Blink);
-      break;
-    case leftTurnOff:
-      left.state(vis.State.Hidden);
-      right.state(vis.State.Hidden);
-      break;
-    case cruiseOff:
-      cruise.state(vis.State.Hidden);
-      break;
-    case cruiseOn:
-      cruise.state(vis.State.Shown);
-      document.getElementById('cruise-value').innerHTML =
-          speedDial.value().toString();
-      break;
-    case cruiseLevel:
-      document.getElementById('cruise-value').innerHTML =
-          Math.round(msg.data).toString();
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
+      document.getElementById('mp-current').innerHTML =
+          (msg.data.current).toPrecision(2) + ' A';
       break;
     default:
       break;

@@ -13,6 +13,7 @@ export class Animator {
   private _options: AnimateOptions;
   private _iterations: number;
   private _start: number;
+  private _prevVal: number;
   private _end: number;
   private _direction: number;
   private _callback: (new_val: number) => void;
@@ -39,6 +40,7 @@ export class Animator {
     this._start = start;
     this._end = end;
     this._callback = callback;
+    this._prevVal = start;
 
     this._animate();
   }
@@ -60,20 +62,20 @@ export class Animator {
 
   private _animate(): void {
     this.cancel();
-    if (this._start === this._end) {
+    if (this._prevVal === this._end) {
       return;
     }
 
     const progress = this._currentIteration++ / this._iterations;
-    let value =
+    this._prevVal =
         this._start +
         this._direction * this._currentIteration * this._easeCubic(progress);
-    if (this._direction > 0 && value > this._end) {
-      value = this._end;
-    } else if (this._direction < 0 && value < this._end) {
-      value = this._end;
+    if (this._direction > 0 && this._prevVal > this._end) {
+      this._prevVal = this._end;
+    } else if (this._direction < 0 && this._prevVal < this._end) {
+      this._prevVal = this._end;
     }
-    this._callback(value);
+    this._callback(this._prevVal);
 
     const run = () => this._animate();
 

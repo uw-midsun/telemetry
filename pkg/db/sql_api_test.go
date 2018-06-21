@@ -15,15 +15,22 @@ func TestEnd2End(t *testing.T) {
 		t.Errorf("Failed to open in memory db " + err.Error())
 	}
 	createTbl := `
-  CREATE TABLE 
-    can (id INTEGER NOT NULL, timestamp DATETIME NOT NULL, data INTEGER NOT NULL);`
+      CREATE TABLE IF NOT EXISTS
+        can (source INTEGER NOT NULL,
+             id INTEGER NOT NULL,
+             rtr INTEGER NOT NULL,
+             dlc INTEGER NOT NULL,
+             timestamp DATETIME NOT NULL,
+             data TEXT NOT NULL);`
 	_, err = db.Exec(createTbl)
 	if err != nil {
 		t.Errorf("Failed to create table " + err.Error())
 	}
 
 	tm := time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
-	msg := msgs.CAN{ID: 1, Timestamp: tm, Data: 2}
+	data = make(map[string]interface{})
+	data["raw"] = 1
+	msg := msgs.CAN{ID: 1, Timestamp: tm, Data: data, DLC: 0, RTR: false, Source: 1}
 	err = WriteMsg(db, msg)
 	if err != nil {
 		t.Errorf("WriteMsg failed " + err.Error())

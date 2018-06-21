@@ -1,0 +1,469 @@
+# Message Definitions in plaintext are on the wiki at:
+# https://uwmidsun.atlassian.net/wiki/spaces/ELEC/pages/50003973/CAN+Message+Definitions
+#
+# If you are making changes to this file please update the corresponding entry
+# on the wiki. If you need to add a new message use a reasonable
+# reserved ID. The higher ID the lower the priority. Generally 
+# - 0-13: Critical messages (have ACK)
+# - 14-30: Actionable messages (trigger a change in another system)
+# - 30-63: Data messages (usually not actionable by an onboard device)
+
+msg {
+  id: 0
+  source: PLUTUS
+  # target: CHAOS, LIGHTS
+  msg_name: "bps heartbeat"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "status"
+    }
+  }
+}
+
+msg {
+  id: 1
+  source: CHAOS
+  # target: Driver Controls
+  msg_name: "power distribution fault"
+  is_critical: true
+  can_data {
+    empty {
+    }
+  }
+}
+
+msg {
+  id: 2
+  source: CHAOS
+  # target: PLUTUS
+  msg_name: "battery relay main"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "relay_state"
+    }
+  }
+}
+
+msg {
+  id: 3
+  source: CHAOS
+  # target: PLUTUS
+  msg_name: "battery relay slave"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "relay_state"
+    }
+  }
+}
+
+msg {
+  id: 4
+  source: CHAOS
+  # target: MOTOR_INTERFACE
+  msg_name: "motor relay"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "relay_state"
+    }
+  }
+}
+
+msg {
+  id: 5
+  source: CHAOS
+  # target: SOLAR_MASTER_REAR
+  msg_name: "solar relay rear"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "relay_state"
+    }
+  }
+}
+
+msg {
+  id: 6
+  source: CHAOS
+  # target: SOLAR_MASTER_FRONT
+  msg_name: "solar relay front"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "relay_state"
+    }
+  }
+}
+
+msg {
+  id: 7
+  source: DRIVER_CONTROLS
+  # target: CHAOS
+  msg_name: "power state"
+  is_critical: true
+  can_data {
+    u8 {
+      field_name_1: "power_state"
+    }
+  }
+}
+
+msg {
+  id: 8
+  source: CHAOS
+  # target: PLUTUS, MOTOR_CONTROLLER, DRIVER_CONTROLS
+  msg_name: "powertrain heartbeat"
+  is_critical: true
+  can_data {
+    empty {
+    }
+  }
+}
+
+# IDs: 9-15 Reserved
+
+msg {
+  id: 16
+  source: CHAOS
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "ovuv dcdc aux"
+  msg_readable_name: "ov uv dcdc and aux bat"
+  can_data {
+    u8 {
+      field_name_1: "dcdc_ov_flag"
+      field_name_2: "dcdc_uv_flag"
+      field_name_3: "aux_bat_ov_flag"
+      field_name_4: "aux_bat_uv_flag"
+    }
+  }
+}
+
+msg {
+  id: 17
+  source: MOTOR_CONTROLLER
+  # target: TELEMETRY
+  msg_name: "mc error limits"
+  msg_readable_name: "motor controller error and limits"
+  can_data {
+    u16 {
+      field_name_1: "error_id"
+      field_name_2: "limits"
+    }
+  }
+}
+
+msg {
+  id: 18
+  source: DRIVER_CONTROLS
+  # target: MOTOR_INTERFACE
+  msg_name: "drive output"
+  can_data {
+    u16 {
+      field_name_1: "throttle"
+      field_name_2: "direction"
+      field_name_3: "cruise_control"
+      field_name_4: "mechanical_brake_state"
+    }
+  }
+}
+
+msg {
+  id: 19
+  source: DRIVER_CONTROLS
+  # target: DRIVER_DISPLAY
+  msg_name: "cruise_target"
+  can_data {
+    u8 {
+      field_name_1: "target speed"
+    }
+  }
+}
+
+# IDs: 20-22 Reserved
+
+msg {
+  id: 23
+  source: LIGHTS_REAR
+  # target: LIGHTS_FRONT
+  msg_name: "lights sync"
+  can_data {
+    empty {
+    }
+  }
+}
+
+msg {
+  id: 24
+  source: DRIVER_CONTROLS
+  # target: LIGHTS
+  msg_name: "lights state"
+  can_data {
+    u8 {
+      field_name_1: "light_id"
+      field_name_2: "light_state"
+    }
+  }
+}
+
+msg {
+  id: 25
+  source: DRIVER_CONTROLS
+  # target: LIGHTS
+  msg_name: "horn"
+  can_data {
+    u8 {
+      field_name_1: "state"
+    }
+  }
+}
+
+msg {
+  id: 26
+  source: CHARGER
+  # target: CHAOS
+  msg_name: "charger conn state"
+  msg_readable_name: "charger connection state"
+  can_data {
+    u8 {
+      field_name_1: "is_connected"
+    }
+  }
+}
+
+msg {
+  id: 27
+  source: CHAOS
+  # target: CHARGER
+  msg_name: "charger set relay state"
+  can_data {
+    u8 {
+      field_name_1: "state"
+    }
+  }
+}
+
+msg {
+  id: 28
+  source: DRIVER_CONTROLS
+  # target: TELEMETRY
+  msg_name: "steering angle"
+  can_data {
+    u16 {
+      field_name_1: "steering_angle"
+    }
+  }
+}
+
+# IDs: 29-30 Reserved
+
+msg {
+  id: 31
+  source: PLUTUS
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "battery soc"
+  can_data {
+    empty {
+    }
+  }
+}
+
+msg {
+  id: 32
+  source: PLUTUS
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "battery vt"
+  msg_readable_name: "battery voltage temperature"
+  can_data {
+    u16 {
+      field_name_1: "module_id"
+      field_name_2: "voltage"
+      field_name_3: "temperature"
+    }
+  }
+}
+
+msg {
+  id: 33
+  source: PLUTUS
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "battery current"
+  can_data {
+    u32 {
+      field_name_1: "current"
+    }
+  }
+}
+
+# IDs: 34 Reserved
+
+msg {
+  id: 35
+  source: MOTOR_CONTROLLER
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "motor controller vc"
+  msg_readable_name: "motor controller voltage current"
+  can_data {
+    u16 {
+      field_name_1: "mc_voltage_1"
+      field_name_2: "mc_current_1"
+      field_name_3: "mc_voltage_2"
+      field_name_4: "mc_current_2"
+    }
+  }
+}
+
+msg {
+  id: 36
+  source: MOTOR_CONTROLLER
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "motor velocity"
+  can_data {
+    u32 {
+      field_name_1: "vehicle_velocity_left"
+      field_name_2: "vehicle_velocity_right"
+    }
+  }
+}
+
+msg {
+  id: 37
+  source: MOTOR_CONTROLLER
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "motor angular frequency"
+  can_data {
+    u32 {
+      field_name_1: "angular_freq_left"
+      field_name_2: "angular_freq_right"
+    }
+  }
+}
+
+msg {
+  id: 38
+  source: MOTOR_CONTROLLER
+  # target: TELEMETRY
+  msg_name: "motor temps"
+  can_data {
+    u32 {
+      field_name_1: "motor_temp_l"
+      field_name_2: "motor_temp_r"
+    }
+  }
+}
+
+msg {
+  id: 39
+  source: MOTOR_CONTROLLER
+  # target: TELEMETRY
+  msg_name: "motor amp hr"
+  can_data {
+    u32 {
+      field_name_1: "motor_amp_hr_l"
+      field_name_2: "motor_amp_hr_r"
+    }
+  }
+}
+
+msg {
+  id: 40
+  source: MOTOR_CONTROLLER
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "odometer"
+  can_data {
+    u32 {
+      field_name_1: "odometer_val"
+    }
+  }
+}
+
+# IDs: 41-42 Reserved
+
+msg {
+  id: 43
+  source: CHAOS
+  # target: TELEMETRY
+  msg_name: "aux dcdc vc"
+  msg_readable_name: "aux bat and dcdc voltage current"
+  can_data {
+    u16 {
+      field_name_1: "aux_voltage"
+      field_name_2: "aux_current"
+      field_name_3: "dcdc_voltage"
+      field_name_4: "dcdc_current"
+    }
+  }
+}
+
+msg {
+  id: 44
+  source: CHAOS
+  # target: TELEMETRY
+  msg_name: "dcdc temps"
+  can_data {
+    u16 {
+      field_name_1: "temp_1"
+      field_name_2: "temp_2"
+    }
+  }
+}
+
+msg {
+  id: 45
+  source: SOLAR_MASTER_FRONT
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "solar data front"
+  can_data {
+    u16 {
+      field_name_1: "module_id"
+      field_name_2: "voltage"
+      field_name_3: "current"
+      field_name_4: "temperature"
+    }
+  }
+}
+
+msg {
+  id: 46
+  source: SOLAR_MASTER_REAR
+  # target: DRIVER_DISPLAY, TELEMETRY
+  msg_name: "solar data rear"
+  can_data {
+    u16 {
+      field_name_1: "module_id"
+      field_name_2: "voltage"
+      field_name_3: "current"
+      field_name_4: "temperature"
+    }
+  }
+}
+
+# IDs: 47-50 Reserved
+
+msg {
+  id: 51
+  source: SENSOR_BOARD
+  # target: TELEMETRY
+  msg_name: "linear acceleration"
+  can_data {
+    empty {
+    }
+  }
+}
+
+msg {
+  id: 52
+  source: SENSOR_BOARD
+  # target: TELEMETRY
+  msg_name: "angular rotation"
+  can_data {
+    empty {
+    }
+  }
+}
+
+# IDs: 53-63 Reserved
+
+# No ID may exceed 63. 

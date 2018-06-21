@@ -26,7 +26,6 @@ export class TimeWindow {
 // Decorator class to make a Plottable.Scale have dynamically updating domain.
 export class WindowedScale extends Plottable.Scales.Linear {
   public domainUpdater: (domain: any[]) => number[];
-  private _domain: number[];
 
   constructor(domainUpdater: (domain: any[]) => any[]) {
     super();

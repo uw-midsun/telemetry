@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate"], factory);
+        define(["require", "exports", "./streaming_graph", "./dial", "./readout", "./visibility", "./animate", "./can_msg_defs"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,6 +14,7 @@
     var readout = require("./readout");
     var vis = require("./visibility");
     var animate = require("./animate");
+    var canDefs = require("./can_msg_defs");
     var kWindowMillis = 180000;
     var timeDomain = new streamGraph.TimeWindow(kWindowMillis);
     var xScale = new streamGraph.WindowedScale(function (domain) { return timeDomain.cached; });
@@ -109,6 +110,7 @@
     window.setInterval(function () {
         updateDate();
     }, 60000);
+    document.getElementById('state').innerHTML = 'N';
     window.addEventListener('resize', function () {
         chart.redraw();
         solarReadout.redraw();
@@ -116,68 +118,96 @@
         speedDial.redraw();
         batteryDial.redraw();
     });
-    var rightTurnOn = 0;
-    var rightTurnOff = 1;
-    var leftTurnOn = 2;
-    var leftTurnOff = 3;
-    var hazardOn = 4;
-    var hazardOff = 5;
-    var solarPowerLevel = 6;
-    var motorPowerLevel = 7;
-    var batteryState = 8;
-    var cruiseOn = 9;
-    var cruiseLevel = 10;
-    var cruiseOff = 11;
-    var speed = 12;
+    var mpSize = 36;
+    var mpVoltage = new Array(mpSize);
+    for (var i = 0; i < mpSize; ++i) {
+        mpVoltage[i] = 0;
+    }
     var ws = new WebSocket('ws://localhost:8080/ws');
     ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        console.log(msg);
         switch (msg.id) {
-            case solarPowerLevel:
-                solarReadout.value(msg.data);
+            case 46:
                 break;
-            case motorPowerLevel:
-                motor_power.addData({ x: msg.timestamp, y: msg.data });
-                motorReadout.value(msg.data);
+            case 36:
+                var value = (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
+                    2 * 0.036;
+                if (value <= 120 && value >= 0) {
+                    speedDial.value(value);
+                }
+                else {
+                    speedDial.value(0);
+                }
                 break;
-            case speed:
-                speedDial.value(msg.data);
+            case 35:
+                var power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
+                    msg.data.mc_voltage_2 * msg.data.mc_current_2;
+                motor_power.addData({ x: msg.timestamp, y: power });
+                motorReadout.value(power);
                 break;
-            case batteryState:
-                batteryDial.value(msg.data);
+            case 18:
+                if (msg.data.direction === 0) {
+                    document.getElementById('state').innerHTML = 'N';
+                    speedDial.value(0);
+                }
+                else if (msg.data.direction === 1) {
+                    document.getElementById('state').innerHTML = 'D';
+                }
+                else if (msg.data.direction === 2) {
+                    document.getElementById('state').innerHTML = 'R';
+                }
+                var cruiseVal = msg.data.cruise_control / (1 << 12);
+                if (cruiseVal > 10) {
+                    cruise.state(vis.State.Shown);
+                    document.getElementById('cruise-value').innerHTML =
+                        Math.round(cruiseVal).toString();
+                }
+                else {
+                    cruise.state(vis.State.Hidden);
+                }
                 break;
-            case rightTurnOn:
-                right.state(vis.State.Blink);
+            case 31:
                 break;
-            case rightTurnOff:
-                right.state(vis.State.Hidden);
+            case 24:
+                var state = vis.State.Blink;
+                if (msg.data.light_state === 0) {
+                    state = vis.State.Hidden;
+                }
+                if (msg.data.light_id === 4) {
+                    right.state(state);
+                }
+                if (msg.data.light_id === 5) {
+                    left.state(state);
+                }
+                if (msg.data.light_id === 6) {
+                    right.state(vis.State.Hidden);
+                    left.state(vis.State.Hidden);
+                    right.state(state);
+                    left.state(state);
+                }
                 break;
-            case leftTurnOn:
-                left.state(vis.State.Blink);
+            case 43:
+                document.getElementById('aux-current').innerHTML =
+                    (msg.data.aux_current / 1000).toPrecision(2) + ' mA';
+                document.getElementById('aux-voltage').innerHTML =
+                    (msg.data.aux_voltage / 1000).toPrecision(2) + ' V';
+                document.getElementById('dcdc-current').innerHTML =
+                    (msg.data.dcdc_current / 1000).toPrecision(2) + ' mA';
+                document.getElementById('dcdc-voltage').innerHTML =
+                    (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
                 break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
+            case 32:
+                if (msg.data.module_id < 36) {
+                    mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
+                }
+                document.getElementById('mp-voltage').innerHTML =
+                    (mpVoltage.reduce(function (acc, val) {
+                        return acc + val;
+                    })).toPrecision(2) + ' V';
                 break;
-            case hazardOn:
-                left.state(vis.State.Blink);
-                right.state(vis.State.Blink);
-                break;
-            case leftTurnOff:
-                left.state(vis.State.Hidden);
-                right.state(vis.State.Hidden);
-                break;
-            case cruiseOff:
-                cruise.state(vis.State.Hidden);
-                break;
-            case cruiseOn:
-                cruise.state(vis.State.Shown);
-                document.getElementById('cruise-value').innerHTML =
-                    speedDial.value().toString();
-                break;
-            case cruiseLevel:
-                document.getElementById('cruise-value').innerHTML =
-                    Math.round(msg.data).toString();
+            case 33:
+                document.getElementById('mp-current').innerHTML =
+                    (msg.data.current).toPrecision(2) + ' A';
                 break;
             default:
                 break;

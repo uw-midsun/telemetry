@@ -11,6 +11,8 @@ import (
 	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
+	"telemetry/pkg/db"
+	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
 	"telemetry/pkg/ws"
 )
@@ -22,7 +24,7 @@ var startCmd = &cobra.Command{
 	Start the telemetry server, which will start listening for data on
 	the input device specified via the --source flags
 	`,
-	Example: `  telemetry start -source=/dev/tty.* [--port=port] [--fake] [--tty=/dev/...]`,
+	Example: `  telemetry start --schema=/foo.asciipb [--port=port] [--fake] [--tty=/dev/...] [--db=a.db]`,
 	RunE:    runStart,
 }
 
@@ -34,11 +36,15 @@ var ErrorCode = 1
 var fake bool
 var serverPort int
 var ttyPort string
+var dbName string
+var schemaFile string
 
 func init() {
-	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
+	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
+	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
 	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
+	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
@@ -54,13 +60,20 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
 
 // runStart
 func runStart(cmd *cobra.Command, args []string) error {
-	if len(args) > 0 {
+	if len(args) > 0 || schemaFile == "" {
 		return usageAndError(cmd)
+	}
+	err := msgs.CanMsgInit(schemaFile)
+	if err != nil {
+		return fmt.Errorf("Schema file is bad or not found")
 	}
 
 	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
+	if dbName != "" {
+		candb.RunDb(messageBus, dbName)
+	}
 	setupURLRouting(r, messageBus)
 	return nil
 }

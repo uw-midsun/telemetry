@@ -30,6 +30,7 @@
             this._start = start;
             this._end = end;
             this._callback = callback;
+            this._prevVal = start;
             this._animate();
         };
         Animator.prototype.cancel = function () {
@@ -47,19 +48,20 @@
         Animator.prototype._animate = function () {
             var _this = this;
             this.cancel();
-            if (this._start === this._end) {
+            if (this._prevVal === this._end) {
                 return;
             }
             var progress = this._currentIteration++ / this._iterations;
-            var value = this._start +
-                this._direction * this._currentIteration * this._easeCubic(progress);
-            if (this._direction > 0 && value > this._end) {
-                value = this._end;
+            this._prevVal =
+                this._start +
+                    this._direction * this._currentIteration * this._easeCubic(progress);
+            if (this._direction > 0 && this._prevVal > this._end) {
+                this._prevVal = this._end;
             }
-            else if (this._direction < 0 && value < this._end) {
-                value = this._end;
+            else if (this._direction < 0 && this._prevVal < this._end) {
+                this._prevVal = this._end;
             }
-            this._callback(value);
+            this._callback(this._prevVal);
             var run = function () { return _this._animate(); };
             this._animationId = window.requestAnimationFrame(run);
         };

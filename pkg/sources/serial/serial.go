@@ -14,6 +14,8 @@ import (
 	"telemetry/pkg/pubsub"
 )
 
+const canRxHeader = 0x585243
+
 type canPacket struct {
 	Header uint32
 	ID     uint32
@@ -46,15 +48,18 @@ func Run(port string, bus *pubsub.MessageBus) {
 		if err != nil {
 			// Except io.EOF errors. Output any others.
 			if err != io.EOF {
-				log.Error("Error: failed to read from port", err)
+				log.Errorf("Error: failed to read from port", err)
 			}
 		} else {
 			// Parse the input and store it into a canPacket. Note that this ignores
 			// the header and the newline.
 			packet := canPacket{}
 			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
-
-			bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data))
+			hdr := packet.Header & 0xFFFFFF
+			dlc := uint8((packet.Header >> 28) & 0xF)
+			if hdr == canRxHeader {
+				bus.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data, dlc))
+			}
 		}
 	}
 }
