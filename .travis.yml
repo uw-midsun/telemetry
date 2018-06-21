@@ -12,6 +12,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y -qq yarn
   - gem install sass --version "=3.5.6"
+  - npm install -g typescript
 
 cache:
   directories:
