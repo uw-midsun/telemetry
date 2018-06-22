@@ -52,7 +52,7 @@ func Run(port string, bus *pubsub.MessageBus) {
 				log.Errorf("Error: failed to read from port", err)
 			}
 		} else {
-			decoded, err = cobs.Decode(buf)
+			decoded, err := cobs.Decode(buf)
 			if err != nil {
 				log.Errorf("Error: cobs failed to decode", err)
 				continue
@@ -60,7 +60,7 @@ func Run(port string, bus *pubsub.MessageBus) {
 			// Parse the input and store it into a canPacket. Note that this ignores
 			// the header and the newline.
 			packet := canPacket{}
-			binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
+			binary.Read(bytes.NewBuffer(decoded), binary.LittleEndian, &packet)
 			hdr := packet.Header & 0xFFFFFF
 			dlc := uint8((packet.Header >> 28) & 0xF)
 			if hdr == canRxHeader {
