@@ -9,6 +9,7 @@ import (
 
 	log "github.com/golang/glog"
 	"github.com/jacobsa/go-serial/serial"
+	"github.com/mrVanboy/go-simple-cobs"
 
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
@@ -51,6 +52,11 @@ func Run(port string, bus *pubsub.MessageBus) {
 				log.Errorf("Error: failed to read from port", err)
 			}
 		} else {
+			decoded, err = cobs.Decode(buf)
+			if err != nil {
+				log.Errorf("Error: cobs failed to decode", err)
+				continue
+			}
 			// Parse the input and store it into a canPacket. Note that this ignores
 			// the header and the newline.
 			packet := canPacket{}
