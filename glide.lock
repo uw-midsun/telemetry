@@ -1,5 +1,5 @@
-hash: d67e44023aca2247af060ee8e8ade8b38d6c9ee420f386d3d11fa3697ae22793
-updated: 2018-06-16T15:48:14.148999773-04:00
+hash: 4457c8b8aacb0806d7274cf568f2646951a0b2c36f8b236c203aa82221b9138c
+updated: 2018-06-23T13:06:32.412376934-04:00
 imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
@@ -17,6 +17,8 @@ imports:
   - serial
 - name: github.com/mattn/go-sqlite3
   version: eac1dfa2a61ebccaa117538a5bb12044f6700cd0
+- name: github.com/mrVanboy/go-simple-cobs
+  version: bc19984395e89df8be1728f2b032fa087412b570
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
 - name: github.com/pressly/chi

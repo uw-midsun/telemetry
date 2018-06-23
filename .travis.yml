@@ -45,5 +45,6 @@ deploy:
   file: 
     - x86_linux.zip
     - arm_linux.zip
+  skip_cleanup: true
   on:
     repo: uw-midsun/telemetry
