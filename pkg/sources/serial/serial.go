@@ -42,10 +42,10 @@ func Run(port string, bus *pubsub.MessageBus) {
 	reader := bufio.NewReader(tty)
 
 	// Discard the first message as it may be garbled due to power/serial timings.
-	buf, err := reader.ReadBytes('\n')
+	buf, err := reader.ReadBytes(0x00)
 	for {
 		// Read a complete message at a time. (Blocking).
-		buf, err = reader.ReadBytes('\n')
+		buf, err = reader.ReadBytes(0x00)
 		if err != nil {
 			// Except io.EOF errors. Output any others.
 			if err != io.EOF {
