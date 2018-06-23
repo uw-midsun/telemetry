@@ -7,11 +7,14 @@ import canDefs = require('./can_msg_defs');
 
 // SOC
 
-function mapSocPercent(voltage: number): number {
-  // Use a poor linear approximation for now based on:
-  // https://lygte-info.dk/info/BatteryChargePercent%20UK.html
+function mapSocPercent(v: number): number {
+  // Based on a discharge curve fit of polynomial degree 6.
   // TODO(ckitagawa): Make this better if time allows.
-  const result = 3.15 * voltage - 373;
+  const max_capcity = 4368.3804;  // Ah
+  const curr_capacity = 1.16e7 - 624486 * v + 13896 * Math.pow(v, 2) -
+      164 * Math.pow(v, 3) + 1.08 * Math.pow(v, 4) - 3.75e-3 * Math.pow(v, 5) +
+      5.41e-6 * Math.pow(v, 6);
+  const result = curr_capacity / max_capcity * 100;
   if (result > 100) {
     return 100;
   } else if (result < 0) {
