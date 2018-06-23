@@ -5,6 +5,25 @@ import vis = require('./visibility');
 import animate = require('./animate');
 import canDefs = require('./can_msg_defs');
 
+// SOC
+
+function mapSocPercent(v: number): number {
+  // Based on a discharge curve fit of polynomial degree 6.
+  // For equation see: Battery Cell Testing on Confluence.
+  // TODO(ckitagawa): Make this better if time allows.
+  const max_capacity = 121.3439;  // Ah (Supposed to be 126 Ah)
+  const curr_capacity = 322574 - 17347 * v + 386 * Math.pow(v, 2) -
+      4.55 * Math.pow(v, 3) + 0.0299 * Math.pow(v, 4) -
+      1.04e-4 * Math.pow(v, 5) + 1.5e-7 * Math.pow(v, 6);
+  const result = curr_capacity / max_capacity * 100;
+  if (result > 100) {
+    return 100;
+  } else if (result < 0) {
+    return 0;
+  }
+  return result;
+}
+
 // Graph
 
 // Time windowing (Graph Side).
@@ -38,11 +57,11 @@ yAxis.endTickLength(0);
 yAxis.innerTickLength(0);
 
 // Data configuration.
-const motor_data: any[] = [];
+const power_consumption_data: any[] = [];
 const xTimeBuffer = 1000;
-const motor_power =
-    new streamGraph.StreamingDataset(motor_data, {color: 'rgb(88, 86, 214)'});
-motor_power.filter((data: any[]) => {
+const power_consumption_graph = new streamGraph.StreamingDataset(
+    power_consumption_data, {color: 'rgb(88, 86, 214)'});
+power_consumption_data.filter((data: any[]) => {
   const time_window = timeDomain.begin() - xTimeBuffer;
   let i: number = 0;
   while (data.length && data[i].x < time_window) {
@@ -58,7 +77,7 @@ motor_power.filter((data: any[]) => {
 
 // Plot configuration.
 const streamingPlot = new Plottable.Plots.Area();
-streamingPlot.datasets([motor_power]);
+streamingPlot.datasets([power_consumption_graph]);
 streamingPlot.y((d: any) => d.y, yScale);
 streamingPlot.x((d: any) => d.x, xScale);
 streamingPlot.attr('stroke', (d: any, i: any, ds: Plottable.Dataset) => {
@@ -80,7 +99,7 @@ function UpdatePlot(): void {
   xScale.domain();
 }
 
-motor_power.dataUpdate = () => UpdatePlot();
+power_consumption_graph.dataUpdate = () => UpdatePlot();
 
 // Dials
 const speedDialOptions = new dial.DialOptions();
@@ -111,8 +130,9 @@ ReadoutOptions.units = 'W';
 ReadoutOptions.formatter = (d: number) => d.toString();
 const solarReadout = new readout.Readout(
     document.getElementById('solar-readout') as HTMLDivElement, ReadoutOptions);
-const motorReadout = new readout.Readout(
-    document.getElementById('motor-readout') as HTMLDivElement, ReadoutOptions);
+const consumptionReadout = new readout.Readout(
+    document.getElementById('consumption-readout') as HTMLDivElement,
+    ReadoutOptions);
 
 // Arrows
 const opts = {
@@ -130,18 +150,21 @@ const copts = {
 const cruise = new vis.VisibilityController(
     document.getElementById('cruise-wrapper'), copts);
 
-// Initializations
-
-speedDial.value(120);
-batteryDial.value(100);
-solarReadout.value(0);
-motorReadout.value(0);
-
+// Date
 function updateDate(): void {
   const date = new Date();
   document.getElementById('status').innerHTML =
       date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 }
+
+// Initializations
+
+const ws = new WebSocket('ws://localhost:8080/ws');
+speedDial.value(120);
+batteryDial.value(100);
+solarReadout.value(0);
+consumptionReadout.value(0);
+document.getElementById('state').innerHTML = 'N';
 updateDate();
 
 // Updates
@@ -150,23 +173,14 @@ window.setInterval(() => {
   updateDate();
 }, 60000);
 
-document.getElementById('state').innerHTML = 'N';
-
 window.addEventListener('resize', () => {
   chart.redraw();
   solarReadout.redraw();
-  motorReadout.redraw();
+  consumptionReadout.redraw();
   speedDial.redraw();
   batteryDial.redraw();
 });
 
-const mpSize = 36;
-const mpVoltage = new Array<number>(mpSize);
-for (let i = 0; i < mpSize; ++i) {
-  mpVoltage[i] = 0;
-}
-
-const ws = new WebSocket('ws://localhost:8080/ws');
 ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
 
@@ -175,9 +189,11 @@ ws.onmessage = (event) => {
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
-      const value =
-          (msg.data.vehicle_velocity_left + msg.data.vehicle_velocity_right) /
-          2 * 0.036;  // cm/s->km/h
+      // The << 32 >> 32 converts from unsigned to signed.
+      const value = Math.abs(
+          (((msg.data.vehicle_velocity_left << 32) >> 32) +
+           ((msg.data.vehicle_velocity_right << 32) >> 32)) /
+          2 * 0.036);  // cm/s->km/h
       if (value <= 120 && value >= 0) {
         speedDial.value(value);
       } else {
@@ -187,8 +203,6 @@ ws.onmessage = (event) => {
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
       const power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
           msg.data.mc_voltage_2 * msg.data.mc_current_2;
-      motor_power.addData({x: msg.timestamp, y: power});
-      motorReadout.value(power);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
       if (msg.data.direction === 0) {
@@ -242,18 +256,17 @@ ws.onmessage = (event) => {
       document.getElementById('dcdc-voltage').innerHTML =
           (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
       break;
-    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
-      if (msg.data.module_id < 36) {
-        mpVoltage[msg.data.module_id] = msg.data.voltage / 10000;
-      }
-      document.getElementById('mp-voltage').innerHTML =
-          (mpVoltage.reduce((acc: number, val: number) => {
-            return acc + val;
-          })).toPrecision(2) + ' V';
-      break;
-    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_CURRENT:
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_AGGREGATE_VC:
+      const converted_current = msg.data.current;
+      const converted_voltage = msg.data.voltage / 10000;
       document.getElementById('mp-current').innerHTML =
-          (msg.data.current).toPrecision(2) + ' A';
+          (converted_current).toPrecision(2) + ' A';
+      document.getElementById('mp-voltage').innerHTML =
+          (converted_voltage).toPrecision(2) + ' V';
+      power_consumption_graph.addData(
+          {x: msg.timestamp, y: converted_current * converted_voltage});
+      consumptionReadout.value(power);
+      batteryDial.value(mapSocPercent(converted_voltage));
       break;
     default:
       break;

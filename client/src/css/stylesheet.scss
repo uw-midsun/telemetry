@@ -312,29 +312,29 @@ body {
         fill: white;
       }
 
-      #motor-wrapper,
+      #consumption-wrapper,
       #solar-wrapper {
         position: relative;
         width: 40%;
         height: 40%;
       }
 
-      #motor-wrapper {
-        #motor-readout {
+      #consumption-wrapper {
+        #consumption-readout {
           height: 75%;
           width: 95%;
 
-          #motor-readout-circle {
+          #consumption-readout-circle {
             fill: rgba(0, 0, 0, 0);
             stroke: rgb(88, 86, 214);
             stroke-width: 0.5em;
           }
 
-          #motor-readout-units {
+          #consumption-readout-units {
             font-size: 2em;
           }
 
-          #motor-readout-text {
+          #consumption-readout-text {
             font-size: 5em;
           }
         }
