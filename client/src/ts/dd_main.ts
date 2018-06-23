@@ -9,12 +9,13 @@ import canDefs = require('./can_msg_defs');
 
 function mapSocPercent(v: number): number {
   // Based on a discharge curve fit of polynomial degree 6.
+  // For equation see: Battery Cell Testing on Confluence.
   // TODO(ckitagawa): Make this better if time allows.
-  const max_capcity = 4368.3804;  // Ah
-  const curr_capacity = 1.16e7 - 624486 * v + 13896 * Math.pow(v, 2) -
-      164 * Math.pow(v, 3) + 1.08 * Math.pow(v, 4) - 3.75e-3 * Math.pow(v, 5) +
-      5.41e-6 * Math.pow(v, 6);
-  const result = curr_capacity / max_capcity * 100;
+  const max_capacity = 121.3439;  // Ah (Supposed to be 126 Ah)
+  const curr_capacity = 322574 - 17347 * v + 386 * Math.pow(v, 2) -
+      4.55 * Math.pow(v, 3) + 0.0299 * Math.pow(v, 4) -
+      1.04e-4 * Math.pow(v, 5) + 1.5e-7 * Math.pow(v, 6);
+  const result = curr_capacity / max_capacity * 100;
   if (result > 100) {
     return 100;
   } else if (result < 0) {
@@ -188,6 +189,7 @@ ws.onmessage = (event) => {
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
+      // The << 32 >> 32 converts from unsigned to signed.
       const value = Math.abs(
           (((msg.data.vehicle_velocity_left << 32) >> 32) +
            ((msg.data.vehicle_velocity_right << 32) >> 32)) /
