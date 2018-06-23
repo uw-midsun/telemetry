@@ -5,6 +5,21 @@ import vis = require('./visibility');
 import animate = require('./animate');
 import canDefs = require('./can_msg_defs');
 
+// SOC
+
+function mapSocPercent(voltage: number): number {
+  // Use a poor linear approximation for now based on:
+  // https://lygte-info.dk/info/BatteryChargePercent%20UK.html
+  // TODO(ckitagawa): Make this better if time allows.
+  const result = 3.15 * voltage - 373;
+  if (result > 100) {
+    return 100;
+  } else if (result < 0) {
+    return 0;
+  }
+  return result;
+}
+
 // Graph
 
 // Time windowing (Graph Side).
@@ -170,8 +185,9 @@ ws.onmessage = (event) => {
       // solarReadout.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
-      const value = Math.abs((((msg.data.vehicle_velocity_left << 32) >> 32) +
-                     ((msg.data.vehicle_velocity_right << 32) >> 32)) /
+      const value = Math.abs(
+          (((msg.data.vehicle_velocity_left << 32) >> 32) +
+           ((msg.data.vehicle_velocity_right << 32) >> 32)) /
           2 * 0.036);  // cm/s->km/h
       if (value <= 120 && value >= 0) {
         speedDial.value(value);
@@ -245,6 +261,7 @@ ws.onmessage = (event) => {
       power_consumption_graph.addData(
           {x: msg.timestamp, y: converted_current * converted_voltage});
       consumptionReadout.value(power);
+      batteryDial.value(mapSocPercent(converted_voltage));
       break;
     default:
       break;
