@@ -114,6 +114,7 @@ export class Dial {
         this._value = Math.round(new_val);
         this.redraw();
       };
+      this._animator.cancel();
       this._animator.animate(this._value, value, update);
       return this;
     }

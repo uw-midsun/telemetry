@@ -105,7 +105,7 @@ power_consumption_graph.dataUpdate = () => UpdatePlot();
 const speedDialOptions = new dial.DialOptions();
 speedDialOptions.angleOffset = 0.5 * Math.PI;
 speedDialOptions.angleArc = 1.5 * Math.PI;
-speedDialOptions.max = 120;
+speedDialOptions.max = 130;
 
 const socDialOptions = new dial.DialOptions();
 socDialOptions.angleOffset = 0.5 * Math.PI;
@@ -160,8 +160,8 @@ function updateDate(): void {
 // Initializations
 
 const ws = new WebSocket('ws://localhost:8080/ws');
-speedDial.value(120);
-batteryDial.value(100);
+speedDial.value(0);
+batteryDial.value(0);
 solarReadout.value(0);
 consumptionReadout.value(0);
 document.getElementById('state').innerHTML = 'N';

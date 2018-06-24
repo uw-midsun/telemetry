@@ -6,7 +6,7 @@ nice ./bin/telemetry start --tty=/dev/ttyAMA0 --db=can.db \
   --schema=can_messages.asciipb &
 
 # Start a very minimal version of Chromium in fullscreen
-chromium-browser --kiosk --incognito --noerrdialogs --disable-infobars \ 
+chromium-browser --kiosk --incognito --noerrdialogs --disable-infobars \
   http://localhost:8080/driver_display.html &
 
 
