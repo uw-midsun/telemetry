@@ -43,6 +43,28 @@ To build the binary (output in ``bin/``)
 make
 ```
 
+Release binaries are automatically compiled on each merge into master. Releases
+are supplied for x86 and arm32 (armeabi-v5) Linux.
+
+To compile on other platforms follow the same install instructions. If you get
+errors you may need the following flags:
+
+*macOS*
+
+Requires macOS header files and GCC
+
+```bash
+env GOOS=darwin GOARCH=<386 or arm64> CGO_ENABLED=1 make
+```
+
+*Windows*
+
+Requires Windows GCC toolchain
+
+```bash
+env GOOS=windows GOARCH=<386 or arm64> CGO_ENABLED=1 make
+```
+
 #### Tests
 To build (and run) the tests
 

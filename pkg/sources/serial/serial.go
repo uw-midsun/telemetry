@@ -52,7 +52,7 @@ func Run(port string, bus *pubsub.MessageBus) {
 				log.Errorf("Error: failed to read from port", err)
 			}
 		} else {
-			decoded, err := cobs.Decode(buf)
+			decoded, err := cobs.Decode(buf[:len(buf)-1])
 			if err != nil {
 				log.Errorf("Error: cobs failed to decode", err)
 				continue
