@@ -44,7 +44,7 @@ deploy:
     secure: F7su/Zj9ZciApSZima5zoh0JIiaN5PjcOEA1Z4Id6Lqhw6p05aAQvHK+wt13RO6vDJXt3b+tEXiF5127+vrnpgQaWPjLXDR//gx0kGoRLWXru2+VXxqUdXFalubZuoV6ehpd3wO4kbM261GS6fc0DbZgAXpGXeJjQtc26yct5afOZpWQ61fvJjXaA+sP9D1aA/OMHO3Rl4V/dskL1HW/mHiUjdlsagxUOjCaeHJnXm/6RYPxIcoaiQcc61wh7kwk2CH5mTzUufv5AZm3DYmNVwYmsKWL2z8WKXlZ9ITlr3J3Q7Vjml1FWBjE4Zsy4PTHKb5wLe0LOpIm2S6itpWQ8Q2jPsRYpR/ZOoGQThNT6Cva55h6Ns0MgjiALsVQSzAvKeM2n5Le5kuMKMFJwQVswiGYAN/1JnfhyJAldr7PX3fLV3nNxoP0ccQfwmQo6AlTI+RW+Uxz3L0OxvCBf5qIdAet+Ykkph+teChMPfDrYPbi75IzkBZIU1YhxEQqi1HZojREYeqeJma+hpebN433w1WvJnAfUPL54fVsX6sz18B0Um5F/oYTdAc3U3vN8BfOS4Gghdnxppg3cZn9m2hGrB60Q0bywqiUwn3PuWo/10jeJxJ/v2tp8uKKpVY38Zt3rHUrInzeqaMXCElnL54uEi0/wJrxKI1kOSTG4MASbMc=
   file: 
     - x86_linux.zip
-    - arm_linux.zip
+    - arm32_linux.zip
   skip_cleanup: true
   on:
     repo: uw-midsun/telemetry
