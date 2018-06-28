@@ -143,9 +143,10 @@ cd /home/pi/telemetry
 rm -rf .
 ```
 
-Download the release `arm32_linux.zip` from the releases page. Unzip the
+Download the release `arm32_linux.zip` from the
+[releases](https://github.com/uw-midsun/telemetry/releases) page. Unzip the
 contents of the zipfile in `/home/pi/telemetry`. The PI is configured to
-autostart the rest.
+autostart the server and client.
 
 ## License
 The project is made available under the [MIT License](https://opensource.org/licenses/MIT).
