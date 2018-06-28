@@ -2,15 +2,26 @@
 
 [![Build Status](https://travis-ci.org/uw-midsun/telemetry.svg?branch=master)](https://travis-ci.org/uw-midsun/telemetry)
 
-This repository contains the latest version of the [University of Waterloo](https://uwaterloo.ca/)'s [Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry software for our solar car. Coincidentally, this backend is also shared with the driver dashboard display.
+This repository contains the latest version of the
+[University of Waterloo](https://uwaterloo.ca/)'s
+[Midnight Sun Solar Rayce Car](http://www.uwmidsun.com/) team's telemetry
+software for our solar car. This backend is also shared with the driver
+dashboard display.
 
-The telemetry server is written in Golang, and receives data from the telemetry board mounted in the vehicle. It exposes a WebSocket connection to stream messages as they arrive, and provides a RESTful API for exploring historical data. A SQLite database (optional) is used to store the received data for future use.
+The telemetry server is written in Golang, and receives data from the telemetry
+board mounted in the vehicle. It exposes a WebSocket connection to stream
+messages as they arrive, and provides a RESTful API for exploring historical
+data. A SQLite database (optional) is used to store the received data for future
+use.
 
 ## telemetry-client
-The telemetry client is a web frontend that displays data pushed from the server over a WebSocket connection. This is written in TypeScript.
+The telemetry client is a web frontend that displays data pushed from the server
+over a WebSocket connection. This is written in TypeScript.
 
 ### Getting Started
-We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is compatible with `npm`, but is a little faster and allows us to specify a `yarn.lock` file.
+We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is 
+compatible with `npm`, but is a little faster and allows us to specify a
+`yarn.lock` file.
 
 ```bash
 yarn install
@@ -19,7 +30,8 @@ yarn install
 ## telemetry-server
 
 ### Getting Started
-We use [Glide](https://github.com/Masterminds/glide) to manage vendored dependencies.
+We use [Glide](https://github.com/Masterminds/glide) to manage vendored
+dependencies.
 
 Once you've installed Glide, get the code
 
@@ -120,6 +132,21 @@ To lint a specific package
 ```bash
 make lint PKG=telemetry/package-name
 ```
+
+## Updating
+
+For the driver display system we use a Raspberry Pi computer to run the server.
+To update it follow these instructions:
+
+```bash
+cd /home/pi/telemetry
+rm -rf .
+```
+
+Download the release `arm32_linux.zip` from the
+[releases](https://github.com/uw-midsun/telemetry/releases) page. Unzip the
+contents of the zipfile in `/home/pi/telemetry`. The PI is configured to
+autostart the server and client.
 
 ## License
 The project is made available under the [MIT License](https://opensource.org/licenses/MIT).
