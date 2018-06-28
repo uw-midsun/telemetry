@@ -6,10 +6,12 @@ import (
 
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
-	"telemetry/pkg/sources/fake"
+	//	"telemetry/pkg/sources/fake"
 	"telemetry/pkg/sources/serial"
 
 	"sync"
+
+	"fmt"
 
 	"github.com/gorilla/websocket"
 )
@@ -45,7 +47,7 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf
 
 	if uf {
 		for {
-			fake.GenFake(bus)
+			//fake.GenFake(bus)
 			time.Sleep(time.Millisecond * 500)
 		}
 	} else {
@@ -58,6 +60,7 @@ func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWr
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 
+		fmt.Println("connection ready")
 		defer func() {
 			if conn != nil {
 				conn.Close()

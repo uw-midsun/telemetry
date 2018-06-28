@@ -1,0 +1,72 @@
+#battery-status-table {
+  #box-1, #box-2 {
+    display: inline-block;
+    margin: 10px;
+  }
+  padding: 0;
+  p {
+    padding: 0;
+  }
+  .module-cell-row {
+    display: block;
+  }
+  .module-cell {
+    transition: all .5s;
+    &.status-ok {
+      background: #00a225;
+    }
+    &.status-not-ok {
+      background: #a21321;
+    }
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    position: relative;
+    .module-cell-tooltip {
+      display: none;
+      position: absolute;
+      z-index: 1;
+      left: 100%;
+      top: 100%;
+      background: #222;
+      transition: all .3s;
+      opacity: 0;
+      p {
+        margin-bottom: 0;
+      }
+    }
+    &:hover {
+      .module-cell-tooltip {
+        display: inline-block;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+#battery-status-chart {
+  font: 10px sans-serif;
+  .y.axisRight text {
+      fill: orange;
+  }
+  .y.axisLeft text {
+      fill: steelblue;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  .bar1 {
+    fill: steelblue;
+  }
+  .bar2 {
+    fill: orange;
+  }
+  .x.axis path {
+    display: none;
+  }
+}

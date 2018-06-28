@@ -1,0 +1,54 @@
+#battery-status-table {
+  padding: 0; }
+  #battery-status-table #box-1, #battery-status-table #box-2 {
+    display: inline-block;
+    margin: 10px; }
+  #battery-status-table p {
+    padding: 0; }
+  #battery-status-table .module-cell-row {
+    display: block; }
+  #battery-status-table .module-cell {
+    transition: all .5s;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    position: relative; }
+    #battery-status-table .module-cell.status-ok {
+      background: #00a225; }
+    #battery-status-table .module-cell.status-not-ok {
+      background: #a21321; }
+    #battery-status-table .module-cell .module-cell-tooltip {
+      display: none;
+      position: absolute;
+      z-index: 1;
+      left: 100%;
+      top: 100%;
+      background: #222;
+      transition: all .3s;
+      opacity: 0; }
+      #battery-status-table .module-cell .module-cell-tooltip p {
+        margin-bottom: 0; }
+    #battery-status-table .module-cell:hover .module-cell-tooltip {
+      display: inline-block;
+      opacity: 1; }
+
+#battery-status-chart {
+  font: 10px sans-serif; }
+  #battery-status-chart .y.axisRight text {
+    fill: orange; }
+  #battery-status-chart .y.axisLeft text {
+    fill: steelblue; }
+  #battery-status-chart .axis path,
+  #battery-status-chart .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges; }
+  #battery-status-chart .bar1 {
+    fill: steelblue; }
+  #battery-status-chart .bar2 {
+    fill: orange; }
+  #battery-status-chart .x.axis path {
+    display: none; }
+
+/*# sourceMappingURL=batteries.css.map */

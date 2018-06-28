@@ -6,28 +6,36 @@
     <title>UWMidsun Car Information</title>
     <meta name="description" content="UWMidsun Car Information">
     <meta name="author" content="UWMidsun">
+    <link href="css/stylesheet.css" rel="stylesheet">
+    <link href="css/batteries.css" rel="stylesheet">
     <link href="css/plottable.css" rel="stylesheet">
     <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/batteries.css" rel="stylesheet">
-    <link href="css/car_information.css" rel="stylesheet">
 </head>
 
-<body id="car-information">
-    <div id="battery-status" class="col-md-12">
-      <h2>Battery Status</h2>
-      <div id="battery-status-table">
-      </div>
+<body id="car-info">
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Messages</a>
+      <a class="nav-link active" href="batteries.html">Batteries</a>
+    </nav>
+
+    <div id="battery_info" class="row">
+
+
     </div>
+
+
     <script src="static/jquery-3.3.1.js"></script>
     <script src="static/d3.js"></script>
     <script src="static/plottable.js"></script>
     <script src="static/bootstrap.bundle.js"></script>
-    <script data-main="js/car_information" src="static/require.js"></script>
     <script>
-      require.config({
-        paths: {
-          d3: "../static/d3"
-        }
-      });
+    require.config({
+      paths: {
+        d3: "static/d3.js"
+      }
+    });
     </script>
+    <script data-main="js/batteries" src="static/require.js"></script>
 </body>
+
+

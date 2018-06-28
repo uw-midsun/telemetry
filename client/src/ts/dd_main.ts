@@ -257,12 +257,12 @@ ws.onmessage = (event) => {
           (msg.data.dcdc_voltage / 1000).toFixed(2) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_AGGREGATE_VC:
-      const converted_current = msg.data.current / 1000000;
+      const converted_current = ((msg.data.current << 32) >> 32) / 1000000;
       const converted_voltage = msg.data.voltage / 10000;
       document.getElementById('mp-current').innerHTML =
-          (converted_current).toFixed(1) + ' A';
+          (converted_current).toFixed(2) + ' A';
       document.getElementById('mp-voltage').innerHTML =
-          (converted_voltage).toFixed(1) + ' V';
+          (converted_voltage).toFixed(2) + ' V';
       power_consumption_graph.addData(
           {x: msg.timestamp, y: converted_current * converted_voltage});
       consumptionReadout.value(power);

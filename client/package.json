@@ -16,7 +16,7 @@
         "stylelint": "^7.10.1",
         "stylelint-config-standard": "^16.0.0",
         "tslint": "^5.0.0",
-        "typescript": "^2.2.2"
+        "typescript": "^2.9.2"
     },
     "scripts": {
         "compile:ts": "tsc",
