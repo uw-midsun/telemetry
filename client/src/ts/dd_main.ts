@@ -248,21 +248,21 @@ ws.onmessage = (event) => {
       break;
     case canDefs.CanMessage.CAN_MESSAGE_AUX_DCDC_VC:
       document.getElementById('aux-current').innerHTML =
-          (msg.data.aux_current / 1000).toPrecision(2) + ' mA';
+          (msg.data.aux_current / 1000).toPrecision(4) + ' mA';
       document.getElementById('aux-voltage').innerHTML =
-          (msg.data.aux_voltage / 1000).toPrecision(2) + ' V';
+          (msg.data.aux_voltage / 1000).toPrecision(4) + ' V';
       document.getElementById('dcdc-current').innerHTML =
-          (msg.data.dcdc_current / 1000).toPrecision(2) + ' mA';
+          (msg.data.dcdc_current / 1000).toPrecision(4) + ' mA';
       document.getElementById('dcdc-voltage').innerHTML =
-          (msg.data.dcdc_voltage / 1000).toPrecision(2) + ' V';
+          (msg.data.dcdc_voltage / 1000).toPrecision(4) + ' V';
       break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_AGGREGATE_VC:
-      const converted_current = msg.data.current;
+      const converted_current = msg.data.current / 1000000;
       const converted_voltage = msg.data.voltage / 10000;
       document.getElementById('mp-current').innerHTML =
-          (converted_current).toPrecision(2) + ' A';
+          (converted_current).toPrecision(4) + ' A';
       document.getElementById('mp-voltage').innerHTML =
-          (converted_voltage).toPrecision(2) + ' V';
+          (converted_voltage).toPrecision(4) + ' V';
       power_consumption_graph.addData(
           {x: msg.timestamp, y: converted_current * converted_voltage});
       consumptionReadout.value(power);
