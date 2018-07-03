@@ -62,24 +62,81 @@ class CAN_MESSAGE(Enum):
   SYSTEM_CAN_MESSAGE_LINEAR_ACCELERATION = 51
   SYSTEM_CAN_MESSAGE_ANGULAR_ROTATION = 52
 
-NUM_CELLS = 36
-module_id = 0
+class PWR_DIST_FAULT(Enum):
+  EE_POWER_DISTRIBUTION_FAULT_REASON_BPS_HB = 0
+  EE_POWER_DISTRIBUTION_FAULT_REASON_BPS_HB_WATCHDOG = 1
+  EE_POWER_DISTRIBUTION_FAULT_REASON_POWERTRAIN_HB_WATCHDOG = 2
+  EE_POWER_DISTRIBUTION_FAULT_REASON_RELAY_RETRY_EXPIRY = 3
+  EE_POWER_DISTRIBUTION_FAULT_REASON_SEQUENCE_RETRY_EXPIRY = 4
+
 
 class GenFake():
     _module_id = 0
+    _NUM_CELLS = 36
     def genBatteryVT(self):
         msg = {
             "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BATTERY_VT.value,
             "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
             "data" : {
                 "module_id" : self._module_id,
-                "voltage" : 2600 + round(random.uniform(0, 1600),1),
-                "temperature" : 25 + round(random.uniform(0, 30),1)
+                "voltage" : 26000 + round(random.uniform(0, 16000), 1),
+                "temperature" : 20000 + round(random.uniform(0, 4000), 1)
             }
         }
         self._module_id += 1
-        self._module_id = self._module_id % NUM_CELLS
+        self._module_id = self._module_id % self._NUM_CELLS
         return msg
+
+    _pwr_dist_faut = 0
+    _NUM_PWR_DIST_FAULTS = 5
+    def genPowerDistFault(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_POWER_DISTRIBUTION_FAULT.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_CHAOS.value,
+            "data" : {
+                "reason" : self._pwr_dist_faut 
+            }
+        }
+        self._pwr_dist_faut += 1
+        self._pwr_dist_faut = self._pwr_dist_faut % self._NUM_PWR_DIST_FAULTS
+        return msg
+
+    _heartbeat_status = 1
+    _NUM_HEARTBEAT_STATUS = 5
+    def genBpsHeartbeatFault(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "rtr": False,
+            "data" : {
+                "status" : self._heartbeat_status 
+            }
+        }
+        self._heartbeat_status = (1 << random.randint(0, self._NUM_HEARTBEAT_STATUS - 1))
+        return msg
+    def genBpsHeartbeat(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "rtr": False,
+            "data": {
+                "status": 0 
+            }
+        }
+        return msg
+    def genAck(self, msgID, source):
+        msg = {
+            "id" : msgID,
+            "source" : source,
+            "rtr": True,
+            "data" : {
+            }
+        }
+        return msg
+
+# gen heartbeat periodically.
+# gen ack's with some probability.
+# gen 
 
 port = 8081
 
@@ -89,12 +146,35 @@ class SimpleEcho(WebSocket):
 
     _connected = True
 
+    def sendTimestampedMessage(self, msg):
+        if msg is None:
+            return
+        msg["timestamp"] = time.time() * 1000
+        self.sendMessage(unicode(json.dumps(msg)))
+
     def handleConnected(self):
         def run(*args):
             while self._connected:
-                time.sleep(0.05)
-                msg = genfake.genBatteryVT()
-                self.sendMessage(unicode(json.dumps(msg)))
+                time.sleep(1)
+
+                #msg = genfake.genBatteryVT()
+                #self.sendTimestampedMessage(msg)
+                #msg = None
+
+                #if random.randint(1,101) < 50:
+                #    if random.randint(1,101) < 10:
+                #        msg = genfake.genPowerDistFault()
+                #else:
+                #    if random.randint(1,101) < 15:
+                #        msg = genfake.genBpsHeartbeatFault()
+
+                #self.sendTimestampedMessage(msg)
+                msg = genfake.genBpsHeartbeat()
+                self.sendTimestampedMessage(msg)
+                msg = genfake.\
+                    genAck(CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+                            CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS_SLAVE.value)
+                self.sendTimestampedMessage(msg)
         thread.start_new_thread(run, ())
 
     def handleClose(self):

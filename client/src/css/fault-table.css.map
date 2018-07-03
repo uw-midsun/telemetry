@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACE,oBAAQ;EACN,KAAK,EAAE,OAAO;AAEhB,qBAAS;EACP,KAAK,EAAE,OAAO",
+"sources": ["fault-table.scss"],
+"names": [],
+"file": "fault-table.css"
+}

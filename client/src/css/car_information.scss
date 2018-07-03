@@ -1,7 +1,12 @@
 #car-information {
   background: #1d1f26;
-  h1, h2, h3, h4, h5, p {
+  h1, h2, h3, h4, h5{
+    color: #7c7aff;
+    margin-bottom: 10px;
+  }
+  p {
     color: white;
+    margin-bottom: 10px;
   }
   .row {
     margin: 0;

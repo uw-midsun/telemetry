@@ -24,13 +24,13 @@
     margin: 2px;
     position: relative;
     .module-cell-tooltip {
-      display: none;
       position: absolute;
       z-index: 1;
       left: 100%;
       top: 100%;
+      transform:translate(99999px);
       background: #222;
-      transition: all .3s;
+      transition: opacity .3s;
       opacity: 0;
       p {
         margin-bottom: 0;
@@ -38,7 +38,7 @@
     }
     &:hover {
       .module-cell-tooltip {
-        display: inline-block;
+        transform:translate(0);
         opacity: 1;
       }
     }

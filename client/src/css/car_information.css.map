@@ -1,6 +1,6 @@
 {
 "version": 3,
-"mappings": "AAAA,gBAAiB;EACf,UAAU,EAAE,OAAO;EACnB,2HAAsB;IACpB,KAAK,EAAE,KAAK;EAEd,qBAAK;IACH,MAAM,EAAE,CAAC",
+"mappings": "AAAA,gBAAiB;EACf,UAAU,EAAE,OAAO;EACnB,uGAAkB;IAChB,KAAK,EAAE,OAAO;IACd,aAAa,EAAE,IAAI;EAErB,kBAAE;IACA,KAAK,EAAE,KAAK;IACZ,aAAa,EAAE,IAAI;EAErB,qBAAK;IACH,MAAM,EAAE,CAAC",
 "sources": ["car_information.scss"],
 "names": [],
 "file": "car_information.css"
