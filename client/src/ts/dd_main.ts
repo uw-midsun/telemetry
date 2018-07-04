@@ -188,6 +188,9 @@ ws.onmessage = (event) => {
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
       // solarReadout.value(msg.data);
       break;
+    case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_FRONT:  // Not working.
+      // solarReadout.value(msg.data);
+      break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
       // The << 32 >> 32 converts from unsigned to signed.
       const value = Math.abs(
@@ -210,8 +213,10 @@ ws.onmessage = (event) => {
         speedDial.value(0);
       } else if (msg.data.direction === 1) {
         document.getElementById('state').innerHTML = 'D';
+        speedDial.value(0);
       } else if (msg.data.direction === 2) {
         document.getElementById('state').innerHTML = 'R';
+        speedDial.value(0);
       }
       const cruiseVal = msg.data.cruise_control / (1 << 12);
       if (cruiseVal > 10) {
@@ -221,9 +226,6 @@ ws.onmessage = (event) => {
       } else {
         cruise.state(vis.State.Hidden);
       }
-      break;
-    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_SOC:  // Currently not supplied.
-      // batteryDial.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_LIGHTS_STATE:
       let state = vis.State.Blink;
