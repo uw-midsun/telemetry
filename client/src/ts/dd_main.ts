@@ -159,7 +159,7 @@ function updateDate(): void {
 
 // Initializations
 
-const prevDir = 4;
+let prevDir = 4;
 const ws = new WebSocket('ws://localhost:8080/ws');
 speedDial.value(0);
 batteryDial.value(0);
@@ -217,8 +217,9 @@ ws.onmessage = (event) => {
       } else if (msg.data.direction === 2) {
         document.getElementById('state').innerHTML = 'R';
       }
-      if (prevDir != msg.data.direction) {
+      if (prevDir !== msg.data.direction) {
         speedDial.value(0);
+        prevDir = msg.data.direction;
       }
       const cruiseVal = msg.data.cruise_control / (1 << 12);
       if (cruiseVal > 10) {
