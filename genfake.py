@@ -3,6 +3,7 @@ import json
 import sys
 import time
 import random
+import math
 from enum import Enum
 
 try:
@@ -77,9 +78,10 @@ class GenFake():
         msg = {
             "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BATTERY_VT.value,
             "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "rtr": False,
             "data" : {
                 "module_id" : self._module_id,
-                "voltage" : 26000 + round(random.uniform(0, 16000), 1),
+                "voltage" : 30000 + round(random.uniform(0, 16000), 1),
                 "temperature" : 20000 + round(random.uniform(0, 4000), 1)
             }
         }
@@ -92,6 +94,7 @@ class GenFake():
     def genPowerDistFault(self):
         msg = {
             "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_POWER_DISTRIBUTION_FAULT.value,
+            "rtr": False,
             "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_CHAOS.value,
             "data" : {
                 "reason" : self._pwr_dist_faut 
@@ -99,6 +102,42 @@ class GenFake():
         }
         self._pwr_dist_faut += 1
         self._pwr_dist_faut = self._pwr_dist_faut % self._NUM_PWR_DIST_FAULTS
+        return msg
+
+    def genSteeringAngle(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_STEERING_ANGLE.value,
+            "rtr": False,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value,
+            "data" : {
+                "steering_angle" : round(20 * math.sin(time.time()), 3)
+            }
+        }
+        return msg
+
+    def genPowerState(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_POWER_STATE.value,
+            "rtr": False,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value,
+            "data" : {
+                "power_state" : random.randint(0,2)
+            }
+        }
+        return msg
+
+    def genDriveOutput(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_DRIVE_OUTPUT.value,
+            "rtr": False,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value,
+            "data" : {
+                "throttle" : random.randint(0,2),
+                "direction" : random.randint(0,2),
+                "cruise_control" : random.randint(0,2),
+                "mechanical_brake_state" : random.randint(0,2)
+            }
+        }
         return msg
 
     _heartbeat_status = 1
@@ -155,26 +194,47 @@ class SimpleEcho(WebSocket):
     def handleConnected(self):
         def run(*args):
             while self._connected:
-                time.sleep(1)
+                time.sleep(0.3)
 
-                #msg = genfake.genBatteryVT()
-                #self.sendTimestampedMessage(msg)
-                #msg = None
+                msg = genfake.genBatteryVT()
+                self.sendTimestampedMessage(msg)
+                msg = None
 
-                #if random.randint(1,101) < 50:
-                #    if random.randint(1,101) < 10:
-                #        msg = genfake.genPowerDistFault()
-                #else:
-                #    if random.randint(1,101) < 15:
-                #        msg = genfake.genBpsHeartbeatFault()
+                if random.randint(1,101) < 50:
+                    if random.randint(1,101) < 10:
+                        msg = genfake.genPowerDistFault()
+                else:
+                    if random.randint(1,101) < 15:
+                        msg = genfake.genBpsHeartbeatFault()
+                self.sendTimestampedMessage(msg)
 
-                #self.sendTimestampedMessage(msg)
                 msg = genfake.genBpsHeartbeat()
                 self.sendTimestampedMessage(msg)
-                msg = genfake.\
-                    genAck(CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
-                            CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS_SLAVE.value)
+                if random.randint(1, 101) < 90:
+                    msg = genfake.\
+                        genAck(CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+                                CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS_SLAVE.value)
+                    self.sendTimestampedMessage(msg)
+                if random.randint(1, 101) < 90:
+                    msg = genfake.\
+                        genAck(CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+                                CAN_DEVICE.SYSTEM_CAN_DEVICE_CHAOS.value)
+                    self.sendTimestampedMessage(msg)
+                if random.randint(1, 101) < 90:
+                    msg = genfake.\
+                        genAck(CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+                                CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value)
+                    self.sendTimestampedMessage(msg)
+                
+                msg = genfake.genSteeringAngle()
                 self.sendTimestampedMessage(msg)
+
+                if random.randint(1, 100) <= 5:
+                    msg = genfake.genPowerState()
+                    self.sendTimestampedMessage(msg)
+                msg = genfake.genDriveOutput()
+                self.sendTimestampedMessage(msg)
+
         thread.start_new_thread(run, ())
 
     def handleClose(self):

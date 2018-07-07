@@ -1,6 +1,6 @@
 {
 "version": 3,
-"mappings": "AACE,oBAAQ;EACN,KAAK,EAAE,OAAO;AAEhB,qBAAS;EACP,KAAK,EAAE,OAAO",
+"mappings": "AAAA,oBAAqB;EACnB,QAAQ,EAAE,QAAQ;EAClB,MAAM,EAAE,KAAK;EACb,QAAQ,EAAE,IAAI;EACd,iCAAa;IAOX,aAAa,EAAE,GAAG;IANlB,yCAAQ;MACN,KAAK,EAAE,OAAO;IAEhB,0CAAS;MACP,KAAK,EAAE,OAAO",
 "sources": ["fault-table.scss"],
 "names": [],
 "file": "fault-table.css"

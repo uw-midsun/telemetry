@@ -11,6 +11,7 @@ export class BatteryStatus {
   readonly ROWS_IN_BOX: number = 6;
   _batteryCells: BatteryModuleData[];
   private _container: any;
+  private _numData : number = 0;
 
   constructor(container: HTMLElement) {
     this._initCells();
@@ -18,26 +19,25 @@ export class BatteryStatus {
   }
 
   public draw() {
+
+    let avgContainer = this._container
+      .append("div")
+      .append("p")
+      .attr("id", "avg-vol")
+      .text("Avg: 0V");
+
     let batteryBox1Container = this._container
       .append("div")
       .attr("id","box-1");
     batteryBox1Container
       .append("p")
       .text("Battery Box 1") ;
-    batteryBox1Container
-      .append("p")
-      .attr("id", "avg-vol-1")
-      .text("Avg V: 0");
     let batteryBox2Container = this._container
       .append("div")
       .attr("id","box-2");
     batteryBox2Container
       .append("p")
       .text("Battery Box 2") ;
-    batteryBox2Container
-      .append("p")
-      .attr("id", "avg-vol-2")
-      .text("Avg V: 0") ;
 
     let box1 = this._populateBox(0);
     let box2 = this._populateBox(this.ROWS_IN_BOX);
@@ -47,6 +47,9 @@ export class BatteryStatus {
   }
 
   public update(datum: BatteryModuleData) {
+    if (this._numData < 2 * this.MODULES_IN_ROW * this.ROWS_IN_BOX) {
+      this._numData += 1;
+    }
     let cell = d3.select("#module-" + datum.module_id)
       .datum(datum)
       .attr("class", this._setStatus);
@@ -60,26 +63,25 @@ export class BatteryStatus {
   }
 
   _updateAvg() {
-    d3.select("#avg-vol-1")
-      .text(`Avg V: ${this._computeAvg(0)}`);
-    d3.select("#avg-vol-2")
-      .text(`Avg V: ${this._computeAvg(this.MODULES_IN_ROW * this.ROWS_IN_BOX)}`);
+    d3.select("#avg-vol")
+      .text(`Avg: ${this._computeAvg()}V`);
   }
 
   private _updateCells(datum: any) {
     this._batteryCells[datum.module_id] = datum;
   }
 
-  private _computeAvg(index: number): number {
+  private _computeAvg(): number {
     let sum = 0;
-    let len = this.MODULES_IN_ROW * this.ROWS_IN_BOX;
-    for (let i = index; i < (index + len); i++) {
+    for (let i = 0; i < 2 * this.MODULES_IN_ROW * this.ROWS_IN_BOX; i++) {
       sum += this._batteryCells[i].voltage;
     }
-    let avg = sum/len;
+    let avg = sum/this._numData;
     // converting to voltage:
     avg = avg / 10000;
-    return Math.round(avg * 10000) / 10000;
+    let rounded = Math.round(avg*10000)/10000;
+    // rounding to 4 digits
+    return rounded;
   }
 
   _setStatus(d: any) {
@@ -145,7 +147,8 @@ export class BatteryStatus {
 
   _textGenerator(title: string, field: string, unit: string, conversion: number) {
     return (d:any) => {
-        return title + ": " + d[field]/conversion + unit;
+        let rounded: number = Math.round(d[field]/conversion*10000)/10000
+        return title + ": " + rounded + unit;
     }
   }
 

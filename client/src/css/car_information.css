@@ -8,5 +8,7 @@
     margin-bottom: 10px; }
   #car-information .row {
     margin: 0; }
+  #car-information #row-1 {
+    height: 431px; }
 
 /*# sourceMappingURL=car_information.css.map */

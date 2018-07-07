@@ -2,6 +2,7 @@ import canDefs = require('./can_msg_defs');
 import { CanMessage } from './can_msg';
 
 class AckRequest {
+  in_use: boolean;
   message_id: canDefs.CanMessage;
   expected_devices: canDefs.CanDevice[];
   timer_id: number;
@@ -9,22 +10,54 @@ class AckRequest {
 
 class AckManager {
   private readonly _ACK_TIMEOUT: number = 25;
+  private readonly _MAX_REQUESTS: number = 10;
+
   private _requests_list: AckRequest[];
   constructor() {
     this._requests_list = [];
-  }
-  public add_request(msg: CanMessage, expected_devices: canDefs.CanDevice[]) {
-    let request: AckRequest = {
-      message_id: msg.id,
-      expected_devices: expected_devices,
-      timer_id: setTimeout(()=>{
-        console.log("uncleared acks: " + request.expected_devices.join(','));
-      }, this._ACK_TIMEOUT)
+    for (let i = 0; i < this._MAX_REQUESTS; i++) {
+      this._requests_list.push({
+        in_use: false,
+        message_id: canDefs.CanMessage.NUM_CAN_MESSAGES,
+        expected_devices: [],
+        timer_id: 0
+      })
     }
-    this._requests_list.push(request);
   }
+
+  private _uncleared_acks: canDefs.CanDevice[] = [];
+
+  private request_timeout_callback(request: AckRequest)  {
+    this._uncleared_acks = request.expected_devices;
+    request.in_use = false;
+  }
+
+  public get_uncleared_acks() {
+    return this._uncleared_acks;
+  }
+
+  public add_request(msg: CanMessage, expected_devices: canDefs.CanDevice[]) {
+    for (let i = 0; i < this._MAX_REQUESTS; i++) {
+      let request: AckRequest = this._requests_list[i];
+      if (request.in_use) {
+        continue;
+      }
+      let new_request = {
+        in_use: true,
+        message_id: msg.id,
+        expected_devices: expected_devices,
+        timer_id: setTimeout(() => {
+          this.request_timeout_callback(new_request);
+        }, this._ACK_TIMEOUT)
+      }
+      this._requests_list[i] = new_request;
+      return;
+    }
+    console.error("Maximum number of requests reached!");
+  }
+
   public process_ack(msg: CanMessage) {
-    for (let i = 0; i <  this._requests_list.length; i++) {
+    for (let i = 0; i <  this._MAX_REQUESTS; i++) {
       let req: AckRequest = this._requests_list[i];
       if (req.message_id !== msg.id) {
         // This isn't the ack for the current request in the request list. 
@@ -38,8 +71,8 @@ class AckManager {
           console.log('cleared acks');
           // We clear requests timer.
           clearTimeout(req.timer_id);
-          // We delete request!
-          this._requests_list.splice(i, 1);
+          // Request is no longer in use
+          req.in_use = false;
         }
         return;
       }
@@ -65,5 +98,4 @@ class AckManager {
 }
 
 export { AckManager, AckRequest }
-
 

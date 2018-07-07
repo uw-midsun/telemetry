@@ -1,8 +1,12 @@
 #battery-status-table {
-  padding: 0; }
+  background: #22252a;
+  padding: 10px 15px; }
   #battery-status-table #box-1, #battery-status-table #box-2 {
-    display: inline-block;
-    margin: 10px; }
+    display: inline-block; }
+  #battery-status-table #box-1 {
+    margin-right: 10px; }
+  #battery-status-table #box-2 {
+    margin-left: 10px; }
   #battery-status-table p {
     padding: 0; }
   #battery-status-table .module-cell-row {

@@ -1,6 +1,7 @@
 import d3 = require('d3');
 import canDefs = require('./can_msg_defs');
 import { CanMessage } from './can_msg';
+import { AckManager } from './ack_handler';
 
 class TableField {
   public title: string;
@@ -41,11 +42,13 @@ export class FaultTable {
       field: "timestamp"
     }
   ];
+  private _ack_manager: AckManager;
 
-  constructor(table: HTMLElement) {
+  constructor(table: HTMLElement, ack_manager: AckManager) {
     this._table = d3.select(table);
     this._createHeader(this._table, this._fields);
     this._tbody = this._createBody(this._table);
+    this._ack_manager = ack_manager;
   }
 
   private _createHeader(table: any, fields: any[]) {
@@ -66,7 +69,18 @@ export class FaultTable {
 
   private _source_id_lookup: {[id:string]: string;} = {
     "1": "Plutus",
-    "3": "Chaos"
+    "2": "Plutus Slave",
+    "3": "Chaos",
+    "4": "Telemetry",
+    "5": "Lights Front",
+    "6": "Lights Rear",
+    "7": "Motor Controller",
+    "8": "Driver Controls",
+    "9": "Driver Display",
+    "10": "Solar Master Front",
+    "11": "Solar Master Rear",
+    "12": "Sensor Board",
+    "13": "Charger"
   }
 
   private _msg_id_lookup: {[id:string]: string;} = {
@@ -97,10 +111,19 @@ export class FaultTable {
       causes.push("LTC ADC");
     }
     if (data & (1 << BpsHeartbeatData.BPS_HEARTBEAT_FAULT_SOURCE_ACK_TIMEOUT)) {
-      causes.push("ACK Timeout");
+      causes.push(`ACK Timeout: [${this._format_ack_timeout_devices()}]`);
     }
     return causes;
   }
+
+  private _format_ack_timeout_devices(): string {
+    let devices = this._ack_manager
+                  .get_uncleared_acks()
+                  .map((data: any) => this._source_id_lookup[data.toString()])
+                  .join(", ");
+    return devices;
+  }
+
 
   private _MSG_WINDOW = 100 * 1000;
  
