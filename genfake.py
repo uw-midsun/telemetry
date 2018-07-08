@@ -49,7 +49,7 @@ class CAN_MESSAGE(Enum):
   SYSTEM_CAN_MESSAGE_STEERING_ANGLE = 28
   SYSTEM_CAN_MESSAGE_BATTERY_SOC = 31
   SYSTEM_CAN_MESSAGE_BATTERY_VT = 32
-  SYSTEM_CAN_MESSAGE_BATTERY_CURRENT = 33
+  SYSTEM_CAN_MESSAGE_BATTERY_AGGREGATE_VC = 33
   SYSTEM_CAN_MESSAGE_MOTOR_CONTROLLER_VC = 35
   SYSTEM_CAN_MESSAGE_MOTOR_VELOCITY = 36
   SYSTEM_CAN_MESSAGE_MOTOR_ANGULAR_FREQUENCY = 37
@@ -83,6 +83,19 @@ class GenFake():
                 "module_id" : self._module_id,
                 "voltage" : 30000 + round(random.uniform(0, 16000), 1),
                 "temperature" : 20000 + round(random.uniform(0, 4000), 1)
+            }
+        }
+        self._module_id += 1
+        self._module_id = self._module_id % self._NUM_CELLS
+        return msg
+    def genBatteryAggregateVC(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BATTERY_AGGREGATE_VC.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "rtr": False,
+            "data" : {
+                "voltage" : 1200000 + round(100000 * math.sin(time.time())),
+                "current" : 20000 + round(3000 * math.sin(time.time()))
             }
         }
         self._module_id += 1
@@ -142,11 +155,11 @@ class GenFake():
 
     def genCruiseTarget(self):
         msg = {
-            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
-            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_CRUISE_TARGET.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value,
             "rtr": False,
             "data": {
-                "status": 0 
+                "target speed": 600 + abs(math.sin(math.pi/2 + time.time()) * 1300)
             }
         }
         return msg
@@ -209,7 +222,9 @@ class SimpleEcho(WebSocket):
 
                 msg = genfake.genBatteryVT()
                 self.sendTimestampedMessage(msg)
-                msg = None
+
+                msg = genfake.genBatteryAggregateVC()
+                self.sendTimestampedMessage(msg)
 
                 if random.randint(1,101) < 50:
                     if random.randint(1,101) < 10:
@@ -243,6 +258,9 @@ class SimpleEcho(WebSocket):
                 if random.randint(1, 100) <= 5:
                     msg = genfake.genPowerState()
                     self.sendTimestampedMessage(msg)
+                    msg = genfake.genCruiseTarget()
+                    self.sendTimestampedMessage(msg)
+
                 msg = genfake.genDriveOutput()
                 self.sendTimestampedMessage(msg)
 

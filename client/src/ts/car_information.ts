@@ -7,8 +7,8 @@ import { CanMessage } from './can_msg';
 import { AckManager, AckRequest } from './ack_handler';
 import { Miscellaneous } from './miscellaneous';
 
-//const ws = new WebSocket('ws://localhost:8080/ws');
-const ws = new WebSocket('ws://localhost:8081');
+const ws = new WebSocket('ws://localhost:8080/ws');
+//const ws = new WebSocket('ws://localhost:8081');
 
 let battery_status_dom: HTMLElement = document.getElementById("battery-status-table");
 
@@ -32,11 +32,15 @@ ws.onmessage = (event) => {
   fault_table.process_msg(msg);
   let data: any;
   switch (msg.id) {
+    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_AGGREGATE_VC:
+      battery_status.updateBatteryInfo(msg.data);
+      break;
     case canDefs.CanMessage.CAN_MESSAGE_BATTERY_VT:
-      battery_status.update(msg.data);
+      battery_status.updateCellInfo(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_POWER_STATE:
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
+    case canDefs.CanMessage.CAN_MESSAGE_CRUISE_TARGET:
       miscellaneous.update(msg);
       break;
   }

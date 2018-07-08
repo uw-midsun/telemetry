@@ -11,6 +11,9 @@ export class BatteryStatus {
   readonly ROWS_IN_BOX: number = 6;
   _batteryCells: BatteryModuleData[];
   private _container: any;
+  private _cell_avg: any;
+  private _battery_voltage: any;
+  private _battery_current: any;
   private _numData : number = 0;
 
   constructor(container: HTMLElement) {
@@ -19,12 +22,29 @@ export class BatteryStatus {
   }
 
   public draw() {
+    let infoContainer  = this._container
+      .append("div");
 
-    let avgContainer = this._container
-      .append("div")
+    this._cell_avg = infoContainer
       .append("p")
-      .attr("id", "avg-vol")
-      .text("Avg: 0V");
+      .text("Cell Average: ")
+      .append("span")
+      .attr("id", "cell-avg-vol")
+      .text("0V");
+    
+    this._battery_voltage = infoContainer
+      .append("p")
+      .text("Battery Voltage: ")
+      .append("span")
+      .attr("id", "battery-voltage")
+      .text("0V");
+
+    this._battery_current = infoContainer
+      .append("p")
+      .text("Battery Current: ")
+      .append("span")
+      .attr("id", "battery-current")
+      .text("0A");
 
     let batteryBox1Container = this._container
       .append("div")
@@ -46,7 +66,14 @@ export class BatteryStatus {
     this._drawBatteryBox(batteryBox2Container, box2);
   }
 
-  public update(datum: BatteryModuleData) {
+  public updateBatteryInfo(data: any) {
+    // update voltage
+    this._battery_voltage.text(`${ data.voltage / 10000 }V`);
+    // update current
+    this._battery_current.text(`${ data.current / 1000 }A`);
+  }
+
+  public updateCellInfo(datum: BatteryModuleData) {
     if (this._numData < 2 * this.MODULES_IN_ROW * this.ROWS_IN_BOX) {
       this._numData += 1;
     }
@@ -63,8 +90,7 @@ export class BatteryStatus {
   }
 
   _updateAvg() {
-    d3.select("#avg-vol")
-      .text(`Avg: ${this._computeAvg()}V`);
+    this._cell_avg.text(`${this._computeAvg()}V`);
   }
 
   private _updateCells(datum: any) {

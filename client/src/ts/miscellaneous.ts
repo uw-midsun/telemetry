@@ -23,14 +23,16 @@ class Miscellaneous {
   private _power_state: any;
   private _throttle: any;
   private _direction: any;
-  private _cruise_control: any;
+  private _cruise_control_active: any;
+  private _cruise_control_target: any;
   private _mechanical_brake_state: any;
 
   constructor() {
     this._power_state = d3.select('#power_state');
     this._throttle = d3.select('#throttle');
     this._direction = d3.select('#direction');
-    this._cruise_control = d3.select('#cruise_control');
+    this._cruise_control_active = d3.select('#cruise_control_active');
+    this._cruise_control_target = d3.select('#cruise_control_target');
     this._mechanical_brake_state = d3.select('#mechanical_brake_state');
   }
 
@@ -42,7 +44,7 @@ class Miscellaneous {
       case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
         this._process_drive_output(msg.data);
         break;
-      case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
+      case canDefs.CanMessage.CAN_MESSAGE_CRUISE_TARGET:
         this._process_cruise_target(msg.data);
         break;
     }
@@ -93,7 +95,7 @@ class Miscellaneous {
 
     // Handling cruise control
     let cruise_control_kmh: number = data.cruise_control * 3.6 / 100;
-    this._cruise_control.text(`${Math.round(cruise_control_kmh * 10) / 10}km/h`);
+    this._cruise_control_active.text(`${Math.round(cruise_control_kmh * 10) / 10}km/h`);
 
     // Handling mechanical brake state
     let brake_ratio = data.mechanical_brake_state/MiscConsts.DRIVE_OUTPUT_DENOMINATOR;
@@ -102,6 +104,12 @@ class Miscellaneous {
     let brake_text = `${brake_percentage}%`;
     this._mechanical_brake_state.text(brake_text);
   }
+
+  private _process_cruise_target(data: any) {
+    let cruise_control_kmh: number = data["target speed"] * 3.6 / 100;
+    this._cruise_control_target.text(`${Math.round(cruise_control_kmh * 10) / 10}km/h`);
+  }
+
 
 }
 

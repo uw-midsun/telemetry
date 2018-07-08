@@ -68,7 +68,6 @@ class AckManager {
         // It gets Ack'd.
         req.expected_devices.splice(i_expected_device, 1);
         if (req.expected_devices.length == 0) {
-          console.log('cleared acks');
           // We clear requests timer.
           clearTimeout(req.timer_id);
           // Request is no longer in use
