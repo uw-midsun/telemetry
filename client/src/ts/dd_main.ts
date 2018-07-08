@@ -105,7 +105,7 @@ power_consumption_graph.dataUpdate = () => UpdatePlot();
 const speedDialOptions = new dial.DialOptions();
 speedDialOptions.angleOffset = 0.5 * Math.PI;
 speedDialOptions.angleArc = 1.5 * Math.PI;
-speedDialOptions.max = 130;
+speedDialOptions.max = 80;
 
 const socDialOptions = new dial.DialOptions();
 socDialOptions.angleOffset = 0.5 * Math.PI;
@@ -194,7 +194,7 @@ ws.onmessage = (event) => {
           (((msg.data.vehicle_velocity_left << 32) >> 32) +
            ((msg.data.vehicle_velocity_right << 32) >> 32)) /
           2 * 0.02237);  // cm/s->mph
-      if (value <= 120 && value >= 0) {
+      if (value <= 75 && value >= 0) {
         speedDial.value(value);
       } else {
         speedDial.value(0);
