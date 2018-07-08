@@ -5,9 +5,10 @@ import chart = require('./dual_chart');
 import battery = require('./batteries');
 import { CanMessage } from './can_msg';
 import { AckManager, AckRequest } from './ack_handler';
+import { Miscellaneous } from './miscellaneous';
 
-const ws = new WebSocket('ws://localhost:8080/ws');
-//const ws = new WebSocket('ws://localhost:8081');
+//const ws = new WebSocket('ws://localhost:8080/ws');
+const ws = new WebSocket('ws://localhost:8081');
 
 let battery_status_dom: HTMLElement = document.getElementById("battery-status-table");
 
@@ -18,6 +19,7 @@ let ack_manager = new AckManager();
 let fault_table_dom: HTMLElement = document.getElementById("fault-table");
 let fault_table = new table.FaultTable(fault_table_dom, ack_manager);
 
+let miscellaneous = new Miscellaneous();
 
 ws.onmessage = (event) => {
   const raw_msg = JSON.parse(event.data);
@@ -34,36 +36,9 @@ ws.onmessage = (event) => {
       battery_status.update(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_POWER_STATE:
-    case canDefs.CanMessage.CAN_MESSAGE_STEERING_ANGLE:
-      updateMisc(msg.data);
-      break;
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
-      data = {
-        "throttle": msg.data.throttle
-      }
-      updateMisc(data);
-      data = {
-        "direction": msg.data.direction
-      }
-      updateMisc(data);
-      data = {
-        "cruise_control": msg.data.cruise_control
-      }
-      updateMisc(data);
-      data = {
-        "mechanical_brake_state": msg.data.mechanical_brake_state
-      }
-      updateMisc(data);
+      miscellaneous.update(msg);
       break;
   }
 }
-
-function updateMisc(data: any) {
-  let key: string = "";
-  for (let k in data) {
-    key = k;
-  }
-  d3.select(`#${key}`).text(`${data[key]}`);
-}
-
 

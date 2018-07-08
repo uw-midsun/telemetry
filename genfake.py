@@ -132,10 +132,21 @@ class GenFake():
             "rtr": False,
             "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_DRIVER_CONTROLS.value,
             "data" : {
-                "throttle" : random.randint(0,2),
+                "throttle" : abs(math.sin(time.time()) * (1 << 12)),
                 "direction" : random.randint(0,2),
-                "cruise_control" : random.randint(0,2),
-                "mechanical_brake_state" : random.randint(0,2)
+                "cruise_control" : 600 + abs(math.sin(math.pi/2 + time.time()) * 1300),
+                "mechanical_brake_state" : abs(math.sin(math.pi/2 + time.time()) * (1 << 12))
+            }
+        }
+        return msg
+
+    def genCruiseTarget(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_BPS_HEARTBEAT.value,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_PLUTUS.value,
+            "rtr": False,
+            "data": {
+                "status": 0 
             }
         }
         return msg
