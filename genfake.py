@@ -117,6 +117,18 @@ class GenFake():
         self._pwr_dist_faut = self._pwr_dist_faut % self._NUM_PWR_DIST_FAULTS
         return msg
 
+    def genMotorVelocity(self):
+        msg = {
+            "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_MOTOR_VELOCITY.value,
+            "rtr": False,
+            "source" : CAN_DEVICE.SYSTEM_CAN_DEVICE_MOTOR_CONTROLLER.value,
+            "data" : {
+                "vehicle_velocity_left": round(3600 * math.sin(time.time()),0),
+                "vehicle_velocity_right": round(3600 * math.sin(time.time()),0) 
+            }
+        }
+        return msg
+
     def genSteeringAngle(self):
         msg = {
             "id" : CAN_MESSAGE.SYSTEM_CAN_MESSAGE_STEERING_ANGLE.value,
@@ -260,8 +272,9 @@ class SimpleEcho(WebSocket):
                     self.sendTimestampedMessage(msg)
                     msg = genfake.genCruiseTarget()
                     self.sendTimestampedMessage(msg)
-
                 msg = genfake.genDriveOutput()
+                self.sendTimestampedMessage(msg)
+                msg = genfake.genMotorVelocity()
                 self.sendTimestampedMessage(msg)
 
         thread.start_new_thread(run, ())

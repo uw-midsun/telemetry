@@ -24,10 +24,6 @@ let miscellaneous = new Miscellaneous();
 ws.onmessage = (event) => {
   const raw_msg = JSON.parse(event.data);
   const msg: CanMessage = new CanMessage(raw_msg);
-        //console.log('msg', msg);
-  //if ( msg.id == 35 || msg.id == 36 || msg.id == 37) {
-  //  console.log('msg', msg.data); 
-  //}
   ack_manager.process_msg(msg);
   fault_table.process_msg(msg);
   let data: any;
