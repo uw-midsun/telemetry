@@ -193,7 +193,7 @@ ws.onmessage = (event) => {
       const value = Math.abs(
           (((msg.data.vehicle_velocity_left << 32) >> 32) +
            ((msg.data.vehicle_velocity_right << 32) >> 32)) /
-          2 * 0.036);  // cm/s->km/h
+          2 * 0.02237);  // cm/s->mph
       if (value <= 120 && value >= 0) {
         speedDial.value(value);
       } else {
