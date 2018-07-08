@@ -94,8 +94,8 @@ class Miscellaneous {
     this._direction.text(direction_text)
 
     // Handling cruise control
-    let cruise_control_kmh: number = data.cruise_control * 3.6 / 100;
-    this._cruise_control_active.text(`${Math.round(cruise_control_kmh * 10) / 10}km/h`);
+    let cruise_control_mph: number = this._cms_to_mph(data.cruise_control);
+    this._cruise_control_active.text(`${Math.round(cruise_control_mph * 10) / 10}mph`);
 
     // Handling mechanical brake state
     let brake_ratio = data.mechanical_brake_state/MiscConsts.DRIVE_OUTPUT_DENOMINATOR;
@@ -106,10 +106,13 @@ class Miscellaneous {
   }
 
   private _process_cruise_target(data: any) {
-    let cruise_control_kmh: number = data["target speed"] * 3.6 / 100;
-    this._cruise_control_target.text(`${Math.round(cruise_control_kmh * 10) / 10}km/h`);
+    let cruise_control_mph: number = this._cms_to_mph(data["target speed"]);
+    this._cruise_control_target.text(`${Math.round(cruise_control_mph * 10) / 10}mph`);
   }
 
+  private _cms_to_mph(speed_cms: number) {
+    return speed_cms * 0.02237;
+  }
 
 }
 

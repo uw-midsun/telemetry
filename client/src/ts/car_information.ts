@@ -7,8 +7,8 @@ import { CanMessage } from './can_msg';
 import { AckManager, AckRequest } from './ack_handler';
 import { Miscellaneous } from './miscellaneous';
 
-const ws = new WebSocket('ws://localhost:8080/ws');
-//const ws = new WebSocket('ws://localhost:8081');
+//const ws = new WebSocket('ws://localhost:8080/ws');
+const ws = new WebSocket('ws://localhost:8081');
 
 let battery_status_dom: HTMLElement = document.getElementById("battery-status-table");
 
