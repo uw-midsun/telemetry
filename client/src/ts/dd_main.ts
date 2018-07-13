@@ -159,6 +159,7 @@ function updateDate(): void {
 
 // Initializations
 
+let prevDir = 4;
 const ws = new WebSocket('ws://localhost:8080/ws');
 speedDial.value(0);
 batteryDial.value(0);
@@ -188,6 +189,9 @@ ws.onmessage = (event) => {
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
       // solarReadout.value(msg.data);
       break;
+    case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_FRONT:  // Not working.
+      // solarReadout.value(msg.data);
+      break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
       // The << 32 >> 32 converts from unsigned to signed.
       const value = Math.abs(
@@ -213,6 +217,10 @@ ws.onmessage = (event) => {
       } else if (msg.data.direction === 2) {
         document.getElementById('state').innerHTML = 'R';
       }
+      if (prevDir !== msg.data.direction) {
+        speedDial.value(0);
+        prevDir = msg.data.direction;
+      }
       const cruiseVal = msg.data.cruise_control / (1 << 12);
       if (cruiseVal > 10) {
         cruise.state(vis.State.Shown);
@@ -221,9 +229,6 @@ ws.onmessage = (event) => {
       } else {
         cruise.state(vis.State.Hidden);
       }
-      break;
-    case canDefs.CanMessage.CAN_MESSAGE_BATTERY_SOC:  // Currently not supplied.
-      // batteryDial.value(msg.data);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_LIGHTS_STATE:
       let state = vis.State.Blink;
