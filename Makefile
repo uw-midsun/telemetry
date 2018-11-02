@@ -38,7 +38,7 @@ $(BASE): ; $(info setting $$GOPATH...)
 #########
 GOLINT = $(GOBIN)/golint
 $(GOBIN)/golint: | $(BASE) ; $(info building golint...)
-	$Q go get github.com/golang/lint/golint
+	$Q go get golang.org/x/lint/golint
 
 GOCOVMERGE = $(GOBIN)/gocovmerge
 $(GOBIN)/gocovmerge: | $(BASE) ; $(info building gocovmerge...)
