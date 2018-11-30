@@ -56,6 +56,15 @@ cd $GOPATH/src/github.com/uw-midsun/telemetry
 ### Getting Started
 We use Go to write backend code for the telemetry server. Follow the appropriate instructions to install Go for your operating system, then check that environment variables are set up correctly by running `go env`.
 
+If you are using the Midnight Sun Box, it may be desirable to have the files in the `shared` directory, so that you can edit files using an editor on your local machine rather than vi in the Box. This can be accomplished by creating a directory in the shared directory, and setting the GOPATH to that directory.
+
+```bash
+cd ~/shared && mkdir go
+export GOPATH=$HOME/shared/go
+```
+
+If you haven't changed the shell, you will also need to edit the GOPATH in your Bash profile. In `~/.bashrc`, locate the line near the bottom of the file that starts with `export GOPATH=`, and modify the line to say `export GOPATH=/home/vagrant/shared/go`.
+
 We use [Glide](https://github.com/Masterminds/glide) to manage vendored
 dependencies.
 
@@ -67,13 +76,15 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 ```
 
-Once you've installed Glide, get the code.
+Once you've installed Glide, get and compile the code.
 
 ```bash
 go get -d github.com/uw-midsun/telemetry
 cd $GOPATH/src/github.com/uw-midsun/telemetry
 make
 ```
+
+On Windows, you may run into an error about failing to create symbolic links. Make sure that you are running your terminal application (Cygwin, Git Bash, etc.) with administrator privileges!
 
 ### Makefile commands
 If you're stuck and need help
