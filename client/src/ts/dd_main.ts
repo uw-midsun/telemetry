@@ -186,11 +186,18 @@ ws.onmessage = (event) => {
   const msg = JSON.parse(event.data);
 
   switch (msg.id) {
+    case canDefs.CanMessage.CAN_MESSAGE_BPS_HEARTBEAT:
+      console.log(event.data);
+      break;
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_REAR:  // Not working.
-      // solarReadout.value(msg.data);
+      const solarRearPower = (msg.data.voltage / 1000) *
+          (msg.data.current / 1000);
+      solarReadout.value(solarRearPower);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_SOLAR_DATA_FRONT:  // Not working.
-      // solarReadout.value(msg.data);
+      const solarFrontPower = (msg.data.voltage / 1000) *
+          (msg.data.current / 1000);
+      solarReadout.value(solarFrontPower);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_VELOCITY:
       // The << 32 >> 32 converts from unsigned to signed.
@@ -207,6 +214,7 @@ ws.onmessage = (event) => {
     case canDefs.CanMessage.CAN_MESSAGE_MOTOR_CONTROLLER_VC:
       const power = msg.data.mc_voltage_1 * msg.data.mc_current_1 +
           msg.data.mc_voltage_2 * msg.data.mc_current_2;
+      consumptionReadout.value(power);
       break;
     case canDefs.CanMessage.CAN_MESSAGE_DRIVE_OUTPUT:
       if (msg.data.direction === 0) {
@@ -270,10 +278,10 @@ ws.onmessage = (event) => {
           (converted_voltage).toFixed(1) + ' V';
       power_consumption_graph.addData(
           {x: msg.timestamp, y: converted_current * converted_voltage});
-      consumptionReadout.value(power);
       batteryDial.value(mapSocPercent(converted_voltage));
       break;
     default:
+      console.log(`No handler found: data=${event.data}`);
       break;
   }
 };

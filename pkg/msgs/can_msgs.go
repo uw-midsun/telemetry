@@ -62,6 +62,25 @@ func NewCAN(rawID uint32, rawData uint64, dlc uint8) CAN {
 	return canMsg
 }
 
+// NewFakeCAN creates a CAN struct with an ID already specified.
+func NewFakeCAN(source uint8, ID uint16, rawData uint64, dlc uint8) CAN {
+	var canMsg CAN
+	canMsg.DLC = dlc
+	canMsg.Data = make(map[string]interface{})
+	canMsg.Timestamp = uint64(time.Now().UnixNano()) / uint64(time.Millisecond)
+	canMsg.Source = source
+	canMsg.RTR = false
+	canMsg.ID = ID
+	srcMsg := findCanMessage(uint32(canMsg.ID))
+	if srcMsg == nil {
+		log.Errorf("Error: no matching schema for", canMsg.ID)
+		canMsg.Data["raw"] = rawData
+	} else {
+		unpackByType(rawData, srcMsg, &canMsg)
+	}
+	return canMsg
+}
+
 func parse(rawID uint32, rawData uint64, canMsg *CAN) {
 	canMsg.Timestamp = uint64(time.Now().UnixNano()) / uint64(time.Millisecond)
 	canMsg.Source = uint8(rawID & 0xF)
@@ -71,7 +90,12 @@ func parse(rawID uint32, rawData uint64, canMsg *CAN) {
 	if srcMsg == nil {
 		log.Errorf("Error: no matching schema for", canMsg.ID)
 		canMsg.Data["raw"] = rawData
+		return
 	}
+	unpackByType(rawData, srcMsg, canMsg)
+}
+
+func unpackByType(rawData uint64, srcMsg *canpb.CanMsg, canMsg *CAN) {
 	switch srcMsg.GetCanData().GetFrame().(type) {
 	case *canpb.CanData_U8:
 		data := srcMsg.GetCanData().GetU8()
@@ -112,7 +136,8 @@ func parse(rawID uint32, rawData uint64, canMsg *CAN) {
 		data := srcMsg.GetCanData().GetU16()
 		name := data.GetFieldName_1()
 		if name != "" {
-			canMsg.Data[name] = extractData(rawData, 0xFFFF, 1, 16)
+			value := extractData(rawData, 0xFFFF, 1, 16)
+			canMsg.Data[name] = value
 		}
 		name = data.GetFieldName_2()
 		if name != "" {
