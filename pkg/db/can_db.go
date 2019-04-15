@@ -17,7 +17,7 @@ import (
 func RunDb(bus *pubsub.MessageBus, dbName string) {
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
-		log.Errorf("Failed to open db", err.Error())
+		log.Errorf("Failed to open db " + err.Error())
 		return
 	}
 	createTbl := `
@@ -38,7 +38,7 @@ func RunDb(bus *pubsub.MessageBus, dbName string) {
 		defer l.Unlock()
 		err = WriteMsg(db, msg)
 		if err != nil {
-			log.Errorf("Failed to write", err.Error())
+			log.Errorf("Failed to write " + err.Error())
 		}
 	})
 }

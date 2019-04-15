@@ -91,7 +91,7 @@ COVERAGE_XML = $(COVERAGE_DIR)/coverage.xml
 COVERAGE_HTML = $(COVERAGE_DIR)/index.html
 .PHONY: test-coverage test-coverage-tools
 test-coverage-tools: | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML)
-test-coverage: COVERAGE_DIR := $(CURDIR)/test/coverage.$(shell date -Iseconds)
+test-coverage: COVERAGE_DIR := $(CURDIR)/test/coverage.$(shell date +%F_%H-%M-%S)
 test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info running coverage tests...) @ ## Run coverage tests
 	$Q mkdir -p $(COVERAGE_DIR)/coverage
 	$Q cd $(BASE) && for pkg in $(TESTPKGS); do \
@@ -100,7 +100,7 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info running co
 					grep '^$(PACKAGE)/' | grep -v '^$(PACKAGE)/vendor/' | \
 					tr '\n' ',')$$pkg \
 			-covermode=$(COVERAGE_MODE) \
-			-coverprofile="$(COVERAGE_DIR)/coverage/`echo $$pkg | tr "/" "-"`.cover" $$pkg ;\
+			-coverprofile="$(COVERAGE_DIR)/coverage/`echo $$pkg | tr "/" "-"`.cover" $$pkg || exit 1; \
 	 done
 	$Q $(GOCOVMERGE) $(COVERAGE_DIR)/coverage/*.cover > $(COVERAGE_PROFILE)
 	$Q $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
