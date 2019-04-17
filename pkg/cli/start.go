@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -8,13 +9,15 @@ import (
 	"path/filepath"
 
 	log "github.com/golang/glog"
-	"github.com/pressly/chi"
+	"github.com/go-chi/chi"
 	"github.com/spf13/cobra"
+	_ "github.com/mattn/go-sqlite3" // DB impl
 
 	"telemetry/pkg/db"
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
 	"telemetry/pkg/ws"
+	"telemetry/pkg/rest"
 )
 
 var startCmd = &cobra.Command{
@@ -34,6 +37,7 @@ var startCmd = &cobra.Command{
 var ErrorCode = 1
 
 var fake bool
+var rest bool
 var serverPort int
 var ttyPort string
 var dbName string
@@ -43,19 +47,31 @@ func init() {
 	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
+	startCmd.Flags().BoolVarP(&rest, "rest", "r", false, "REST API input as source")
 	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
 	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
 }
 
-func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
+func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *DB) error {
 	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, fake))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
+
+	// TODO(ELEC-612): Make a different implementation. Mux.FileServer has been
+	// deprecated and removed
 	r.FileServer("/", http.Dir(filesDir))
+
+	if db == nil && rest {
+		return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
+	}
+
+	r.Post("/can/stream", rest.ServeHTTPCurrentStream(messageBus, db))
 
 	port := fmt.Sprintf(":%d", serverPort)
 	log.Infof("Starting HTTP server on %s", port)
 	log.Fatal(http.ListenAndServe(port, r))
+
+	return nil
 }
 
 // runStart
@@ -72,10 +88,15 @@ func runStart(cmd *cobra.Command, args []string) error {
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
 	if dbName != "" {
-		candb.RunDb(messageBus, dbName)
+		db, err := sql.Open("sqlite3", dbName)
+		if err != nil {
+			log.Errorf("Failed to open db " + err.Error())
+			return err
+		}
+		candb.RunDb(messageBus, db)
+		return setupURLRouting(r, messageBus, db)
 	}
-	setupURLRouting(r, messageBus)
-	return nil
+	return setupURLRouting(r, messageBus, nil)
 }
 
 // restartBackground restarts the process in the background (like a daemon)

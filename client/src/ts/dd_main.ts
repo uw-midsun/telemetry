@@ -160,7 +160,7 @@ function updateDate(): void {
 // Initializations
 
 let prevDir = 4;
-const ws = new WebSocket('ws://localhost:8080/ws');
+const ws = new WebSocket('ws://192.168.24.24:8080/ws');
 speedDial.value(0);
 batteryDial.value(0);
 solarReadout.value(0);

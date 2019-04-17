@@ -14,13 +14,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const (
-	// Time between pinging for presence.
-	pingPeriod = 30 * time.Second
-	// Maximum time to wait when trying to send a message to the client.
-	writeWait = time.Second
-)
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -31,8 +24,6 @@ var upgrader = websocket.Upgrader{
 
 // handleMessages handles messages on the websocket
 func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf bool) {
-	// pingTicker := time.NewTicker(pingPeriod)
-	// defer pingTicker.Stop()
 
 	// the websocket cannot be concurrently written to
 	l := sync.Mutex{}

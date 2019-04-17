@@ -21,7 +21,7 @@ imports:
   version: bc19984395e89df8be1728f2b032fa087412b570
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
-- name: github.com/pressly/chi
+- name: github.com/go-chi/chi
   version: 5917107c1cecb42eb3dbca2246b160285562799b
 - name: github.com/spf13/cobra
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
