@@ -14,7 +14,7 @@ import (
 )
 
 // RunDb creates a table and sinks all "CAN" pubsub messages into it via the WriteMsg method.
-func RunDb(bus *pubsub.MessageBus, db *DB) {
+func RunDb(bus *pubsub.MessageBus, db *sql.DB) {
 	createCanTbl := `
       CREATE TABLE IF NOT EXISTS
         can (source INTEGER NOT NULL,
@@ -27,7 +27,7 @@ func RunDb(bus *pubsub.MessageBus, db *DB) {
 			CREATE TABLE IF NOT EXISTS
 				auth (token TEXT NOT NULL);`
 
-	_, err = db.Exec(createCanTbl)
+	_, err := db.Exec(createCanTbl)
 	if err != nil {
 		log.Errorf("Failed to create CAN table " + err.Error())
 	}

@@ -1,6 +1,8 @@
-hash: 4457c8b8aacb0806d7274cf568f2646951a0b2c36f8b236c203aa82221b9138c
-updated: 2018-06-23T13:06:32.412376934-04:00
+hash: 7b6ee7939afb7b792c9cecb544df86dbb57fcfb53d8882ac60109b868b06246c
+updated: 2019-04-17T23:16:44.502378123Z
 imports:
+- name: github.com/go-chi/chi
+  version: 5917107c1cecb42eb3dbca2246b160285562799b
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/golang/protobuf
@@ -21,8 +23,6 @@ imports:
   version: bc19984395e89df8be1728f2b032fa087412b570
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
-- name: github.com/go-chi/chi
-  version: 5917107c1cecb42eb3dbca2246b160285562799b
 - name: github.com/spf13/cobra
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
 - name: github.com/spf13/pflag

@@ -7,17 +7,18 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
-	log "github.com/golang/glog"
 	"github.com/go-chi/chi"
-	"github.com/spf13/cobra"
+	log "github.com/golang/glog"
 	_ "github.com/mattn/go-sqlite3" // DB impl
+	"github.com/spf13/cobra"
 
 	"telemetry/pkg/db"
 	"telemetry/pkg/msgs"
 	"telemetry/pkg/pubsub"
-	"telemetry/pkg/ws"
 	"telemetry/pkg/rest"
+	"telemetry/pkg/ws"
 )
 
 var startCmd = &cobra.Command{
@@ -27,8 +28,15 @@ var startCmd = &cobra.Command{
 	Start the telemetry server, which will start listening for data on
 	the input device specified via the --source flags
 	`,
-	Example: `  telemetry start --schema=/foo.asciipb [--port=port] [--fake] [--tty=/dev/...] [--db=a.db]`,
-	RunE:    runStart,
+	Example: `
+	telemetry start --schema=/foo.asciipb
+									[--port=port]
+									[--source=(s|f|r)]
+									[--rest]
+									[--tty=/dev/...]
+									[--db=a.db]
+	`,
+	RunE: runStart,
 }
 
 // ErrorCode is the value to be used by main() as exit code in case of
@@ -36,8 +44,7 @@ var startCmd = &cobra.Command{
 // can change this.
 var ErrorCode = 1
 
-var fake bool
-var rest bool
+var source string
 var serverPort int
 var ttyPort string
 var dbName string
@@ -46,14 +53,16 @@ var schemaFile string
 func init() {
 	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
-	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
-	startCmd.Flags().BoolVarP(&rest, "rest", "r", false, "REST API input as source")
+	startCmd.Flags().StringVarP(
+		&source,
+		"source", "", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake",
+	)
 	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
 	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
 }
 
-func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *DB) error {
-	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, fake))
+func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
+	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, source))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
 
@@ -61,11 +70,12 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *DB) error {
 	// deprecated and removed
 	r.FileServer("/", http.Dir(filesDir))
 
-	if db == nil && rest {
-		return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
+	if strings.Contains(source, "r") {
+		if db == nil {
+			return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
+		}
+		r.Post("/can/stream", rest.ServeHTTPCurrentStream(messageBus, db))
 	}
-
-	r.Post("/can/stream", rest.ServeHTTPCurrentStream(messageBus, db))
 
 	port := fmt.Sprintf(":%d", serverPort)
 	log.Infof("Starting HTTP server on %s", port)

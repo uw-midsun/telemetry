@@ -2,6 +2,7 @@ package ws
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"telemetry/pkg/msgs"
@@ -23,7 +24,7 @@ var upgrader = websocket.Upgrader{
 }
 
 // handleMessages handles messages on the websocket
-func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf bool) {
+func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, source string) {
 
 	// the websocket cannot be concurrently written to
 	l := sync.Mutex{}
@@ -34,18 +35,18 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf
 		conn.WriteJSON(msg)
 	})
 
-	if uf {
+	if strings.Contains(source, "f") {
 		for {
 			fake.GenFake(bus)
 			time.Sleep(time.Millisecond * 500)
 		}
-	} else {
+	} else if strings.Contains(source, "s") {
 		serial.Run(tty, bus)
 	}
 }
 
 // ServeHTTP serves the websocket connection
-func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWriter, *http.Request) {
+func ServeHTTP(b *pubsub.MessageBus, tty string, source string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 
@@ -59,6 +60,6 @@ func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWr
 			return
 		}
 
-		handleMessages(b, conn, tty, fake)
+		handleMessages(b, conn, tty, source)
 	}
 }
