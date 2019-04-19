@@ -25,7 +25,7 @@ func RunDb(bus *pubsub.MessageBus, db *sql.DB) {
 						 data TEXT NOT NULL);`
 	createOAuthTbl := `
 			CREATE TABLE IF NOT EXISTS
-				auth (token TEXT NOT NULL);`
+				auth (token BLOB);`
 
 	_, err := db.Exec(createCanTbl)
 	if err != nil {

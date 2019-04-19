@@ -1,11 +1,12 @@
 package rest
 
 import (
+	"bufio"
 	"bytes"
+	"crypto/sha256"
 	"database/sql"
 	"encoding/binary"
-	"io/ioutil"
-	"mime/multipart"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"strings"
@@ -25,67 +26,59 @@ type canPacket struct {
 	Data   uint64
 }
 
+func validateAuthHeader(authHeader string, db *sql.DB) bool {
+	authTokenSlice := strings.Split(authHeader, "Bearer ")
+	if len(authTokenSlice) != 2 {
+		return false
+	}
+	authToken := authTokenSlice[1]
+	hashedToken := sha256.Sum256([]byte(authToken))
+	hashedTokenHex := fmt.Sprintf("%x", hashedToken)
+
+	authQuery := `SELECT * FROM auth WHERE token = ? LIMIT 1;`
+	rows, err := db.Query(authQuery, hashedTokenHex)
+	defer rows.Close()
+
+	if err != nil {
+		return false
+	}
+
+	if rows.Next() {
+		return true
+	}
+
+	return false
+}
+
 // ServeHTTPCurrentStream listens to a stream of data and dumps it into the bus
 func ServeHTTPCurrentStream(b *pubsub.MessageBus, db *sql.DB) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		req, err := httputil.DumpRequest(r, true)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		log.Infof("Request:\n %s", string(req))
-
 		authTokenContent := r.Header.Get("Authorization")
-		authTokenSlice := strings.Split(authTokenContent, "Bearer ")
-		if len(authTokenSlice) != 2 {
-			http.Error(w, "Authorization required", http.StatusUnauthorized)
-			return
-		}
-		authToken := authTokenSlice[1]
-
-		authQuery := `SELECT * FROM auth WHERE token = ? LIMIT 1;`
-		rows, err := db.Query(authQuery, authToken)
-		defer rows.Close()
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if !rows.Next() {
+		if !validateAuthHeader(authTokenContent, db) {
 			http.Error(w, "Authorization required", http.StatusUnauthorized)
 			return
 		}
 
-		if r.Header.Get("Transfer-Encoding") != "chunked" {
-			http.Error(w, "This is a streaming endpoint. Please stream", http.StatusUnsupportedMediaType)
-			return
-		}
+		reqB, _ := httputil.DumpRequest(r, false)
+		log.Infof("%s", string(reqB))
 
-		// It looks like we're authenticated
-
-		partReader := multipart.NewReader(r.Body, "eh")
+		chunkReader := bufio.NewReader(r.Body)
 		for {
-			part, err := partReader.NextPart()
+			chunk, err := chunkReader.ReadBytes('\n')
 			if err != nil {
-				log.Infof("Failed to read part 1 %s", err.Error())
+				log.Infof("Failed to read chunk %s", err.Error())
 				break
 			}
-			for {
-				buf, err := ioutil.ReadAll(part)
-				if err != nil {
-					log.Infof("Failed to read part " + err.Error())
-					break
-				}
-				packet := canPacket{}
-				binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &packet)
-				hdr := packet.Header & 0xFFFFFF
-				dlc := uint8((packet.Header >> 28) & 0xF)
-				if hdr == canRxHeader {
-					log.Infof("Published something %s")
-					b.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data, dlc))
-				}
+			log.Infof("Got chunk %s", string(chunk))
+
+			packet := canPacket{}
+			binary.Read(bytes.NewBuffer(chunk), binary.LittleEndian, &packet)
+			hdr := packet.Header & 0xFFFFFF
+			dlc := uint8((packet.Header >> 28) & 0xF)
+			if hdr == canRxHeader {
+				log.Infof("Published something %s", string(chunk))
+				b.Publish("CAN", msgs.NewCAN(packet.ID, packet.Data, dlc))
 			}
 		}
 	}

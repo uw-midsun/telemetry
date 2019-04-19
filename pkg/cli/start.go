@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -45,6 +46,7 @@ var startCmd = &cobra.Command{
 var ErrorCode = 1
 
 var source string
+var token string
 var serverPort int
 var ttyPort string
 var dbName string
@@ -56,6 +58,10 @@ func init() {
 	startCmd.Flags().StringVarP(
 		&source,
 		"source", "", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake",
+	)
+	startCmd.Flags().StringVarP(
+		&token,
+		"token", "", "", "A token to add to the sqlite auth table. Only needs to be specified once per token",
 	)
 	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
 	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
@@ -99,10 +105,21 @@ func runStart(cmd *cobra.Command, args []string) error {
 	messageBus := pubsub.New()
 	if dbName != "" {
 		db, err := sql.Open("sqlite3", dbName)
+
 		if err != nil {
 			log.Errorf("Failed to open db " + err.Error())
 			return err
 		}
+
+		if token != "" {
+			hashed := sha256.Sum256([]byte(token))
+			hashedHex := fmt.Sprintf("%x", hashed)
+			_, err := db.Exec("INSERT INTO auth(token) VALUES (?)", hashedHex)
+			if err != nil {
+				log.Errorf("Could exec db command (add token to db): " + err.Error())
+			}
+		}
+
 		candb.RunDb(messageBus, db)
 		return setupURLRouting(r, messageBus, db)
 	}
