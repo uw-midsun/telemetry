@@ -23,18 +23,10 @@ func RunDb(bus *pubsub.MessageBus, db *sql.DB) {
              dlc INTEGER NOT NULL,
              timestamp INTEGER NOT NULL,
 						 data TEXT NOT NULL);`
-	createOAuthTbl := `
-			CREATE TABLE IF NOT EXISTS
-				auth (token BLOB);`
 
 	_, err := db.Exec(createCanTbl)
 	if err != nil {
 		log.Errorf("Failed to create CAN table " + err.Error())
-	}
-
-	_, err = db.Exec(createOAuthTbl)
-	if err != nil {
-		log.Errorf("Failed to create OAuth table " + err.Error())
 	}
 
 	l := sync.Mutex{}

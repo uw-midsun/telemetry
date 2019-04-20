@@ -1,5 +1,5 @@
-hash: 7b6ee7939afb7b792c9cecb544df86dbb57fcfb53d8882ac60109b868b06246c
-updated: 2019-04-17T23:16:44.502378123Z
+hash: 58e62ab21ba04d930972c815c292b181d538b05db66e6f2a4c1c593bbd71f3f8
+updated: 2019-04-19T21:32:14.512208753Z
 imports:
 - name: github.com/go-chi/chi
   version: 5917107c1cecb42eb3dbca2246b160285562799b
@@ -27,6 +27,8 @@ imports:
   version: ee4055870c2d5f7ce112642377e32c9929c3bbaf
 - name: github.com/spf13/pflag
   version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+- name: github.com/spf13/viper
+  version: 7a605a50e69cd1ea431c4a1e6eebe9b287ef6de4
 - name: golang.org/x/net
   version: a6577fac2d73be281a500b310739095313165611
   subpackages:

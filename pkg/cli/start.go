@@ -14,6 +14,7 @@ import (
 	log "github.com/golang/glog"
 	_ "github.com/mattn/go-sqlite3" // DB impl
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"telemetry/pkg/db"
 	"telemetry/pkg/msgs"
@@ -45,29 +46,35 @@ var startCmd = &cobra.Command{
 // can change this.
 var ErrorCode = 1
 
-var source string
-var token string
-var serverPort int
-var ttyPort string
-var dbName string
-var schemaFile string
-
 func init() {
-	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
-	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
-	startCmd.Flags().StringVarP(
-		&source,
-		"source", "", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake",
-	)
-	startCmd.Flags().StringVarP(
-		&token,
-		"token", "", "", "A token to add to the sqlite auth table. Only needs to be specified once per token",
-	)
-	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
-	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
+	var source string
+	var token string
+	var serverPort int
+	var ttyPort string
+	var dbConnectString string
+	var schemaFile string
+
+	startCmd.Flags().StringVar(&schemaFile, "schema", "", "The location of the CAN message schema")
+	startCmd.Flags().IntVar(&serverPort, "port", 8080, "The port to setup the HTTP port on")
+	startCmd.Flags().StringVar(&ttyPort, "interface", "/dev/ttyUSB0", "The interface to listen on")
+	startCmd.Flags().StringVar(&dbName, "dbConnectString", "", "The connect string to use for the database")
+	startCmd.Flags().StringVar(&token, "token", "", "Permanently add a new token to the sqlite auth table")
+	startCmd.Flags().StringVar(&source, "source", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake")
+	startCmd.Flags().StringVar(&source, "confFile", "", "Config file")
+
+	viper.Set("source", source)
+	viper.Set("token", token)
+	viper.Set("serverPort", serverPort)
+	viper.Set("ttyPort", ttyPort)
+	viper.Set("dbConnectString", dbConnectString)
+	viper.Set("schemaFile", schemaFile)
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
+	ttyPort := viper.Get("ttyPort")
+	source := viper.Get("source")
+	serverPort := viper.GetInt("serverPort")
+
 	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, source))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
@@ -92,6 +99,10 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 
 // runStart
 func runStart(cmd *cobra.Command, args []string) error {
+	schemaFile := viper.Get("schemaFile")
+	dbDriver := viper.Get("dbDriver")
+	dbConnectString := viper.Get("dbConnectString")
+
 	if len(args) > 0 || schemaFile == "" {
 		return usageAndError(cmd)
 	}
@@ -103,8 +114,11 @@ func runStart(cmd *cobra.Command, args []string) error {
 	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
-	if dbName != "" {
-		db, err := sql.Open("sqlite3", dbName)
+	var db *sql.DB
+
+	if dbConnectString != "" {
+
+		db, err = sql.Open(dbDriver, dbConnectString)
 
 		if err != nil {
 			log.Errorf("Failed to open db " + err.Error())
@@ -121,9 +135,9 @@ func runStart(cmd *cobra.Command, args []string) error {
 		}
 
 		candb.RunDb(messageBus, db)
-		return setupURLRouting(r, messageBus, db)
+
 	}
-	return setupURLRouting(r, messageBus, nil)
+	return setupURLRouting(r, messageBus, db)
 }
 
 // restartBackground restarts the process in the background (like a daemon)
