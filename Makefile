@@ -15,7 +15,6 @@ TESTPKGS = $(shell env GOPATH=$(GOPATH) $(GO) list -f '{{ if .TestGoFiles }}{{ .
 GO       = go
 GODOC    = godoc
 GOFMT    = gofmt
-GLIDE    = glide
 TIMEOUT  = 15
 V := 0
 Q := $(if $(filter 1,$V),,@)
@@ -118,17 +117,11 @@ fmt: ; $(info running gofmt...) @ ## Run gofmt on all source files
 		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
 	 done ; exit $$ret
 
-
 #########################
 # Dependency management #
 #########################
-glide.lock: glide.yaml | $(BASE) ; $(info updating dependencies...)
-	$Q cd $(BASE) && $(GLIDE) update
-	@touch $@
-vendor: glide.lock | $(BASE) ; $(info retrieving dependencies...)
-	$Q cd $(BASE) && $(GLIDE) --quiet install
-	@ln -sf . vendor/src
-	@touch $@
+vendor: | $(BASE) ; $(info retrieving dependencies...)
+	$(GO) mod vendor
 
 
 #################
@@ -139,6 +132,7 @@ clean: ; $(info cleaning...)	@ ## Cleanup everything
 	@rm -rf $(GOPATH)
 	@rm -rf bin
 	@rm -rf test/tests.* test/coverage.*
+	@rm -rf vendor
 
 .PHONY: help
 help:

@@ -10,7 +10,7 @@ import (
 	log "github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 
-	canpb "telemetry/pkg/protos"
+	canpb "github.com/uw-midsun/telemetry/pkg/protos"
 )
 
 // CAN describes a single message from the CAN bus. This assumes network layer CAN! ID is the

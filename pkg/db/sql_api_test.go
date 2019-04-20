@@ -3,7 +3,7 @@ package candb
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
 	"testing"
 	"time"
 )

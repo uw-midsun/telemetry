@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"telemetry/pkg/cli"
+	"github.com/uw-midsun/telemetry/pkg/cli"
 )
 
 func main() {

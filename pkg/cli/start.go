@@ -7,14 +7,14 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/go-chi/chi"
 	log "github.com/golang/glog"
-	"github.com/pressly/chi"
 	"github.com/spf13/cobra"
 
-	"telemetry/pkg/db"
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
-	"telemetry/pkg/ws"
+	"github.com/uw-midsun/telemetry/pkg/db"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/ws"
 )
 
 var startCmd = &cobra.Command{

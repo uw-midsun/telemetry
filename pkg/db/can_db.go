@@ -9,8 +9,8 @@ import (
 	log "github.com/golang/glog"
 	_ "github.com/mattn/go-sqlite3" // DB impl
 
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
 )
 
 // RunDb creates a table and sinks all "CAN" pubsub messages into it via the WriteMsg method.
