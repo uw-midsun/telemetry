@@ -9,8 +9,8 @@ BASE     := $(GOPATH)/src/$(PACKAGE)
 # use user-given PKG variable
 # otherwise do `go list ./...`, but ignore files in vendor/ directory
 # TODO: check if this is portable enough, otherwise we might need to rewrite this logic
-PKGS     = $(or $(PKG),$(shell cd $(BASE) && env GOPATH=$(GOPATH) $(GO) list ./... | grep -v "^$(PACKAGE)/vendor/"))
-TESTPKGS = $(shell env GOPATH=$(GOPATH) $(GO) list -f '{{ if .TestGoFiles }}{{ .ImportPath }}{{ end }}' $(PKGS))
+PKGS     = $(or $(PKG),$(shell $(GO) list -m -f "{{ .Path }}" all | grep "uw-midsun"))
+TESTPKGS = $(shell $(GO) list -f '{{ if .TestGoFiles }}{{ .ImportPath }}{{ end }}' $(PKGS))
 
 GO       = go
 GODOC    = godoc
@@ -21,7 +21,7 @@ Q := $(if $(filter 1,$V),,@)
 
 .PHONY: all
 all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build program binary
-	$Q cd $(BASE) && $(GO) build \
+	$Q $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o bin/$(PACKAGE) main.go
@@ -44,7 +44,8 @@ $(GOBIN)/gocovmerge: | $(BASE) ; $(info building gocovmerge...)
 	$Q go get github.com/wadey/gocovmerge
 
 GOCOV = $(GOBIN)/gocov
-$(GOBIN)/gocov: | $(BASE) ; $(info building gocov...)
+$(GOBIN)/gocov: | $(BASE) ; $(info building gocov...) @ ## Hack: https://github.com/golang/go/issues/27215#issuecomment-451342769
+	$Q go get github.com/axw/gocov
 	$Q go get github.com/axw/gocov/...
 
 GOCOVXML = $(GOBIN)/gocov-xml
@@ -93,10 +94,10 @@ test-coverage-tools: | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML)
 test-coverage: COVERAGE_DIR := $(CURDIR)/test/coverage.$(shell date +%F_%H-%M-%S)
 test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info running coverage tests...) @ ## Run coverage tests
 	$Q mkdir -p $(COVERAGE_DIR)/coverage
-	$Q cd $(BASE) && for pkg in $(TESTPKGS); do \
+	$Q for pkg in $(TESTPKGS); do \
 		$(GO) test \
 			-coverpkg=$$($(GO) list -f '{{ join .Deps "\n" }}' $$pkg | \
-					grep '^$(PACKAGE)/' | grep -v '^$(PACKAGE)/vendor/' | \
+					grep '$(PACKAGE)/' | grep -v '$(PACKAGE)/vendor/' | \
 					tr '\n' ',')$$pkg \
 			-covermode=$(COVERAGE_MODE) \
 			-coverprofile="$(COVERAGE_DIR)/coverage/`echo $$pkg | tr "/" "-"`.cover" $$pkg || exit 1; \
@@ -107,7 +108,7 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info running co
 
 .PHONY: lint
 lint: vendor | $(BASE) $(GOLINT) ; $(info running golint...) @ ## Run golint
-	$Q cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
+	$Q ret=0 && for pkg in $(PKGS); do \
 		test -z "$$($(GOLINT) $$pkg | tee /dev/stderr)" || ret=1 ; \
 	 done ; exit $$ret
 

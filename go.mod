@@ -3,6 +3,8 @@ module github.com/uw-midsun/telemetry
 go 1.12
 
 require (
+	github.com/AlekSi/gocov-xml v0.0.0-20190121064608-3a14fb1c4737 // indirect
+	github.com/axw/gocov v0.0.0-20170322000131-3a69a0d2a4ef // indirect
 	github.com/go-chi/chi v0.0.0-20170216185340-5917107c1cec // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/golang/protobuf v0.0.0-20180612185929-5831880292e7 // indirect
@@ -22,9 +24,11 @@ require (
 	github.com/uw-midsun/telemetry/pkg/pubsub v0.0.0-00010101000000-000000000000 // indirect
 	github.com/uw-midsun/telemetry/pkg/sources/fake v0.0.0-00010101000000-000000000000 // indirect
 	github.com/uw-midsun/telemetry/pkg/sources/serial v0.0.0-00010101000000-000000000000 // indirect
-	github.com/uw-midsun/telemetry/pkg/util v0.0.0-00010101000000-000000000000 // indirect
+	github.com/uw-midsun/telemetry/pkg/util/randutil v0.0.0-00010101000000-000000000000 // indirect
 	github.com/uw-midsun/telemetry/pkg/ws v0.0.0-00010101000000-000000000000 // indirect
+	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad // indirect
 	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
+	golang.org/x/sync v0.0.0-20190412183630-56d357773e84 // indirect
 )
 
 replace github.com/uw-midsun/telemetry/pkg/cli => ./pkg/cli
@@ -43,6 +47,6 @@ replace github.com/uw-midsun/telemetry/pkg/sources/fake => ./pkg/sources/fake
 
 replace github.com/uw-midsun/telemetry/pkg/sources/serial => ./pkg/sources/serial
 
-replace github.com/uw-midsun/telemetry/pkg/util => ./pkg/util
+replace github.com/uw-midsun/telemetry/pkg/util/randutil => ./pkg/util/randutil
 
 replace github.com/uw-midsun/telemetry/pkg/ws => ./pkg/ws
