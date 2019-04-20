@@ -8,6 +8,9 @@ os:
 go:
   - "1.12"
 
+env:
+  - GO111MODULE=on
+
 before_install:
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-key adv --fetch-keys http://dl.yarnpkg.com/debian/pubkey.gpg
