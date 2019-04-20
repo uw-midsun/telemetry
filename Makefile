@@ -12,7 +12,7 @@ export GO111MODULE=on
 # use user-given PKG variable
 # otherwise do `go list ./...`, but ignore files in vendor/ directory
 # TODO: check if this is portable enough, otherwise we might need to rewrite this logic
-PKGS     = $(or $(PKG),$(shell $(GO) list -m -f "{{ .Path }}" all | grep "uw-midsun"))
+PKGS     = $(or $(PKG),$(shell $(GO) list -m -f "{{ .Path }}" all | grep $(PACKAGE)))
 TESTPKGS = $(shell $(GO) list -f '{{ if .TestGoFiles }}{{ .ImportPath }}{{ end }}' $(PKGS))
 
 GO       = go

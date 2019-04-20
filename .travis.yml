@@ -5,6 +5,9 @@ branches:
 os:
   - linux
 
+go:
+  - "1.12"
+
 before_install:
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-key adv --fetch-keys http://dl.yarnpkg.com/debian/pubkey.gpg
