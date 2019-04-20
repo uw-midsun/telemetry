@@ -6,6 +6,9 @@ GOPATH   := ${PWD}/.gopath~
 GOBIN    := $(GOPATH)/bin
 BASE     := $(GOPATH)/src/$(PACKAGE)
 
+# Force Go modules to be enabled
+export GO111MODULE=on
+
 # use user-given PKG variable
 # otherwise do `go list ./...`, but ignore files in vendor/ directory
 # TODO: check if this is portable enough, otherwise we might need to rewrite this logic
