@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
-	"telemetry/pkg/sources/fake"
-	"telemetry/pkg/sources/serial"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/sources/fake"
+	"github.com/uw-midsun/telemetry/pkg/sources/serial"
 
 	"sync"
 

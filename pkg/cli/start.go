@@ -16,11 +16,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"telemetry/pkg/db"
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
-	"telemetry/pkg/rest"
-	"telemetry/pkg/ws"
+	"github.com/uw-midsun/telemetry/pkg/db"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/ws"
 )
 
 var startCmd = &cobra.Command{
