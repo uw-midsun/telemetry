@@ -43,6 +43,9 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, so
 	} else if strings.Contains(source, "s") {
 		serial.Run(tty, bus)
 	}
+	for {
+		time.Sleep(time.Millisecond * 500)
+	}
 }
 
 // ServeHTTP serves the websocket connection
