@@ -10,9 +10,4 @@ nice ./bin/telemetry start --tty=/dev/ttyAMA0 --db=can.db \
 
 # Start a very minimal version of Chromium in fullscreen.
 chromium-browser --kiosk --incognito --noerrdialogs --disable-infobars \
-  http://localhost:8080/driver_display.html &
-
-
-
-
-
+  http://localhost:8080/static/driver_display.html &

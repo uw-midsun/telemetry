@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	log "github.com/golang/glog"
@@ -20,6 +20,7 @@ import (
 	"github.com/uw-midsun/telemetry/pkg/msgs"
 	"github.com/uw-midsun/telemetry/pkg/pubsub"
 	"github.com/uw-midsun/telemetry/pkg/ws"
+	"github.com/uw-midsun/telemetry/pkg/rest"
 )
 
 var startCmd = &cobra.Command{
@@ -45,33 +46,38 @@ var startCmd = &cobra.Command{
 // can change this.
 var ErrorCode = 1
 
+var envPrefix = "uwmidsuntelem"
+
 func init() {
-	var source string
-	var token string
-	var serverPort int
-	var ttyPort string
-	var dbConnectString string
-	var schemaFile string
+	startCmd.Flags().String("schema", "", "The location of the CAN message schema")
+	startCmd.Flags().Int("serverPort", 8080, "The port to setup the HTTP port on")
+	startCmd.Flags().String("interface", "/dev/ttyUSB0", "The interface to listen on")
+	startCmd.Flags().String("dbConnectString", "", "The connect string to use for the database")
+	startCmd.Flags().String("token", "", "Permanently add a new token to the sqlite auth table")
+	startCmd.Flags().String("source", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake")
+	startCmd.Flags().String("dbDriver", "sqlite3", "The DB driver to use")
 
-	startCmd.Flags().StringVar(&schemaFile, "schema", "", "The location of the CAN message schema")
-	startCmd.Flags().IntVar(&serverPort, "port", 8080, "The port to setup the HTTP port on")
-	startCmd.Flags().StringVar(&ttyPort, "interface", "/dev/ttyUSB0", "The interface to listen on")
-	startCmd.Flags().StringVar(&dbName, "dbConnectString", "", "The connect string to use for the database")
-	startCmd.Flags().StringVar(&token, "token", "", "Permanently add a new token to the sqlite auth table")
-	startCmd.Flags().StringVar(&source, "source", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake")
-	startCmd.Flags().StringVar(&source, "confFile", "", "Config file")
+	viper.SetEnvPrefix(envPrefix)
+	viper.AutomaticEnv()
+	viper.BindPFlags(startCmd.Flags())
+}
 
-	viper.Set("source", source)
-	viper.Set("token", token)
-	viper.Set("serverPort", serverPort)
-	viper.Set("ttyPort", ttyPort)
-	viper.Set("dbConnectString", dbConnectString)
-	viper.Set("schemaFile", schemaFile)
+func setupFileServer(r *chi.Mux, endpoint string, filesDir string) {
+	fileServer := http.StripPrefix(
+		endpoint,
+	  http.TimeoutHandler(http.FileServer(http.Dir(filesDir)), 5 * time.Second, "Failed to serve file"),
+	)
+	log.Infof("Mounting fileserver from %s", filesDir)
+	endpoint += "*"
+	r.Get(endpoint, func (w http.ResponseWriter, r *http.Request) {
+			fileServer.ServeHTTP(w, r)
+		},
+	)
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
-	ttyPort := viper.Get("ttyPort")
-	source := viper.Get("source")
+	ttyPort := viper.GetString("interface")
+	source := viper.GetString("source")
 	serverPort := viper.GetInt("serverPort")
 
 	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, source))
@@ -80,37 +86,45 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 
 	// TODO(ELEC-612): Make a different implementation. Mux.FileServer has been
 	// deprecated and removed
-	r.FileServer("/", http.Dir(filesDir))
+	setupFileServer(r, "/static/", filesDir)
 
 	if strings.Contains(source, "r") {
 		if db == nil {
 			return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
 		}
-		r.Post("/can/stream", rest.ServeHTTPCurrentStream(messageBus, db))
+		r.Post("/can/stream/json", rest.ServeHTTP(messageBus, db))
 	}
 
 	port := fmt.Sprintf(":%d", serverPort)
 	log.Infof("Starting HTTP server on %s", port)
-	log.Fatal(http.ListenAndServe(port, r))
+
+	// TODO(karl): change this so the process can be "daemonized"
+	server := &http.Server{
+		Addr: port,
+		Handler: r,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout: 6 * time.Hour,
+	}
+	log.Fatal(server.ListenAndServe())
 
 	return nil
 }
 
 // runStart
 func runStart(cmd *cobra.Command, args []string) error {
-	schemaFile := viper.Get("schemaFile")
-	dbDriver := viper.Get("dbDriver")
-	dbConnectString := viper.Get("dbConnectString")
+	schemaFile := viper.GetString("schema")
+	dbDriver := viper.GetString("dbDriver")
+	dbConnectString := viper.GetString("dbConnectString")
+	token := viper.GetString("token")
 
 	if len(args) > 0 || schemaFile == "" {
-		return usageAndError(cmd)
+		return fmt.Errorf("Schema file not specified")
 	}
 	err := msgs.CanMsgInit(schemaFile)
 	if err != nil {
 		return fmt.Errorf("Schema file is bad or not found")
 	}
 
-	// TODO(karl): change this so the process can be "daemonized"
 	r := chi.NewRouter()
 	messageBus := pubsub.New()
 	var db *sql.DB
@@ -124,15 +138,8 @@ func runStart(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		if token != "" {
-			hashed := sha256.Sum256([]byte(token))
-			hashedHex := fmt.Sprintf("%x", hashed)
-			_, err := db.Exec("INSERT INTO auth(token) VALUES (?)", hashedHex)
-			if err != nil {
-				log.Errorf("Could exec db command (add token to db): " + err.Error())
-			}
-		}
-
+		rest.InitAuthDb(db)
+		rest.AddTokenToDb(token, db)
 		candb.RunDb(messageBus, db)
 
 	}
