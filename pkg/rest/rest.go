@@ -53,7 +53,6 @@ func ServeHTTP(b *pubsub.MessageBus, db *sql.DB) func(http.ResponseWriter, *http
 						log.Errorf("Error: failed to read json " + err.Error())
 						return
 					}
-					log.Infof("SUCCCCCCCCCCCCCCCCCCESSSSSSSSSSSSSSS")
 					b.Publish("CAN", canPacket)
 			}
 		}

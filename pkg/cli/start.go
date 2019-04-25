@@ -21,6 +21,8 @@ import (
 	"github.com/uw-midsun/telemetry/pkg/pubsub"
 	"github.com/uw-midsun/telemetry/pkg/ws"
 	"github.com/uw-midsun/telemetry/pkg/rest"
+	"github.com/uw-midsun/telemetry/pkg/sources/fake"
+	"github.com/uw-midsun/telemetry/pkg/sources/serial"
 )
 
 var startCmd = &cobra.Command{
@@ -56,7 +58,7 @@ func init() {
 	startCmd.Flags().String("token", "", "Permanently add a new token to the sqlite auth table")
 	startCmd.Flags().String("source", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake")
 	startCmd.Flags().String("dbDriver", "sqlite3", "The DB driver to use")
-	startCmd.Flags().Bool("sendtoremote", false, "If CAN data should be sent to a remote server")
+	startCmd.Flags().String("remoteurl", "", "If CAN data should be sent to a remote server")
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.AutomaticEnv()
@@ -84,12 +86,13 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 	source := viper.GetString("source")
 	serverPort := viper.GetInt("serverPort")
 
-	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, source))
+	r.Get("/ws", ws.ServeHTTP(messageBus))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
 
 	setupFileServer(r, "/", filesDir)
 
+	// Start the rest api if it was requested
 	if strings.Contains(source, "r") {
 		if db == nil {
 			return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
@@ -97,10 +100,25 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 		r.Post(rest.JSONStreamEndpoint, rest.ServeHTTP(messageBus, db))
 	}
 
+	// Start the fake data generation if it was requested
+	if strings.Contains(source, "f") {
+		go func() {
+			for {
+				fake.GenFake(messageBus)
+				time.Sleep(time.Millisecond * 500)
+			}
+		} ()
+	}
+
+	// Run the serial port if it was requested
+	if strings.Contains(source, "s") {
+		go serial.Run(ttyPort, messageBus)
+	}
+
 	port := fmt.Sprintf(":%d", serverPort)
 	log.Infof("Starting HTTP server on %s", port)
 
-	if viper.GetBool("sendtoremote") {
+	if viper.GetString("remoteurl") != "" {
 		rest.RunClient(messageBus)
 	}
 

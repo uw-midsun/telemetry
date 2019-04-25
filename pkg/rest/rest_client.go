@@ -16,7 +16,7 @@ import (
 )
 
 func setupClient(client *http.Client, bodyPipe *io.PipeReader) {
-	req, err := http.NewRequest("POST", "http://localhost:8080" + JSONStreamEndpoint, bodyPipe)
+	req, err := http.NewRequest("POST", viper.GetString("remoteurl") + JSONStreamEndpoint, bodyPipe)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ func setupClient(client *http.Client, bodyPipe *io.PipeReader) {
 func RunClient(bus *pubsub.MessageBus) {
 	log.Infof("Starting http client")
 	client := &http.Client{
-		Timeout:   60 * time.Second,
+		Timeout:   15 * time.Minute,
 	}
 
 	bodyPipe, jsonPipe := io.Pipe()
@@ -53,7 +53,6 @@ func RunClient(bus *pubsub.MessageBus) {
 	bus.Subscribe("CAN", func(msg msgs.CAN) {
 		l.Lock()
 		defer l.Unlock()
-		log.Infof("T")
 		err := jsonEncoder.Encode(msg)
 		if err != nil {
 			log.Errorf("Error: failed stream to endpoint " + err.Error())
