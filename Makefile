@@ -23,11 +23,19 @@ V := 0
 Q := $(if $(filter 1,$V),,@)
 
 .PHONY: all
-all: fmt lint vendor | $(BASE) ; $(info building executable...) @ ## Build program binary
-	$Q $(GO) build \
+.DEFAULT: all
+all: build | $(BASE) ; $(info building executable...) @ ## Build program binary
+
+.PHONY: build
+build: fmt lint vendor | $(BASE) ; @ ## Build program binary
+	$Q $(GO) build $(ARGS) \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o bin/$(PACKAGE) main.go
+
+.PHONY: race
+race: ARGS=-race
+race: build | $(BASE) ; $(info building race executable...) @ ## Build program binary with race detection
 
 # echoing $GOPATH to ensure it is evaluated and not lazily-evaluated
 $(BASE): ; $(info setting $$GOPATH...)
