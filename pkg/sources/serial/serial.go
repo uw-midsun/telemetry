@@ -11,8 +11,8 @@ import (
 	"github.com/jacobsa/go-serial/serial"
 	"github.com/mrVanboy/go-simple-cobs"
 
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
 )
 
 const canRxHeader = 0x585243

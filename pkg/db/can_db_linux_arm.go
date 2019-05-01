@@ -11,8 +11,8 @@ import (
 
 	log "github.com/golang/glog"
 
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
 )
 
 // RunDb on ARM uses a logfile since there is no sqlite driver for armeabi-v7a.

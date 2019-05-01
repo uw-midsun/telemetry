@@ -4,10 +4,10 @@ import (
 	"math"
 	"time"
 
-	"telemetry/pkg/canmsgdefs"
-	"telemetry/pkg/msgs"
-	"telemetry/pkg/pubsub"
-	"telemetry/pkg/util/randutil"
+	"github.com/uw-midsun/telemetry/pkg/canmsgdefs"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/pubsub"
+	"github.com/uw-midsun/telemetry/pkg/util/randutil"
 )
 
 const (

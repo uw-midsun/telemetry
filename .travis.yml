@@ -5,6 +5,12 @@ branches:
 os:
   - linux
 
+go:
+  - "1.12"
+
+env:
+  - GO111MODULE=on
+
 before_install:
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-key adv --fetch-keys http://dl.yarnpkg.com/debian/pubkey.gpg
@@ -16,12 +22,6 @@ before_install:
 cache:
   directories:
   - "$HOME/.yarn-cache"
-
-install:
-  - go get -v github.com/Masterminds/glide
-  - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install
-    && cd -
-  - glide install
 
 before_script:
   - nvm install 6

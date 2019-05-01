@@ -65,22 +65,12 @@ export GOPATH=$HOME/shared/go
 
 If you haven't changed the shell, you will also need to edit the GOPATH in your Bash profile. In `~/.bashrc`, locate the line near the bottom of the file that starts with `export GOPATH=`, and modify the line to say `export GOPATH=/home/vagrant/shared/go`.
 
-We use [Glide](https://github.com/Masterminds/glide) to manage vendored
-dependencies.
-
-When installing Glide, it may complain that you do not have a `bin` folder in your $GOPATH. Rectify this by creating a bin folder, setting $GOBIN, then adding it to your path.
+Once you've set up the GOPATH variable, get and compile the code. Please note that since we're using [go modules](https://github.com/golang/go/wiki/Modules) for dependency management, the telemetry repository should not be located under GOPATH.
 
 ```bash
-cd $GOPATH && mkdir bin
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
-```
-
-Once you've installed Glide, get and compile the code.
-
-```bash
-go get -d github.com/uw-midsun/telemetry
-cd $GOPATH/src/github.com/uw-midsun/telemetry
+cd ~/shared
+git clone https://github.com/uw-midsun/telemetry.git
+cd telemetry
 make
 ```
 

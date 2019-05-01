@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"telemetry/pkg/msgs"
+	"github.com/uw-midsun/telemetry/pkg/msgs"
 )
 
 // WriteMsg commits a CAN message to the database.
