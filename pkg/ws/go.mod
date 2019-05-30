@@ -1,3 +1,3 @@
-module rest
+module ws
 
 go 1.12
