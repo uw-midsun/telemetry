@@ -289,9 +289,9 @@ ws.onmessage = (event) => {
 };
 
 ws.onclose = (event) => {
-  console.error("WebSocket closed observed:", event);
+  console.error('WebSocket closed observed:', event);
 };
 
 ws.onerror = (event) => {
-  console.error("WebSocket error observed:", event);
+  console.error('WebSocket error observed:', event);
 };
