@@ -9,10 +9,10 @@ import (
 	"github.com/uw-midsun/telemetry/pkg/sources/fake"
 	"github.com/uw-midsun/telemetry/pkg/sources/serial"
 	"github.com/uw-midsun/telemetry/pkg/sources/socketcan"
-
 	"sync"
 
 	"github.com/gorilla/websocket"
+
 )
 
 const (
@@ -43,14 +43,18 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf
 		defer l.Unlock()
 		conn.WriteJSON(msg)
 	})
-
-	if uf {
+		
+	if uf { // Fake Data
 		for {
 			fake.GenFake(bus)
 			time.Sleep(time.Millisecond * 500)
 		}
-	} else {
+	} else if tty == "" { // SocketCAN
+		
 		socketcan.Run(socketCan, bus)
+
+	} else { // Serial
+		serial.Run(tty, bus)
 	}
 }
 
@@ -58,7 +62,7 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf
 func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool, socketCan string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
-
+		
 		defer func() {
 			if conn != nil {
 				conn.Close()
