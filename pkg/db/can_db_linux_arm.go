@@ -5,18 +5,21 @@ package candb
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/csv"
 	"os"
 	"sync"
 
 	log "github.com/golang/glog"
+	"github.com/spf13/viper"
 
 	"github.com/uw-midsun/telemetry/pkg/msgs"
 	"github.com/uw-midsun/telemetry/pkg/pubsub"
 )
 
 // RunDb on ARM uses a logfile since there is no sqlite driver for armeabi-v7a.
-func RunDb(bus *pubsub.MessageBus, dbName string) {
+func RunDb(bus *pubsub.MessageBus, _ *sql.DB) {
+	dbName := viper.GetString("dbDriver")
 	f, err := os.OpenFile(dbName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Errorf("Failed to open db log", err.Error())
