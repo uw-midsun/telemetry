@@ -30,13 +30,13 @@ const maxSolarCurrent = 10
 const minSolarTemp = 15
 const maxSolarTemp = 40
 
-const minBatteryVoltage = 978800 // 67.88 V
-const maxBatteryVoltage = 986010 // 68.6 V
+const minBatteryVoltage = 678800 // 67.88 V
+const maxBatteryVoltage = 686010 // 68.6 V
 const minBatteryCurrent = 0
 const maxBatteryCurrent = 3400000 // 3.4 A
 
-const minAuxVoltage = 90
-const maxAuxVoltage = 200
+const minAuxVoltage = 50
+const maxAuxVoltage = 60
 const minAuxCurrent = 4000000
 const maxAuxCurrent = 6000000
 const minDcdcVoltage = 140
