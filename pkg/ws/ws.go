@@ -8,10 +8,11 @@ import (
 	"github.com/uw-midsun/telemetry/pkg/pubsub"
 	"github.com/uw-midsun/telemetry/pkg/sources/fake"
 	"github.com/uw-midsun/telemetry/pkg/sources/serial"
-
+	"github.com/uw-midsun/telemetry/pkg/sources/socketcan"
 	"sync"
 
 	"github.com/gorilla/websocket"
+
 )
 
 const (
@@ -30,7 +31,7 @@ var upgrader = websocket.Upgrader{
 }
 
 // handleMessages handles messages on the websocket
-func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf bool) {
+func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf bool, socketCan string) {
 	// pingTicker := time.NewTicker(pingPeriod)
 	// defer pingTicker.Stop()
 
@@ -42,22 +43,26 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn, tty string, uf
 		defer l.Unlock()
 		conn.WriteJSON(msg)
 	})
-
-	if uf {
+		
+	if uf { // Fake Data
 		for {
 			fake.GenFake(bus)
 			time.Sleep(time.Millisecond * 500)
 		}
-	} else {
+	} else if tty == "" { // SocketCAN
+		
+		socketcan.Run(socketCan, bus)
+
+	} else { // Serial
 		serial.Run(tty, bus)
 	}
 }
 
 // ServeHTTP serves the websocket connection
-func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWriter, *http.Request) {
+func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool, socketCan string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
-
+		
 		defer func() {
 			if conn != nil {
 				conn.Close()
@@ -68,6 +73,6 @@ func ServeHTTP(b *pubsub.MessageBus, tty string, fake bool) func(http.ResponseWr
 			return
 		}
 
-		handleMessages(b, conn, tty, fake)
+		handleMessages(b, conn, tty, fake, socketCan)
 	}
 }

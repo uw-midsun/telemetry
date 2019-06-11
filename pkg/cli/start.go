@@ -38,17 +38,19 @@ var serverPort int
 var ttyPort string
 var dbName string
 var schemaFile string
+var socketCanPort string
 
 func init() {
 	startCmd.Flags().StringVarP(&schemaFile, "schema", "s", "", "s")
 	startCmd.Flags().IntVarP(&serverPort, "port", "p", 8080, "port")
 	startCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake")
-	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "/dev/ttyUSB0", "tty")
+	startCmd.Flags().StringVarP(&ttyPort, "tty", "t", "", "tty")
+	startCmd.Flags().StringVarP(&socketCanPort, "socketcan", "c", "can0", "socketcan")
 	startCmd.Flags().StringVarP(&dbName, "db", "d", "", "db")
 }
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus) {
-	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, fake))
+	r.Get("/ws", ws.ServeHTTP(messageBus, ttyPort, fake, socketCanPort))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
 	r.FileServer("/", http.Dir(filesDir))
