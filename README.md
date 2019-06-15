@@ -23,7 +23,7 @@ These steps must be followed **after** setting up telemetry-server.
 
 We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is 
 compatible with `npm`, but is a little faster and allows us to specify a
-`yarn.lock` file. If you get an error regarding a failure to create symbolic links, try running `yarn install --no-bin-links`
+`yarn.lock` file. If you get an error regarding a failure to create symbolic links, try running `yarn install --no-bin-links`.
 
 ```bash
 cd shared/telemetry/client
@@ -31,21 +31,23 @@ sudo npm install -g yarn
 yarn install
 ```
 
-We use TypeScript extensively, so you will need to compile the TypeScript files. Compile the code with our `tsconfig.json` configuration.
+We use TypeScript extensively, so you will need to compile the TypeScript files. Install Typescript, then compile the code with our `tsconfig.json` configuration.
 
 ```bash
+npm -g install typescript
 cd shared/telemetry/client
 tsc
 ```
 
-For some stylesheets, we use Sass. Compile the Sass stylesheets to CSS.
+For some stylesheets, we use Sass. Install Sass, then compile the Sass stylesheets to CSS.
 
 ```bash
+npm -g install sass
 cd shared/telemetry/client/src/css
 sass stylesheet.scss stylesheet.css
 ```
 
-To start serving the webpage, run the server executable with appropriate options specified. The driver display webpage will be accessible at <IP_ADDRESS>:8080/driver_display.html. (Usually, this IP address is 192.168.24.24.)
+To start serving the webpage, run the server executable with appropriate options specified. The driver display webpage will be accessible at <IP_ADDRESS>:8080/driver_display.html. (Usually, this IP address is 192.168.24.24 if you are running the telemetry server on the box.)
 
 ```bash
 cd shared/telemetry
