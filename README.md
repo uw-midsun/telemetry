@@ -23,49 +23,55 @@ These steps must be followed **after** setting up telemetry-server.
 
 We use [yarn](https://yarnpkg.com/en/) to manage dependencies&mdash;it is 
 compatible with `npm`, but is a little faster and allows us to specify a
-`yarn.lock` file.
+`yarn.lock` file. If you get an error regarding a failure to create symbolic links, try running `yarn install --no-bin-links`
 
 ```bash
-cd $GOPATH/src/github.com/uw-midsun/telemetry/client
+cd shared/telemetry/client
+sudo npm install -g yarn
 yarn install
 ```
 
-We use TypeScript extensively, so you will need to compile the TypeScript files. First, install TypeScript, then compile the code with our `tsconfig.json` configuration.
+We use TypeScript extensively, so you will need to compile the TypeScript files. Compile the code with our `tsconfig.json` configuration.
 
 ```bash
-cd $GOPATH/src/github.com/uw-midsun/telemetry/client
+cd shared/telemetry/client
 tsc
 ```
 
-For some stylesheets, we use Sass, so you will need to install that as well. Then, compile the Sass stylesheets to CSS.
+For some stylesheets, we use Sass. Compile the Sass stylesheets to CSS.
 
 ```bash
-cd $GOPATH/src/github.com/uw-midsun/telemetry/client/src/css
+cd shared/telemetry/client/src/css
 sass stylesheet.scss stylesheet.css
 ```
 
-To start serving the webpage, run the server executable with appropriate options specified. The driver display webpage will be accessible at <IP_ADDRESS>:8080/driver_display.html.
+To start serving the webpage, run the server executable with appropriate options specified. The driver display webpage will be accessible at <IP_ADDRESS>:8080/driver_display.html. (Usually, this IP address is 192.168.24.24.)
 
 ```bash
-cd $GOPATH/src/github.com/uw-midsun/telemetry
+cd shared/telemetry
 ./bin/telemetry start -f --schema=can_messages.asciipb
 ```
 
 ## telemetry-server
 
 ### Getting Started
-We use Go to write backend code for the telemetry server. Follow the appropriate instructions to install Go for your operating system, then check that environment variables are set up correctly by running `go env`.
+We use Go to write backend code for the telemetry server.
 
-If you are using the Midnight Sun Box, it may be desirable to have the files in the `shared` directory, so that you can edit files using an editor on your local machine rather than vi in the Box. This can be accomplished by creating a directory in the shared directory, and setting the GOPATH to that directory.
+If you are using the Midnight Sun Box, it may be desirable to have the files in the `shared` directory, so that you can edit files using an editor on your local machine rather than vi in the Box. There are some outdated dependencies in the Box - until the Box gets updated, you will want to update these dependencies by running the following commands:
 
-```bash
-cd ~/shared && mkdir go
-export GOPATH=$HOME/shared/go
+```
+rm -rf /usr/local/go
+wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz
+tar -C /usr/local -xzf go1.12.4.linux-amd64.tar.gz
+rm -f go*.tar.gz
+
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
-If you haven't changed the shell, you will also need to edit the GOPATH in your Bash profile. In `~/.bashrc`, locate the line near the bottom of the file that starts with `export GOPATH=`, and modify the line to say `export GOPATH=/home/vagrant/shared/go`.
+Then, get and compile the code! Please note that since we're using [go modules](https://github.com/golang/go/wiki/Modules) for dependency management, the telemetry repository should not be located under GOPATH.
 
-Once you've set up the GOPATH variable, get and compile the code. Please note that since we're using [go modules](https://github.com/golang/go/wiki/Modules) for dependency management, the telemetry repository should not be located under GOPATH.
+On Windows, you may run into an error about failing to create symbolic links. Make sure that you are running your terminal application (Cygwin, Git Bash, etc.) with administrator privileges.
 
 ```bash
 cd ~/shared
@@ -73,8 +79,6 @@ git clone https://github.com/uw-midsun/telemetry.git
 cd telemetry
 make
 ```
-
-On Windows, you may run into an error about failing to create symbolic links. Make sure that you are running your terminal application (Cygwin, Git Bash, etc.) with administrator privileges!
 
 ### Makefile commands
 If you're stuck and need help
