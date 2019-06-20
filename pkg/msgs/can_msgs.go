@@ -42,7 +42,7 @@ var schema canpb.CanSchema
 func CanMsgInit(filename string) error {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatalln("Failed to read can_schema.asciipb")
+		log.Fatalln("Failed to read schema file: " + filename, err)
 		return err
 	}
 	err = proto.UnmarshalText(string(b), &schema)
