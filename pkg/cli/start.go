@@ -23,6 +23,7 @@ import (
 	"github.com/uw-midsun/telemetry/pkg/rest"
 	"github.com/uw-midsun/telemetry/pkg/sources/fake"
 	"github.com/uw-midsun/telemetry/pkg/sources/serial"
+	"github.com/uw-midsun/telemetry/pkg/sources/socketcan"
 )
 
 var startCmd = &cobra.Command{
@@ -59,6 +60,7 @@ func init() {
 	startCmd.Flags().String("source", "s", "Source of CAN messages. Can be a combination of (s)erial, (r)est, or (f)ake")
 	startCmd.Flags().String("dbDriver", "sqlite3", "The DB driver to use")
 	startCmd.Flags().String("remoteurl", "", "If CAN data should be sent to a remote server")
+	startCmd.Flags().String("socketcan", "can0", "The socketcan interface to listen on")
 
 	viper.SetEnvPrefix(envPrefix)
 	viper.AutomaticEnv()
@@ -83,6 +85,7 @@ func setupFileServer(r *chi.Mux, endpoint string, filesDir string) {
 
 func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
 	ttyPort := viper.GetString("interface")
+	socketCan := viper.GetString("socketcan")
 	source := viper.GetString("source")
 	serverPort := viper.GetInt("serverPort")
 
@@ -113,6 +116,8 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 	// Run the serial port if it was requested
 	if strings.Contains(source, "s") {
 		go serial.Run(ttyPort, messageBus)
+	} else {
+		go socketcan.Run(socketCan, messageBus)
 	}
 
 	port := fmt.Sprintf(":%d", serverPort)

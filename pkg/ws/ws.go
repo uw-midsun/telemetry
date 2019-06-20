@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+
 )
 
 const (
@@ -93,7 +94,7 @@ func handleMessages(bus *pubsub.MessageBus, conn *websocket.Conn) {
 func ServeHTTP(b *pubsub.MessageBus) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
-
+		
 		defer func() {
 			if conn != nil {
 				conn.Close()

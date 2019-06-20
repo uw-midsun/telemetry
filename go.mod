@@ -5,11 +5,12 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/go-chi/chi v0.0.0-20170216185340-5917107c1cec // indirect
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/gorilla/websocket v0.0.0-20170218162710-3f3e394da2b8 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4 // indirect
+	github.com/linklayer/go-socketcan v0.0.0-20190403144728-e9fc2da5204c
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/mrVanboy/go-simple-cobs v0.0.0-20180102074149-bc19984395e8 // indirect
 	github.com/pkg/errors v0.0.0-20161029093637-248dadf4e906 // indirect
@@ -18,13 +19,13 @@ require (
 	github.com/uw-midsun/telemetry/pkg/canmsgdefs v0.0.0 // indirect
 	github.com/uw-midsun/telemetry/pkg/cli v0.0.0
 	github.com/uw-midsun/telemetry/pkg/db v0.0.0 // indirect
-	github.com/uw-midsun/telemetry/pkg/msgs v0.0.0 // indirect
+	github.com/uw-midsun/telemetry/pkg/msgs v0.0.0
 	github.com/uw-midsun/telemetry/pkg/protos v0.0.0-00010101000000-000000000000 // indirect
-	github.com/uw-midsun/telemetry/pkg/pubsub v0.0.0-00010101000000-000000000000 // indirect
+	github.com/uw-midsun/telemetry/pkg/pubsub v0.0.0-00010101000000-000000000000
 	github.com/uw-midsun/telemetry/pkg/rest v0.0.0-00010101000000-000000000000 // indirect
 	github.com/uw-midsun/telemetry/pkg/sources/fake v0.0.0-00010101000000-000000000000 // indirect
 	github.com/uw-midsun/telemetry/pkg/sources/serial v0.0.0-00010101000000-000000000000 // indirect
-	github.com/uw-midsun/telemetry/pkg/util/randutil v0.0.0-00010101000000-000000000000 // indirect
+	github.com/uw-midsun/telemetry/pkg/util/randutil v0.0.0-00010101000000-000000000000
 	github.com/uw-midsun/telemetry/pkg/ws v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/net v0.0.0-20190522155817-f3200d17e092 // indirect
 	golang.org/x/sync v0.0.0-20190412183630-56d357773e84 // indirect
