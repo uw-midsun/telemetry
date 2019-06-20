@@ -36,10 +36,9 @@ var startCmd = &cobra.Command{
 	Example: `
 	telemetry start --schema=/foo.asciipb
 									[--port=port]
-									[--source=(s|f|r)]
+									[--source=(s|f|r|c)]
 									[--rest]
 									[--tty=/dev/...]
-									[--db=a.db]
 	`,
 	RunE: runStart,
 }
@@ -67,40 +66,45 @@ func init() {
 	viper.BindPFlags(startCmd.Flags())
 }
 
-func setupFileServer(r *chi.Mux, endpoint string, filesDir string) {
+func setupFileServer(router *chi.Mux, endpoint string, filesDir string) {
+
 	if !strings.HasSuffix(endpoint, "/") {
-			panic("Endpoint must be a folder type")
+		panic("Endpoint must be a folder type")
 	}
+
 	fileServer := http.StripPrefix(
 		endpoint,
-	  http.TimeoutHandler(http.FileServer(http.Dir(filesDir)), 5 * time.Second, "Failed to serve file"),
+		http.TimeoutHandler(http.FileServer(http.Dir(filesDir)), 5 * time.Second, "Failed to serve file"),
 	)
+
 	log.Infof("Mounting fileserver from %s", filesDir)
+
 	endpoint += "*"
-	r.Get(endpoint, func (w http.ResponseWriter, r *http.Request) {
-			fileServer.ServeHTTP(w, r)
+
+	router.Get(endpoint, func (w http.ResponseWriter, router *http.Request) {
+			fileServer.ServeHTTP(w, router)
 		},
 	)
 }
 
-func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
+func setupURLRouting(router *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) error {
 	ttyPort := viper.GetString("interface")
 	socketCan := viper.GetString("socketcan")
 	source := viper.GetString("source")
 	serverPort := viper.GetInt("serverPort")
 
-	r.Get("/ws", ws.ServeHTTP(messageBus))
+	router.Get("/ws", ws.ServeHTTP(messageBus))
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "client", "src")
 
-	setupFileServer(r, "/", filesDir)
+	setupFileServer(router, "/", filesDir)
 
 	// Start the rest api if it was requested
 	if strings.Contains(source, "r") {
 		if db == nil {
-			return fmt.Errorf("You did not specify a db. A db is required to start the REST server")
+			return fmt.Errorf("You did not specify a db. A db is required to start the REST server (flag dbConnectString)")
 		}
-		r.Post(rest.JSONStreamEndpoint, rest.ServeHTTP(messageBus, db))
+		router.Post(rest.JSONStreamEndpoint, rest.ServeHTTP(messageBus, db))
 	}
 
 	// Start the fake data generation if it was requested
@@ -116,7 +120,9 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 	// Run the serial port if it was requested
 	if strings.Contains(source, "s") {
 		go serial.Run(ttyPort, messageBus)
-	} else {
+	}
+	
+	if strings.Contains(source, "c") {
 		go socketcan.Run(socketCan, messageBus)
 	}
 
@@ -130,7 +136,7 @@ func setupURLRouting(r *chi.Mux, messageBus *pubsub.MessageBus, db *sql.DB) erro
 	// TODO(karl): change this so the process can be "daemonized"
 	server := &http.Server{
 		Addr: port,
-		Handler: r,
+		Handler: router,
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout: 6 * time.Hour,
 	}
@@ -154,7 +160,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("Schema file is bad or not found")
 	}
 
-	r := chi.NewRouter()
+	router := chi.NewRouter()
 	messageBus := pubsub.New()
 	var db *sql.DB
 
@@ -167,12 +173,14 @@ func runStart(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		rest.InitAuthDb(db)
-		rest.AddTokenToDb(token, db)
+		err = rest.InitAuthDb(db)
+		if (err == nil) {
+			rest.AddTokenToDb(token, db)
+		}
 		candb.RunDb(messageBus, db)
 
 	}
-	return setupURLRouting(r, messageBus, db)
+	return setupURLRouting(router, messageBus, db)
 }
 
 // restartBackground restarts the process in the background (like a daemon)

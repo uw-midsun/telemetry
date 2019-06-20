@@ -51,7 +51,7 @@ To start serving the webpage, run the server executable with appropriate options
 
 ```bash
 cd shared/telemetry
-./bin/telemetry start -f --schema=can_messages.asciipb
+./bin/telemetry start --source=f --schema=can_messages.asciipb
 ```
 
 ## telemetry-server

@@ -22,7 +22,7 @@ func RunDb(bus *pubsub.MessageBus, db *sql.DB) {
              rtr INTEGER NOT NULL,
              dlc INTEGER NOT NULL,
              timestamp INTEGER NOT NULL,
-						 data TEXT NOT NULL);`
+             data TEXT NOT NULL);`
 
 	_, err := db.Exec(createCanTbl)
 	if err != nil {

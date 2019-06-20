@@ -12,7 +12,7 @@ import (
 )
 
 // InitAuthDb Creates authentication DB table
-func InitAuthDb(db *sql.DB) {
+func InitAuthDb(db *sql.DB) error {
 	createOAuthTbl := `
 			CREATE TABLE IF NOT EXISTS
 				auth (token TEXT, CONSTRAINT unique_tokens UNIQUE(token));`
@@ -20,7 +20,9 @@ func InitAuthDb(db *sql.DB) {
 	_, err := db.Exec(createOAuthTbl)
 	if err != nil {
 		log.Errorf("Failed to create OAuth table " + err.Error())
+		return err
 	}
+	return nil
 }
 
 // AddTokenToDb Adds a token to the authentication DB table
@@ -28,7 +30,7 @@ func AddTokenToDb(token string, db *sql.DB) {
 	if token != "" {
 		hashed := sha256.Sum256([]byte(token))
 		hashedHex := fmt.Sprintf("%x", hashed)
-		insertQuery := "INSERT INTO auth(token) VALUES (?)"
+		insertQuery := `INSERT INTO auth(token) VALUES (?)`
 		_, err := db.Exec(insertQuery, hashedHex)
 		if err != nil {
 			log.Errorf("Could add token to db: " + err.Error())
