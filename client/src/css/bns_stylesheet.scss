@@ -1,0 +1,159 @@
+@font-face {
+    font-family: "Open Sans";
+    src: url("../fonts/OpenSans-Regular.ttf") format("truetype");
+  }
+  
+  // Force root to a font-size so rem units are consistent if they need to be
+  // converted.
+  :root {
+    font-size: 16px;
+  }
+
+  li {
+    color: white;
+  }
+
+  tr {
+    color: white;
+  }
+  
+  p, b {
+    color: white;
+  }
+
+  html {
+    height: 100%;
+    font-family: "Open Sans";
+    background-color: #1d1f26;
+    line-height: 14px;
+  }
+
+  .section-header {
+    color: white;
+    margin: 2%;
+  }
+
+  .page-button {
+    font-family: "Open Sans";
+    border: none;
+    height: 100%;
+    background-color: slategray;
+    padding: 5px, 5px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    color: white;
+    font-size: 14;
+    border: 3px solid #1d1f26;
+    border-radius: 3px;
+  }
+
+  body {
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    #monitor-wrapper {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      
+      #top-bar {
+        width: 100%;
+        height: 6%;
+        top: 0%;
+        left: 0%;
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        #date-bar {
+          width: auto;
+          height: 100%;
+          text-align: right;
+          flex-grow: 1;
+          padding-right: 5%;
+
+          #date-text {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+          }
+        }
+      }
+
+      #main-panel-layout {
+        display: flex;
+        position: relative;
+        width: 100%;
+        height: 93%;
+        justify-content: flex-start;
+        flex-direction: row;
+        flex-shrink: 0;
+
+        .bat-voltage-table, .solar-voltage-table {
+          width: 93%;
+          // border: 1px solid blue;
+          table-layout: fixed;
+          margin: 3%;
+          border-collapse: separate;
+          border-spacing: 0px;
+
+          td {
+            text-align: center;
+          }
+
+          .bat-voltage-ids, .solar-voltage-ids {
+            td {
+              border: 2px solid #619794;
+              padding: 5px;
+            }
+          }
+          .bat-voltage-readings, .solar-voltage-readings {
+            td {
+              padding: 12px;
+              border: 2px solid rgb(0, 183, 255);
+              font-weight: bold;
+            }
+          }
+        }
+
+        #plutus-panel {
+          position: relative;
+          display: flex;
+          width: 50%;
+          height: 100%;
+          overflow: visible;
+          flex-direction: column;
+          border: 3px solid yellowgreen;
+          border-radius: 3px;
+          padding-left: 2px;
+        }
+
+        #solar-wrapper-panel {
+          width: 50%;
+          height: 100%;
+          border: 3px solid orange;
+          border-radius: 3px;
+          #solar-front-panel, #solar-rear-panel {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 45%;
+            overflow: visible;
+            flex-direction: column;
+            padding-left: 2px;
+          }
+        }
+      }
+
+    }
+
+
+
+  }

@@ -201,6 +201,36 @@ func GenFake(bus *pubsub.MessageBus) {
 		value := uint16(500*math.Sin(float64(5*time.Now().UnixNano()/int64(time.Millisecond))) + 1000)
 		bus.Publish("CAN", msgs.NewFakeCAN(0, uint16(canmsgdefs.SystemCanMessageMotorVelocity), createDataU16(value, value/2), 2))
 
+		// heartbeats
+		bus.Publish("CAN", msgs.NewFakeCAN(0, uint16(canmsgdefs.SystemCanMessageBpsHeartbeat), createDataU8(1), 1))
+
+		if randutil.RandIntInRange(rand, 0, 2) == 0 {
+			bus.Publish("CAN", msgs.NewFakeCAN(0, uint16(canmsgdefs.SystemCanMessagePowertrainHeartbeat), createDataU8(1), 1))
+		}
+
+		// faults
+		if randutil.RandIntInRange(rand, 0, 10) == 0 {
+			faultID := uint8(randutil.RandIntInRange(rand, 0, 4))
+			sentFault := uint64(0)
+			if faultID == 0 {
+				sentFault = createDataU8(1, 0, 0, 0)
+			} else if faultID == 1 {
+				sentFault = createDataU8(0, 1, 0, 0)
+			} else if faultID == 2 {
+				sentFault = createDataU8(0, 0, 1, 0)
+			} else if faultID == 3 {
+				sentFault = createDataU8(0, 0, 0, 1)
+			} else {
+				sentFault = createDataU8(1, 1, 1, 1)
+			}
+			if randutil.RandIntInRange(rand, 0, 100) == 0 {
+				bus.Publish("CAN", msgs.NewFakeCAN(0, uint16(canmsgdefs.SystemCanMessageHorn), createDataU8(1), 1))
+			}
+			bus.Publish("CAN", msgs.NewFakeCAN(0, uint16(canmsgdefs.SystemCanMessageOvuvDcdcAux), sentFault, 4))
+		}
+
+		// relay open/close
+
 		time.Sleep(readInterval)
 	}
 }

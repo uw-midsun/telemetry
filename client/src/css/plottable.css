@@ -105,8 +105,8 @@
 }
 
 .plottable .label text {
+  color: white;
   font-family: "Helvetica Neue", sans-serif;
-  fill: #32313F;
 }
 
 .plottable .bar-label-text-area text {
@@ -115,9 +115,9 @@
 }
 
 .plottable .label-area text {
-  fill: #32313F;
+  fill: #ffffff;
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .plottable .light-label text {
@@ -125,15 +125,15 @@
 }
 
 .plottable .dark-label text {
-  fill: #32313F;
+  fill: #ffffff;
 }
 
 .plottable .off-bar-label text {
-  fill: #32313F;
+  fill: #ffffff;
 }
 
 .plottable .stacked-bar-label text {
-  fill: #32313F;
+  fill: #ffffff;
   font-style: normal;
 }
 
@@ -146,8 +146,9 @@
   font-size: 10px;
   font-weight: bold;
   letter-spacing: 1px;
-  line-height: normal;
+  line-height: 9px;
   text-transform: uppercase;
+  fill: white;
 }
 
 .plottable .title-label text {
@@ -166,7 +167,7 @@
 }
 
 .plottable .axis text {
-  fill: #32313F;
+  fill: #ffffff;
   font-family: "Helvetica Neue", sans-serif;
   font-size: 12px;
   font-weight: 200;
@@ -195,7 +196,7 @@
 }
 
 .plottable .gridlines line {
-  stroke: #3C3C3C; /* hackhack: gridlines should be solid; see #820 */
+  stroke: rgb(124, 124, 124); /* hackhack: gridlines should be solid; see #820 */
   opacity: 0.25;
   stroke-width: 1px;
 }
@@ -254,9 +255,9 @@
 }
 
 .plottable .legend text {
-  fill: #32313F;
+  fill: #ffffff;
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   line-height: normal;
 }

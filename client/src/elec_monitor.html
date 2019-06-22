@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>UWMidsun Electrical Monitor</title>
+    <meta name="description" content="Electrical systems monitor for UWMidsun">
+    <meta name="author" content="UWMidsun">
+    <link type="text/css" href="css/em_stylesheet.css" rel="stylesheet">
+    <link type="text/css" href="css/plottable.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="monitor-wrapper">
+        <div id="top-bar">
+            <button class="page-button" onclick="location.href='bns_monitor.html'" type="button">Bat & solar monitor</button>
+            <button class="page-button" onclick="location.href='driver_display.html'" type="button">Driver display</button>
+            <div id="date-bar">
+                <p id="date-text">fffffffffffffff</p>
+            </div>
+        </div>
+        <div id="main-panel-layout">
+            <div id="misc-info-panel">
+                <div id="heartbeat-wrapper">
+                    <b class="section-header">Heartbeats</b>
+                    <div id="bps-heartbeat">
+                        <div class="section-header">BPS heartbeat:</div>
+                        <b id="bps-hb-text">...</b>
+                    </div>
+                    <div id="powertrain-heartbeat">
+                        <div class="section-header">Powertrain heartbeat:</div>
+                        <b id="powertrain-hb-text">...</b>
+                    </div>
+                </div>
+                <b class="section-header" id="state-of-charge">State of charge: 0</b>
+                <br></br>
+                <div id="relay-state-panel">
+                    <b class="section-header">Relay states</b>
+                    <div id="relay-states-wrapper">
+                        <table id="relay-state-table">
+                            <tr>
+                                <td>Bat. main: </td>
+                                <td id="bat-main-relay-state" class="relay-state">open</td>
+                            </tr>
+                            <tr>
+                                <td>Bat. slave: </td>
+                                <td id="bat-slave-relay-state" class="relay-state">open</td>
+                            </tr>
+                            <tr>
+                                <td>Solar front: </td>
+                                <td id="solar-front-relay-state" class="relay-state">open</td>
+                            </tr>
+                            <tr>
+                                <td>Solar rear: </td>
+                                <td id="solar-rear-relay-state" class="relay-state">open</td>
+                            </tr>
+                            <tr>
+                                <td>Motor: </td>
+                                <td id="motor-relay-state" class="relay-state">open</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="fault-printout-wrapper">
+                    <b class="section-header">Fault Printouts</b>
+                    <ul id="fault-printout-list">
+                        <li>...</li>
+                        <li>...</li>
+                        <li>...</li>
+                        <li>...</li>
+                        <li>...</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="battery-details-wrapper">
+                <b class="section-header">BATTERY</b>
+                <div id="battery-graphs-wrapper">
+                    <table class="graph-title-table">
+                        <tr>
+                            <td><b>Battery voltage graph</b></td>
+                            <td id="bat-voltage-value" class="highlight-value">Value: 0</td>
+                        </tr>
+                    </table>
+                    <div id="battery-voltage-graph" class="graph plottable"></div>
+                    <table class="graph-title-table">
+                            <tr>
+                                <td><b>Battery current graph</b></td>
+                                <td id="bat-current-value" class="highlight-value">Value: 0</td>
+                            </tr>
+                        </table>
+                    <div id="battery-current-graph" class="graph plottable"></div>
+                </div>
+                <div id="battery-extra-info-wrapper">
+                    <table id="bat-info-table">
+                        <tr>
+                            <td>Aux voltage:</td>
+                            <td class="bat-info-val" id="aux-voltage">0</td>
+                            <td>Dcdc voltage:</td>
+                            <td class="bat-info-val" id="dcdc-voltage">0</td>
+                        </tr>
+                        <tr>
+                            <td>Aux current:</td>
+                            <td class="bat-info-val" id="aux-current">0</td>
+                            <td>Dcdc current:</td>
+                            <td class="bat-info-val" id="dcdc-current">0</td>
+                        </tr>
+                        <tr>
+                            <td>Main pack voltage:</td>
+                            <td class="bat-info-val" id="mp-voltage">0</td>
+                            <td>Dcdc temp 1:</td>
+                            <td class="bat-info-val" id="dcdc-temp1">0</td>
+                        </tr>
+                        <tr>
+                            <td>Main pack current:</td>
+                            <td class="bat-info-val" id="mp-current">0</td>
+                            <td>Dcdc temp 2:</td>
+                            <td class="bat-info-val" id="dcdc-temp2">0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="solar-details-wrapper">
+                <b class="section-header">SOLAR</b>
+                <div id="solar-graphs-wrapper">
+                    <div id="solar-front-wrapper">
+                        <table class="graph-title-table">
+                            <tr>
+                                <td><b>Solar front voltage graph</b></td>
+                                <td id="solar-front-voltage-value" class="highlight-value">Value: 0</td>
+                            </tr>
+                        </table>
+                        <div id="solar-front-voltage-graph" class="graph plottable"></div>
+                        <table class="graph-title-table">
+                            <tr>
+                                <td><b>Solar front current graph</b></td>
+                                <td id="solar-front-current-value" class="highlight-value">Value: 0</td>
+                            </tr>
+                        </table>                        
+                        <div id="solar-front-current-graph" class="graph plottable"></div>
+                    </div>
+                    <div id="solar-rear-wrapper">
+                        <table class="graph-title-table">
+                            <tr>
+                                <td><b>Solar rear voltage graph</b></td>
+                                <td id="solar-rear-voltage-value" class="highlight-value">Value: 0</td>
+                            </tr>
+                        </table>
+                        <div id="solar-rear-voltage-graph" class="graph plottable"></div>
+                        <table class="graph-title-table">
+                            <tr>
+                                <td><b>Solar rear current graph</b></td>
+                                <td id="solar-rear-current-value" class="highlight-value">Value: 0</td>
+                            </tr>
+                        </table>
+                        <div id="solar-rear-current-graph" class="graph plottable"></div>
+                    </div>
+                </div>
+                <table id="solar-temps-table">
+                    <tr>
+                        <td id="solar-front-temp">Front temp: 0</td>
+                        <td id="solar-rear-temp">Rear temp: 0</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="static/d3.js"></script>
+    <script type="text/javascript" src="static/plottable.js"></script>
+    <script type="text/javascript" data-main="js/em" src="static/require.js"></script>
+</body>
+
+</html>

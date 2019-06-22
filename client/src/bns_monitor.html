@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>UWMidsun B&S monitor</title>
+    <meta name="description" content="UWMidsun bns monitor">
+    <meta name="author" content="UWMidsun">
+    <link type="text/css" href="css/bns_stylesheet.css" rel="stylesheet">
+    <link type="text/css" href="css/plottable.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="monitor-wrapper">
+        <div id="top-bar">
+            <button class="page-button" onclick="location.href='elec_monitor.html'" type="button">Elec monitor</button>
+            <button class="page-button" onclick="location.href='driver_display.html'" type="button">Driver display</button>
+            <div id="date-bar">
+                <p id="date-text">fffffffffffffff</p>
+            </div>
+        </div>
+        <div id="main-panel-layout">
+            <div id="plutus-panel">
+                <b class="section-header">Plutus voltages</b>
+                <table class="bat-voltage-table">
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-1">0</td>
+                        <td id="bat-voltage-2">0</td>
+                        <td id="bat-voltage-3">0</td>
+                        <td id="bat-voltage-4">0</td>
+                        <td id="bat-voltage-5">0</td>
+                        <td id="bat-voltage-6">0</td>
+                    </tr>
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>7</td>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>11</td>
+                        <td>12</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-7">0</td>
+                        <td id="bat-voltage-8">0</td>
+                        <td id="bat-voltage-9">0</td>
+                        <td id="bat-voltage-10">0</td>
+                        <td id="bat-voltage-11">0</td>
+                        <td id="bat-voltage-12">0</td>
+                    </tr>
+                </table>
+                <table class="bat-voltage-table">
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>13</td>
+                        <td>14</td>
+                        <td>15</td>
+                        <td>16</td>
+                        <td>17</td>
+                        <td>18</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-13">0</td>
+                        <td id="bat-voltage-14">0</td>
+                        <td id="bat-voltage-15">0</td>
+                        <td id="bat-voltage-16">0</td>
+                        <td id="bat-voltage-17">0</td>
+                        <td id="bat-voltage-18">0</td>
+                    </tr>
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>19</td>
+                        <td>20</td>
+                        <td>21</td>
+                        <td>22</td>
+                        <td>23</td>
+                        <td>24</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-19">0</td>
+                        <td id="bat-voltage-20">0</td>
+                        <td id="bat-voltage-21">0</td>
+                        <td id="bat-voltage-22">0</td>
+                        <td id="bat-voltage-23">0</td>
+                        <td id="bat-voltage-24">0</td>
+                    </tr>
+                </table>
+                <table class="bat-voltage-table">
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>25</td>
+                        <td>26</td>
+                        <td>27</td>
+                        <td>28</td>
+                        <td>29</td>
+                        <td>30</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-25">0</td>
+                        <td id="bat-voltage-26">0</td>
+                        <td id="bat-voltage-27">0</td>
+                        <td id="bat-voltage-28">0</td>
+                        <td id="bat-voltage-29">0</td>
+                        <td id="bat-voltage-30">0</td>
+                    </tr>
+                    <tr class="bat-voltage-ids">
+                        <td>id: </td>
+                        <td>31</td>
+                        <td>32</td>
+                        <td>33</td>
+                        <td>34</td>
+                        <td>35</td>
+                        <td>36</td>
+                    </tr>
+                    <tr class="bat-voltage-readings">
+                        <td>volts: </td>
+                        <td id="bat-voltage-31">0</td>
+                        <td id="bat-voltage-32">0</td>
+                        <td id="bat-voltage-33">0</td>
+                        <td id="bat-voltage-34">0</td>
+                        <td id="bat-voltage-35">0</td>
+                        <td id="bat-voltage-36">0</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="solar-wrapper-panel">
+                <div id="solar-front-panel">
+                    <b class="section-header">Solar front voltages</b>
+                    <table class="solar-voltage-table">
+                        <tr class="solar-voltage-ids">
+                            <td>id: </td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                        </tr>
+                        <tr class="solar-voltage-readings">
+                            <td>volts: </td>
+                            <td id="solar-front-voltage-1">0</td>
+                            <td id="solar-front-voltage-2">0</td>
+                            <td id="solar-front-voltage-3">0</td>
+                            <td id="solar-front-voltage-4">0</td>
+                            <td id="solar-front-voltage-5">0</td>
+                            <td id="solar-front-voltage-6">0</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="solar-rear-panel">
+                    <b class="section-header">Solar rear voltages</b>
+                    <table class="solar-voltage-table">
+                        <tr class="solar-voltage-ids">
+                            <td>id: </td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                        </tr>
+                        <tr class="solar-voltage-readings">
+                            <td>volts: </td>
+                            <td id="solar-rear-voltage-1">0</td>
+                            <td id="solar-rear-voltage-2">0</td>
+                            <td id="solar-rear-voltage-3">0</td>
+                            <td id="solar-rear-voltage-4">0</td>
+                            <td id="solar-rear-voltage-5">0</td>
+                            <td id="solar-rear-voltage-6">0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="static/d3.js"></script>
+    <script type="text/javascript" src="static/plottable.js"></script>
+    <script type="text/javascript" data-main="js/bns" src="static/require.js"></script>
+</body>
+
+</html>
