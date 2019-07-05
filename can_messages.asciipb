@@ -124,7 +124,18 @@ msg {
   }
 }
 
-# IDs: 9-15 Reserved
+# IDs: 9-14 Reserved
+msg {
+  id: 15
+  source: DRIVER_CONTROLS
+  # target: MOTOR_INTERFACE
+  msg_name: "motor controller reset"
+  can_data {
+    empty {
+    }
+  }
+}
+
 
 msg {
   id: 16
@@ -514,6 +525,62 @@ msg {
   }
 }
 
-# IDs: 53-63 Reserved
+msg {
+  id: 53
+  source: TELEMETRY
+  msg_name: "gps utc time"
+  can_data {
+    u16 {
+      field_name_1: "hour"
+      field_name_2: "minute"
+      field_name_3: "second"
+      field_name_4: "millisecond"
+    }
+  }
+}
+
+msg {
+  id: 54
+  source: TELEMETRY
+  msg_name: "gps longitude satellites"
+  can_data {
+    u16 {
+      field_name_1: "degree"
+      field_name_2: "minute"
+      field_name_3: "minute_fraction"
+      field_name_4: "satellites_used"
+    }
+  }
+}
+
+msg {
+  id: 55
+  source: TELEMETRY
+  msg_name: "gps latitude position fix"
+  can_data {
+    u16 {
+      field_name_1: "degree"
+      field_name_2: "minute"
+      field_name_3: "minute_fraction"
+      field_name_4: "position_fix_indicator"
+    }
+  }
+}
+
+msg {
+  id: 56
+  source: TELEMETRY
+  msg_name: "gps speed true heading"
+  can_data {
+    u16 {
+      field_name_1: "speed_integer"
+      field_name_2: "speed_fraction"
+      field_name_3: "heading_integer"
+      field_name_4: "heading_fraction"
+    }
+  }
+}
+
+# IDs: 57-63 Reserved
 
 # No ID may exceed 63. 
