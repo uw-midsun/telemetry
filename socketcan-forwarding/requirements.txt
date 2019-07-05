@@ -1,0 +1,2 @@
+python-can==3.3.0
+websocket-client==0.56.0

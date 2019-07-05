@@ -1,0 +1,250 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url("../fonts/OpenSans-Regular.ttf") format("truetype");
+}
+:root {
+  font-size: 16px;
+}
+
+li {
+  color: white;
+}
+
+tr {
+  color: white;
+}
+
+p, b {
+  color: white;
+}
+
+html {
+  height: 100%;
+  font-family: "Open Sans";
+  background-color: #1d1f26;
+  line-height: 14px;
+}
+
+.section-header {
+  color: white;
+  margin: 2%;
+}
+
+.graph {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.graph .tick-label {
+  fill: white;
+  font-size: 10x;
+}
+.graph .text-line {
+  fill: white;
+}
+.graph .x-axis-tick .tick-label {
+  visibility: visible !important;
+}
+.graph .x-label {
+  font-family: "Open Sans";
+  font-size: 10px;
+}
+.graph .x-gridlines line {
+  stroke: white;
+  stroke-width: 0.1em;
+}
+
+.graph-title-table {
+  width: 100%;
+  padding: 0px;
+}
+
+.highlight-value {
+  color: #30d689;
+}
+
+.page-button {
+  font-family: "Open Sans";
+  border: none;
+  height: 100%;
+  background-color: slategray;
+  padding: 5px, 5px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  color: white;
+  font-size: 14;
+  border: 3px solid #1d1f26;
+  border-radius: 3px;
+}
+
+body {
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body #monitor-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+}
+body #monitor-wrapper #top-bar {
+  width: 100%;
+  height: 6%;
+  top: 0%;
+  left: 0%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+body #monitor-wrapper #top-bar #date-bar {
+  width: auto;
+  height: 100%;
+  text-align: right;
+  flex-grow: 1;
+  padding-right: 5%;
+}
+body #monitor-wrapper #top-bar #date-bar #date-text {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+body #monitor-wrapper #main-panel-layout {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 93%;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-shrink: 0;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel {
+  position: relative;
+  width: 20%;
+  height: 100%;
+  overflow: visible;
+  border: 3px solid lightseagreen;
+  border-radius: 3px;
+  padding-left: 2px;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #heartbeat-wrapper {
+  width: 90%;
+  height: 30%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #heartbeat-wrapper #bps-heartbeat {
+  height: 50%;
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #heartbeat-wrapper #bps-heartbeat #bps-hb-text {
+  color: lightcoral;
+  margin-left: 10%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #heartbeat-wrapper #powertrain-heartbeat {
+  height: 50%;
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #heartbeat-wrapper #powertrain-heartbeat #powertrain-hb-text {
+  color: lightcoral;
+  margin-left: 10%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #relay-state-panel {
+  height: 30%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #relay-state-panel #relay-states-wrapper {
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #relay-state-panel #relay-states-wrapper #relay-state-table {
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #relay-state-panel #relay-states-wrapper #relay-state-table .relay-state {
+  text-align: center;
+  padding: 3px;
+  color: #ffd000;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #fault-printout-wrapper {
+  position: relative;
+  height: 30%;
+}
+body #monitor-wrapper #main-panel-layout #misc-info-panel #fault-printout-wrapper li {
+  margin: 6px;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper {
+  position: relative;
+  display: flex;
+  width: 40%;
+  height: 100%;
+  overflow: visible;
+  flex-direction: column;
+  border: 3px solid yellowgreen;
+  border-radius: 3px;
+  padding-left: 2px;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper #battery-graphs-wrapper {
+  width: 95%;
+  height: 70%;
+  overflow: hidden;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper #battery-graphs-wrapper .graph {
+  height: 35%;
+  width: 95%;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper #battery-extra-info-wrapper {
+  position: absolute;
+  bottom: 2%;
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper #battery-extra-info-wrapper #bat-info-table {
+  font-size: 14px;
+  width: 100%;
+}
+body #monitor-wrapper #main-panel-layout #battery-details-wrapper #battery-extra-info-wrapper #bat-info-table .bat-info-val {
+  text-align: left;
+  color: #ffd000;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper {
+  position: relative;
+  display: flex;
+  width: 40%;
+  height: 100%;
+  overflow: visible;
+  flex-direction: column;
+  border: 3px solid orange;
+  border-radius: 3px;
+  padding-left: 2px;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-graphs-wrapper {
+  height: 90%;
+  margin: 1%;
+  padding-left: 0;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-graphs-wrapper .graph {
+  height: 41%;
+  margin-top: 1%;
+  width: 95%;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-graphs-wrapper #solar-front-wrapper {
+  width: 95%;
+  height: 48%;
+  overflow: hidden;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-graphs-wrapper #solar-rear-wrapper {
+  width: 95%;
+  height: 48%;
+  overflow: hidden;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-temps-table {
+  position: absolute;
+  bottom: 2%;
+  width: 100%;
+  text-align: center;
+}
+body #monitor-wrapper #main-panel-layout #solar-details-wrapper #solar-temps-table td {
+  color: rgba(253, 114, 0, 0.904);
+}
+
+/*# sourceMappingURL=em_stylesheet.css.map */

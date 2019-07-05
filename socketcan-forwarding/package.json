@@ -1,0 +1,12 @@
+{
+  "name": "socketcan-forwarding",
+  "description": "Forward a CAN packets from one location to many others.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": {
+    "ws": "^7.0.1"
+  }
+}
