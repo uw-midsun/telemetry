@@ -205,7 +205,7 @@ ws.onmessage = (event) => {
       // The << 32 >> 32 converts from unsigned to signed.
       const value = Math.abs(
           (((msg.data.vehicle_velocity_left << 32) >> 32) +
-           ((msg.data.vehicle_velocity_right << 32) >> 32)) * 0.036);  // cm/s->km/h
+           ((msg.data.vehicle_velocity_right << 32) >> 32)) / 2 * 0.036);  // cm/s->km/h
       if (value <= 120 && value >= 0) {
         speedDial.value(value);
       } else {
